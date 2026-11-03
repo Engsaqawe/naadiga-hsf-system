@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Members' Articles | NAHS Foundation</title>
+  <meta name="description" content="Read research papers, opinion pieces, stories and reports written by NAHS Foundation scholarship students.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/site-header.css">
+  <link rel="stylesheet" href="assets/css/floating-actions.css">
+  <link rel="stylesheet" href="assets/css/articles.css">
+</head>
+<body class="articles-page">
+
+  <!-- Site header (same as index) -->
+  <div class="navbar" id="mainNavbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-container">
+      <a href="index.html" class="logo" aria-label="NAHS Foundation home">
+        <img src="portal/img/logo.svg" alt="HS Foundation Logo">
+        <div class="logo-text-wrapper">
+          <h1>Naadiga Ardayda Hormuud Salaam Foundation</h1>
+          <p>Scholarship students • Giving back</p>
+        </div>
+      </a>
+      <div class="menu-icon" id="menuToggle" aria-label="Toggle menu" role="button" tabindex="0"><i class="fas fa-bars"></i></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#mission-vision">Mission</a></li>
+        <li><a href="articles.html" class="active-nav">Articles</a></li>
+        <li><a href="books.html">Books</a></li>
+        <li><a href="team.html">Our Team</a></li>
+        <li><a href="index.html#activities">Activities</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="admin_login.html" class="btn-outline">Login</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <header class="articles-hero" id="articlesHero" aria-labelledby="heroTitle">
+    <div class="articles-hero-bg" id="articlesHeroBg" aria-hidden="true">
+      <img id="articlesHeroImg" alt="" decoding="async" hidden>
+    </div>
+    <div class="articles-hero-overlay" aria-hidden="true"></div>
+    <div class="articles-hero-content">
+      <h1 id="heroTitle">Members' Research &amp; Articles</h1>
+      <p id="heroSubtitle">Insights, research, and stories from our scholarship community</p>
+      <div class="search-wrap" role="search">
+        <input type="search" id="searchInput" placeholder="Search articles, topics, authors…" aria-label="Search articles">
+        <i class="fas fa-search" aria-hidden="true"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Author Filter Banner (hidden by default) -->
+  <div id="authorFilterBanner" class="author-filter-banner" style="display:none" role="alert" aria-live="polite">
+    <span id="authorFilterText"></span>
+    <a href="articles.html" class="author-filter-clear">
+      <i class="fas fa-times" style="margin-right:4px"></i>Clear author filter
+    </a>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar" role="toolbar" aria-label="Article category filters">
+    <div class="filter-inner">
+      <div class="filter-pills" id="filterPills" aria-label="Categories">
+        <button type="button" class="filter-pill active" data-category="all">All</button>
+      </div>
+      <span class="articles-count" id="articlesCount" aria-live="polite">Loading…</span>
+    </div>
+  </div>
+
+  <!-- Articles Grid -->
+  <main>
+    <div class="articles-grid" id="articlesGrid" aria-label="Articles" role="list"></div>
+
+    <div class="load-more-wrap">
+      <p class="showing-text" id="showingText"></p>
+      <button type="button" class="btn-primary" id="loadMoreBtn" style="display:none">
+        <i class="fas fa-plus" style="margin-right:8px"></i>Load More Articles
+      </button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:2.5rem 1rem;color:#7a9ab2;font-size:.85rem;border-top:1px solid #dde8f0;margin-top:2rem;background:#fff;">
+    <p>&copy; <span id="year"></span> Naadiga Ardayda Deeqda Waxbarasho HSF · All rights reserved</p>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/article-categories.js"></script>
+  <script src="assets/js/site-header.js"></script>
+  <script src="assets/js/floating-actions.js"></script>
+  <script src="assets/js/articles.js"></script>
+</body>
+</html>

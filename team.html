@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Team | NAHS Foundation</title>
+  <meta name="description" content="Meet the leadership team of Naadiga Ardayda Deeqda Waxbarasho HSF.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/site-header.css">
+  <link rel="stylesheet" href="assets/css/floating-actions.css">
+  <link rel="stylesheet" href="assets/css/articles.css">
+  <link rel="stylesheet" href="assets/css/team.css?v=20260619">
+</head>
+<body class="articles-page team-page">
+
+  <div class="navbar" id="mainNavbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-container">
+      <a href="index.html" class="logo" aria-label="NAHS Foundation home">
+        <img src="portal/img/logo.svg" alt="HS Foundation Logo">
+        <div class="logo-text-wrapper">
+          <h1>Naadiga Ardayda Hormuud Salaam Foundation</h1>
+          <p>Scholarship students • Giving back</p>
+        </div>
+      </a>
+      <div class="menu-icon" id="menuToggle" aria-label="Toggle menu" role="button" tabindex="0"><i class="fas fa-bars"></i></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#mission-vision">Mission</a></li>
+        <li><a href="articles.html">Articles</a></li>
+        <li><a href="books.html">Books</a></li>
+        <li><a href="team.html" class="active-nav">Our Team</a></li>
+        <li><a href="index.html#activities">Activities</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="admin_login.html" class="btn-outline">Login</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <header class="articles-hero team-hero" aria-labelledby="heroTitle">
+    <div class="articles-hero-bg team-hero-bg" aria-hidden="true"></div>
+    <div class="articles-hero-overlay" aria-hidden="true"></div>
+    <div class="articles-hero-content">
+      <p class="team-hero-eyebrow">Leadership &amp; service</p>
+      <h1 id="heroTitle">Our Team</h1>
+      <p id="heroSubtitle">The people who guide Naadiga Ardayda Deeqda Waxbarasho HSF</p>
+    </div>
+  </header>
+
+  <section class="team-carousel-section" aria-label="Team showcase">
+    <div class="team-carousel-wrap">
+      <div class="team-carousel-stage">
+        <div class="team-carousel-ring" id="teamCarouselRing" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="team-main">
+    <div class="team-roster-head">
+      <h2>Meet the team</h2>
+      <p id="teamCount" aria-live="polite">Loading…</p>
+    </div>
+    <div class="team-grid" id="teamGrid" role="list" aria-label="Team members"></div>
+  </main>
+
+  <footer style="text-align:center;padding:2.5rem 1rem;color:#7a9ab2;font-size:.85rem;border-top:1px solid #dde8f0;margin-top:2rem;background:#fff;">
+    <p>&copy; <span id="year"></span> Naadiga Ardayda Deeqda Waxbarasho HSF. All rights reserved</p>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/site-header.js"></script>
+  <script src="assets/js/floating-actions.js"></script>
+  <script src="assets/js/team.js?v=20260619"></script>
+</body>
+</html>

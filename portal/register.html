@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - Hormuud Salaam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script>
+      try {
+        var t = localStorage.getItem('portal-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
+    <style>
+      .login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-main); width: 100%; padding: 40px 20px; }
+      .login-card { background: var(--bg-card); border-radius: 40px; padding: 48px 40px; width: 100%; max-width: 500px; box-shadow: var(--shadow-lg); text-align: center; }
+      .login-logo img { width: 80px; height: 80px; object-fit: contain; }
+      .login-card h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--text-main); font-weight: 800; }
+      .login-sub { color: var(--text-muted); margin-bottom: 32px; font-size: 0.9rem; }
+      .login-footer { margin-top: 30px; font-size: 0.85rem; color: var(--text-muted); padding-top: 20px; border-top: 1px solid var(--border); }
+    </style>
+  </head>
+  <body class="login-page">
+    <div class="login-card fade-in">
+      <div style="margin-bottom: 20px;"><img src="/portal/img/logo.svg" alt="HS Foundation Logo" style="height: 130px; width: auto; border-radius: 50%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));"></div>
+      <h2>Join the Club</h2>
+      <form id="register-form">
+        <div class="form-group mb-3" style="text-align: left">
+          <label class="floating-label">Full Name</label>
+          <div class="input-container">
+            <input type="text" id="fullname" class="modern-input" placeholder="e.g. Ahmed Ali" required />
+            <i class="fa-solid fa-id-card"></i>
+          </div>
+        </div>
+
+        <div class="form-group mb-3" style="text-align: left">
+          <label class="floating-label">Email Address</label>
+          <div class="input-container">
+            <input type="email" id="email" class="modern-input" placeholder="email@example.com" required />
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+        </div>
+
+        <div class="form-group mb-3" style="text-align: left">
+          <label class="floating-label">Username</label>
+          <div class="input-container">
+            <input type="text" id="username" class="modern-input" placeholder="e.g. ahmed123" required />
+            <i class="fa-solid fa-user"></i>
+          </div>
+        </div>
+
+        <div class="form-group mb-4" style="text-align: left">
+          <label class="floating-label">Password</label>
+          <div class="input-container">
+            <input type="password" id="password" class="modern-input" placeholder="••••••••" required />
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="show-pass" style="cursor: pointer; width: 16px; height: 16px" onclick="const p = document.getElementById('password'); p.type = this.checked ? 'text' : 'password'">
+            <label for="show-pass" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer; font-weight: 600">Show Password</label>
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-modern primary" style="width: 100%; justify-content: center; padding: 14px">
+          Create Account
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <p>Already have an account? <a id="login-after-register-link" href="../admin_login.html" style="color: var(--primary); font-weight: 700; text-decoration: none;">Login here</a></p>
+      </div>
+    </div>
+
+    <script src="../assets/js/contact-return.js"></script>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/components.js"></script>
+    <script>
+      (function () {
+        if (typeof HSFContactReturn !== 'undefined') {
+          HSFContactReturn.getPostAuthReturn();
+        }
+        const loginLink = document.getElementById('login-after-register-link');
+        if (loginLink && typeof HSFContactReturn !== 'undefined') {
+          loginLink.href = '../' + HSFContactReturn.buildLoginUrl();
+        }
+      })();
+
+      const registerForm = document.getElementById("register-form");
+      const submitBtn = document.getElementById("submit-btn");
+
+      registerForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+            full_name: document.getElementById("fullname").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            username: document.getElementById("username").value.trim(),
+            password: document.getElementById("password").value.trim()
+        };
+
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+
+        try {
+          const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:5000/api" : "/api";
+          const response = await fetch(`${API_BASE}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          
+          const result = await response.json();
+
+          if (result.success) {
+            alert('Registration successful! Redirecting to login...');
+            const loginUrl = (typeof HSFContactReturn !== 'undefined')
+              ? '../' + HSFContactReturn.buildLoginUrl()
+              : '../admin_login.html';
+            setTimeout(() => { window.location.href = loginUrl; }, 1500);
+          } else {
+            alert(result.message || 'Registration failed!');
+          }
+        } catch (err) {
+          alert('Connection error. Is the server running?');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+        }
+      };
+    </script>
+  </body>
+</html>

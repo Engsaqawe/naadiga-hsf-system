@@ -1,0 +1,132 @@
+/* Collector Dashboard — toolbar & layout polish */
+
+.month-selector--collector {
+    gap: 1rem;
+}
+
+.month-selector--collector #filters-container {
+    align-items: center;
+}
+
+#collector-badge {
+    background: var(--secondary);
+    color: #fff;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    border: none;
+}
+
+.month-selector--collector .toolbar-month-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+.month-selector--collector #month-picker {
+    min-height: 42px;
+}
+
+.collect-row-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.collect-amount-input--inline {
+    width: 88px;
+    min-height: 36px;
+    padding: 6px 10px !important;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: right;
+    background: var(--bg-card, #fff);
+    color: var(--text-main, #0f172a);
+}
+
+.collect-row-btn {
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    white-space: nowrap;
+    min-width: 5.5rem;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .collect-row-action {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .collect-amount-input--inline {
+        flex: 1;
+        max-width: 100px;
+    }
+}
+
+.month-selector--collector .search-wrapper {
+    position: relative;
+}
+
+.month-selector--collector .search-wrapper .search-input {
+    width: 100%;
+    min-height: 42px;
+}
+
+@media (min-width: 769px) {
+    .month-selector--collector {
+        padding: 1rem 1.5rem;
+    }
+
+    .month-selector--collector #filters-container {
+        flex-wrap: nowrap;
+    }
+
+    .month-selector--collector .search-wrapper {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .month-selector--collector {
+        padding: 14px 16px;
+    }
+
+    .month-selector--collector #filters-container {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    #collector-badge {
+        flex: 1 1 100%;
+        justify-content: center;
+        padding: 10px 16px;
+    }
+
+    .month-selector--collector .month-field-group {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .month-selector--collector .search-wrapper {
+        width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .month-selector--collector .search-wrapper .search-input {
+        padding-left: 38px;
+    }
+}

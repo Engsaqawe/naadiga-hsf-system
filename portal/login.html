@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Hormuud Salaam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="assets/css/style.css?v=20260713" />
+    <script>
+      try {
+        var t = localStorage.getItem('portal-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
+    <style>
+      .login-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        width: 100%;
+        padding: 40px 20px;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse 80% 60% at 10% 20%, rgba(37, 99, 235, 0.18), transparent 55%),
+          radial-gradient(ellipse 70% 50% at 90% 80%, rgba(30, 74, 109, 0.22), transparent 50%),
+          linear-gradient(160deg, var(--bg-main) 0%, var(--bg-surface-muted, #f1f5f9) 100%);
+      }
+      [data-theme="dark"] .login-page {
+        background:
+          radial-gradient(ellipse 80% 60% at 12% 18%, rgba(37, 99, 235, 0.28), transparent 55%),
+          radial-gradient(ellipse 70% 50% at 88% 85%, rgba(14, 165, 233, 0.12), transparent 50%),
+          linear-gradient(160deg, #0b1220 0%, #0f172a 55%, #1e293b 100%);
+      }
+      .login-page::before {
+        content: "";
+        position: absolute;
+        inset: -20%;
+        background-image: radial-gradient(rgba(30, 74, 109, 0.06) 1px, transparent 1px);
+        background-size: 28px 28px;
+        animation: loginDrift 28s linear infinite;
+        pointer-events: none;
+      }
+      @keyframes loginDrift {
+        from { transform: translate3d(0, 0, 0); }
+        to { transform: translate3d(-28px, -28px, 0); }
+      }
+      .login-card {
+        position: relative;
+        z-index: 1;
+        background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+        backdrop-filter: blur(12px);
+        border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+        border-radius: 28px;
+        padding: 48px 40px;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+        text-align: center;
+        margin: auto;
+        animation: loginCardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes loginCardIn {
+        from { opacity: 0; transform: translateY(28px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .login-logo {
+        margin-bottom: 24px;
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .login-logo img {
+        width: 88px;
+        height: 88px;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 16px rgba(30, 74, 109, 0.2));
+        animation: loginLogoFloat 4.5s ease-in-out infinite;
+      }
+      @keyframes loginLogoFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      .login-logo:hover { transform: scale(1.05); }
+      .login-logo:hover img { animation-play-state: paused; }
+      .login-card h2 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        color: var(--text-main);
+        font-weight: 800;
+        letter-spacing: -1px;
+      }
+      .login-sub {
+        color: var(--text-muted);
+        margin-bottom: 32px;
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+      .login-card .modern-input:focus {
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+      }
+      .login-card .btn-modern.primary {
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        box-shadow: 0 8px 20px rgba(30, 74, 109, 0.25);
+      }
+      .login-card .btn-modern.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(30, 74, 109, 0.32);
+      }
+      .forgot-link {
+        display: block;
+        text-align: right;
+        margin-top: -10px;
+        margin-bottom: 25px;
+        font-size: 0.875rem;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 700;
+        transition: var(--transition);
+      }
+      .forgot-link:hover { color: var(--primary-light); text-decoration: underline; }
+      .login-footer {
+        margin-top: 30px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .login-page::before,
+        .login-card,
+        .login-logo img { animation: none !important; }
+      }
+    </style>
+  </head>
+  <body class="login-page">
+    <div class="login-card fade-in">
+      <div class="login-logo"><img src="img/logo.svg" alt="Logo"></div>
+      <h2>Hormuud Salaam</h2>
+      <p class="login-sub">Student Team Management Portal</p>
+
+      <form id="login-form">
+        <div class="form-group mb-4" style="text-align: left">
+          <label class="floating-label">Username</label>
+          <div class="input-container">
+            <input type="text" id="username" class="modern-input" placeholder="Enter your username" required />
+            <i class="fa-solid fa-user"></i>
+          </div>
+        </div>
+
+        <div class="form-group mb-4" style="text-align: left">
+          <label class="floating-label">Password</label>
+          <div class="input-container">
+            <input type="password" id="password" class="modern-input" placeholder="••••••••" required />
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="show-pass" style="cursor: pointer; width: 16px; height: 16px" onclick="const p = document.getElementById('password'); p.type = this.checked ? 'text' : 'password'">
+            <label for="show-pass" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer; font-weight: 600">Show Password</label>
+          </div>
+        </div>
+
+        <a href="forgot-password.html" class="forgot-link">Forgot Password?</a>
+
+        <button type="submit" id="submit-btn" class="btn-modern primary" style="width: 100%; justify-content: center; padding: 14px">
+          Login to Dashboard
+        </button>
+      </form>
+      <!-- <div class="login-footer">
+        <p>Don't have an account? <a href="register.html" style="color: var(--primary); font-weight: 700; text-decoration: none;">Register here</a></p>
+      </div> -->
+    </div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/components.js"></script>
+    <script>
+
+
+      const loginForm = document.getElementById("login-form");
+      const loginBtn = document.getElementById("submit-btn");
+
+      loginForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const userVal = document.getElementById("username").value.trim();
+        const passVal = document.getElementById("password").value.trim();
+
+        Components.setLoading(loginBtn, true);
+
+        try {
+          const result = await loginUser(userVal, passVal);
+
+          if (result && result.success) {
+            const role = result.user.role;
+            
+            // SECURITY: Prevent "Public User" from accessing the Member Portal
+            if (role === "Public User") {
+              Components.showToast('Access Denied. Public accounts cannot access the Member Portal.', 'error');
+              Components.setLoading(loginBtn, false);
+              return;
+            }
+
+            setCurrentUser(result.user);
+            Components.showToast('Login successful! Redirecting...', 'success');
+            
+            setTimeout(() => {
+                if (role === "Main Leader") {
+                  localStorage.setItem('isAdmin', 'true');
+                  window.location.href = "pages/main-leader/dashboard.html";
+                } else if (role === "Media Admin") {
+                  window.location.href = "pages/media-admin/dashboard.html";
+                } else if (role === "Payment Admin" || role === "payment-admin" || role === "payment-leader") {
+                  window.location.href = "pages/payment-leader/dashboard.html";
+                } else if (role === "Leader" || role === "Payment Sub Admin" || role === "convocation-leader") {
+                  window.location.href = "pages/convocation-leader/dashboard.html";
+                } else {
+                  window.location.href = "pages/student/dashboard.html";
+                }
+            }, 1000);
+          } else {
+            Components.showToast(result?.message || 'Invalid username or password!', 'error');
+          }
+        } catch (err) {
+          Components.showToast('Connection error. Is the server running?', 'error');
+        } finally {
+          Components.setLoading(loginBtn, false);
+        }
+      };
+    </script>
+  </body>
+</html>

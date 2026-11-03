@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Leader Dashboard - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css?v=20260713">
+    <link rel="stylesheet" href="./payment-leader.css?v=20260625">
+    <link rel="stylesheet" href="../convocation-leader/collector-dashboard.css">
+    <style>
+        input[type="month"] {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            height: 38px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .chart-row {
+                display: flex;
+                overflow-x: auto;
+                gap: 1rem;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.5rem;
+            }
+            .chart-card {
+                min-width: 85vw;
+                flex: 0 0 85vw;
+                scroll-snap-align: start;
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            height: 200px;
+            margin-top: 1.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .bar-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+
+          @media (max-width: 768px) {
+.d-flex> button{
+    text-align: center;
+}
+
+}
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+
+            <div class="dashboard-content">
+                <div class="month-selector month-selector--payment-admin">
+                    <div class="d-flex align-center gap-3" id="filters-container">
+                        <div class="month-field-group">
+                            <label class="toolbar-month-label" for="month-picker"><i class="fa-solid fa-calendar-days"></i> Month:</label>
+                            <input type="month" id="month-picker" class="search-input month-picker-input">
+                        </div>
+                        <select id="convocation-filter" class="search-input convocation-filter-input">
+                            <option value="All">All Convocations</option>
+                        </select>
+                    </div>
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="global-search" class="search-input"
+                            placeholder="Search by ID or Name...">
+                    </div>
+                </div>
+
+                <div class="stats-grid" id="stats-grid" style="display:none;"></div>
+
+                <!-- Support / Money In (Admin Only) -->
+                <div id="support-entry-card" class="support-entry-card expense-entry-card" style="display:none;">
+                    <div class="expense-entry-head support-entry-head">
+                        <div class="support-balance-pill" id="support-balance-hint">Money from supporters adds to balance</div>
+                        <h3 class="expense-entry-title"><i class="fa-solid fa-hand-holding-heart"></i> Record Support / Money In</h3>
+                    </div>
+                    <form id="support-form" class="expense-form-grid" onsubmit="return submitSupportEntry(event)">
+                        <div class="expense-field">
+                            <label for="support-date">Date</label>
+                            <input type="date" id="support-date" class="search-input" style="padding-left:12px;" required />
+                        </div>
+                        <div class="expense-field">
+                            <label for="support-amount">Amount (USD)</label>
+                            <input type="number" step="0.01" min="0.01" id="support-amount" class="search-input" style="padding-left:12px;" placeholder="e.g. 50.00" required />
+                        </div>
+                        <div class="expense-field expense-field--full">
+                            <label for="support-desc">Description / Supporter</label>
+                            <input type="text" id="support-desc" class="search-input" style="padding-left:12px;" placeholder="Who helped or what this is for (e.g. Hormuud support)" />
+                        </div>
+                        <div class="expense-field expense-field--action">
+                            <button type="submit" class="btn btn-primary support-save-btn">
+                                <i class="fa-solid fa-plus"></i> Add to Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="recent-support-card" class="card-table" style="margin-top:1.5rem;display:none;">
+                    <div class="table-header">
+                        <h3>Recent Support & Contributions</h3>
+                        <button type="button" id="toggle-support-btn" class="btn btn-outline btn-sm"
+                            onclick="toggleSupport()" style="display:none;">View All</button>
+                    </div>
+                    <div class="table-wrapper no-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th style="text-align:right;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-support-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Expense Entry (Admin Only) -->
+                <div id="expense-entry-card" class="expense-entry-card" style="display:none;">
+                    <div class="expense-entry-head">
+                        <div class="expense-balance-pill" id="expense-balance-label">Balance: —</div>
+                        <h3 class="expense-entry-title"><i class="fa-solid fa-receipt"></i> Record Expense</h3>
+                    </div>
+                    <form id="expense-form" class="expense-form-grid" onsubmit="return submitExpenseEntry(event)">
+                        <div class="expense-field">
+                            <label for="expense-date">Date</label>
+                            <input type="date" id="expense-date" class="search-input" style="padding-left:12px;" required />
+                        </div>
+                        <div class="expense-field">
+                            <label for="expense-amount">Amount (USD)</label>
+                            <input type="number" step="0.01" min="0" id="expense-amount" class="search-input" style="padding-left:12px;" placeholder="e.g. 12.00" required />
+                        </div>
+                        <div class="expense-field expense-field--full">
+                            <label for="expense-desc">Description</label>
+                            <input type="text" id="expense-desc" class="search-input" style="padding-left:12px;" placeholder="Optional note (e.g. hall rent, supplies)" />
+                        </div>
+                        <div class="expense-field expense-field--action">
+                            <button type="submit" class="btn btn-primary expense-save-btn">
+                                <i class="fa-solid fa-check"></i> Save Entry
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recent Spending -->
+                <div id="recent-expenses-card" class="card-table" style="margin-top:2rem;">
+                    <div class="table-header">
+                        <h3>Recent Spending</h3>
+                        <button type="button" id="toggle-expenses-btn" class="btn btn-outline btn-sm"
+                            onclick="toggleExpenses()" style="display:none;">
+                            View All
+                        </button>
+                    </div>
+                    <!-- 🔥 ADD THIS -->
+                 <div class="table-wrapper no-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th style="text-align:right;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-expenses-body">
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="card-table" style="margin-top:2rem;">
+                    <div class="table-header">
+                        <h3>Unpaid Members | <span style="font-weight:400;color:var(--text-muted);">Lacag la'aan</span>
+                        </h3>
+                    </div>
+                    <!-- 🔥 ADD THIS -->
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Convocation</th>
+                                    <th style="text-align:right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unpaid-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-table" style="margin-top:2rem;">
+                    <div class="table-header">
+                        <h3>Transaction History | <span style="font-weight:400;color:var(--text-muted);">Taariikhda
+                                Bixinta</span></h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Convocation</th>
+                                    <th>Month</th>
+                                    <th>Amount</th>
+                                    <th>Collector</th>
+                                    <th>Status</th>
+                                    <th id="hist-action-col" style="text-align:right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="chart-row" id="admin-charts" style="display:none;">
+                        <div class="chart-card">
+                            <h3>Convocation Performance (%)</h3>
+                            <div class="bar-container" id="conv-chart"></div>
+                        </div>
+                    </div>
+                </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/data.js"></script>
+    <script src="../../assets/js/chart-bars.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+        let currentUser = {};
+        let isCollector = false;
+        let allStudents = [];
+        let allConvocations = [];
+        let showAllExpenses = false;
+        let showAllSupport = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = getCurrentUser();
+            if (!currentUser.id || currentUser.role === 'Public User') {
+                localStorage.removeItem('hsf_current_user');
+                window.location.href = '../../login.html'; 
+                return; 
+            }
+
+            isCollector = currentUser.role === 'Payment Sub Admin';
+
+            Components.init({
+                role: currentUser.role,
+                activePage: 'dashboard',
+                title: 'Payment Dashboard',
+                userName: currentUser.name || 'User',
+                userRoleLabel: currentUser.role || 'Guest'
+            });
+
+            // Load convocations for the filter
+            allConvocations = await getConvocations();
+            allStudents = await getUsers();
+
+            const convFilter = document.getElementById('convocation-filter');
+            const container = document.getElementById('filters-container');
+
+            if (isCollector) {
+                // Show badge for collector's convocation
+                if (container && !document.getElementById('collector-badge')) {
+                    container.insertAdjacentHTML('afterbegin', `
+                        <div id="collector-badge">
+                            <i class="fa-solid fa-user-shield"></i> ${currentUser.convocation}
+                        </div>`);
+                document.querySelector('.month-selector')?.classList.add('month-selector--collector');
+                }
+                if (convFilter) convFilter.style.display = 'none';
+            } else {
+                document.querySelector('.month-selector')?.classList.add('month-selector--payment-admin-panel');
+                if (convFilter) {
+                    convFilter.innerHTML = '<option value="All">All Convocations</option>' +
+                        allConvocations.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+                }
+            }
+
+            // Set month picker to current month
+            const now = new Date();
+            const monthPicker = document.getElementById('month-picker');
+            if (monthPicker) {
+                monthPicker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                monthPicker.onchange = updateDashboard;
+            }
+            if (convFilter) convFilter.onchange = updateDashboard;
+            const search = document.getElementById('global-search');
+            if (search) search.oninput = updateDashboard;
+
+            // Show money-in / money-out forms for main payment admin (not collectors)
+            const supportCard = document.getElementById('support-entry-card');
+            const expenseCard = document.getElementById('expense-entry-card');
+            if (!isCollector) {
+                if (supportCard) supportCard.style.display = 'block';
+                if (expenseCard) expenseCard.style.display = 'block';
+            }
+
+            updateDashboard();
+        });
+
+        async function updateDashboard() {
+            const mPicker = document.getElementById('month-picker');
+            const gSearch = document.getElementById('global-search');
+            const cFilter = document.getElementById('convocation-filter');
+
+            const dateVal = mPicker ? mPicker.value : '';
+            if (!dateVal) return;
+
+            const [year, monthNum] = dateVal.split('-');
+            const now = new Date();
+            const selectedMonthIdx = parseInt(monthNum) - 1;
+            const isFutureDate = (parseInt(year) > now.getFullYear()) ||
+                (parseInt(year) === now.getFullYear() && selectedMonthIdx > now.getMonth());
+
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const selectedMonth = monthNames[selectedMonthIdx];
+            const selectedConv = isCollector ? currentUser.convocation : (cFilter ? cFilter.value : 'All');
+            const searchTerm = (gSearch ? gSearch.value : '').toLowerCase();
+
+            // Fetch transactions for this month / convocation
+            const txnFilters = { month: selectedMonth, year };
+            if (selectedConv !== 'All') txnFilters.convocation = selectedConv;
+            const transactions = await getTransactions(txnFilters);
+
+            // Which students have paid this month?
+            const paidIds = new Set(transactions.map(t => t.student_id));
+
+            // Filter students
+            let scopeStudents = allStudents;
+            if (selectedConv !== 'All') {
+                scopeStudents = scopeStudents.filter(s =>
+                    s.convocation && s.convocation.toLowerCase() === selectedConv.toLowerCase()
+                );
+            }
+
+            // Unpaid students = not in paidIds for this month (if not future)
+            let unpaidStudents = isFutureDate ? scopeStudents :
+                scopeStudents.filter(s => !paidIds.has(s.id));
+
+            // Apply search
+            const finalUnpaid = unpaidStudents.filter(s =>
+                s.name.toLowerCase().includes(searchTerm) || s.id.toLowerCase().includes(searchTerm)
+            );
+
+            // ── Stats ─────────────────────────────────────────
+            const statsGrid = document.getElementById('stats-grid');
+            if (statsGrid) {
+                statsGrid.style.display = 'grid';
+                const collectedTotal = transactions.reduce((acc, t) =>
+                    acc + parseFloat((t.amount || '0').replace('$', '')), 0);
+
+                let stats = [];
+                if (isCollector) {
+                    stats = [
+                        { label: `Collected (${currentUser.convocation})`, value: `$${collectedTotal.toFixed(2)}`, icon: 'fa-sack-dollar', color: 'icon-green' },
+                        { label: 'Unpaid Members', value: finalUnpaid.length, icon: 'fa-clock', color: 'icon-red' },
+                        { label: 'Paid Members', value: scopeStudents.length - finalUnpaid.length, icon: 'fa-circle-check', color: 'icon-green' },
+                    ];
+                } else {
+                    const allTimeTxns = await getTransactions();
+                    const allExpensesList = await getExpenses();
+                    const allFundEntries = await getFundEntries();
+
+                    const grandCollectedTotal = sumTxnCollected(allTimeTxns);
+                    const grandSpentTotal = sumExpenseTotal(allExpensesList);
+                    const grandSupportTotal = sumFundEntriesTotal(allFundEntries);
+                    const accountBalance = calcAccountBalance(allTimeTxns, allExpensesList, allFundEntries);
+
+                    const currentMonthSpent = allExpensesList
+                        .filter(e => e.month === selectedMonth && parseInt(e.year) === parseInt(year))
+                        .reduce((acc, e) => acc + parseFloat(e.amount || 0), 0);
+                    const currentMonthSupport = allFundEntries
+                        .filter(e => e.month === selectedMonth && parseInt(e.year) === parseInt(year))
+                        .reduce((acc, e) => acc + parseFloat(e.amount || 0), 0);
+
+                    stats = [
+                        { label: 'Unpaid Total', value: unpaidStudents.length, icon: 'fa-clock', color: 'icon-red' },
+                        { label: 'Paid Members', value: scopeStudents.length - unpaidStudents.length, icon: 'fa-user-check', color: 'icon-green' },
+                        { label: `Collected (${selectedMonth})`, value: `$${collectedTotal.toFixed(2)}`, icon: 'fa-sack-dollar', color: 'icon-green' },
+                        { label: `Supported (${selectedMonth})`, value: `$${currentMonthSupport.toFixed(2)}`, icon: 'fa-hand-holding-heart', color: 'icon-green' },
+                        { label: `Spent (${selectedMonth})`, value: `$${currentMonthSpent.toFixed(2)}`, icon: 'fa-money-bill-transfer', color: 'icon-red' },
+                        { label: 'Total Account Balance', value: `$${accountBalance.toFixed(2)}`, icon: 'fa-vault', color: 'icon-green' },
+                        { label: 'Total Supported (All Time)', value: `$${grandSupportTotal.toFixed(2)}`, icon: 'fa-circle-plus', color: 'icon-green' },
+                        { label: 'Total Spent (All Time)', value: `$${grandSpentTotal.toFixed(2)}`, icon: 'fa-money-bill-trend-up', color: 'icon-red' }
+                    ];
+
+                    const balanceLabel = document.getElementById('expense-balance-label');
+                    if (balanceLabel) {
+                        balanceLabel.textContent = `Balance: $${accountBalance.toFixed(2)}`;
+                    }
+                    const supportHint = document.getElementById('support-balance-hint');
+                    if (supportHint) {
+                        supportHint.textContent = `Collected $${grandCollectedTotal.toFixed(2)} + Supported $${grandSupportTotal.toFixed(2)} − Spent $${grandSpentTotal.toFixed(2)}`;
+                    }
+
+                    const recentSupportCard = document.getElementById('recent-support-card');
+                    const recentSupportBody = document.getElementById('recent-support-body');
+                    const toggleSupportBtn = document.getElementById('toggle-support-btn');
+                    if (recentSupportCard && recentSupportBody) {
+                        const monthSupport = allFundEntries
+                            .filter(e => e.month === selectedMonth && parseInt(e.year) === parseInt(year))
+                            .sort((a, b) => (b.id || 0) - (a.id || 0));
+
+                        if (monthSupport.length > 0) {
+                            recentSupportCard.style.display = 'block';
+                            const limit = showAllSupport ? monthSupport.length : 5;
+                            const subset = monthSupport.slice(0, limit);
+                            recentSupportBody.innerHTML = subset.map(e => `
+                                <tr>
+                                    <td>${formatFundEntryDate(e)}</td>
+                                    <td>${e.description || '—'}</td>
+                                    <td style="text-align:right;color:#145f40;"><strong>+$${parseFloat(e.amount || 0).toFixed(2)}</strong></td>
+                                </tr>
+                            `).join('');
+                            if (toggleSupportBtn) {
+                                toggleSupportBtn.style.display = monthSupport.length > 5 ? 'inline-block' : 'none';
+                                toggleSupportBtn.textContent = showAllSupport ? 'Show Latest 5' : 'View All';
+                            }
+                        } else {
+                            recentSupportCard.style.display = 'block';
+                            recentSupportBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--text-muted);">No support recorded for this month.</td></tr>';
+                            if (toggleSupportBtn) toggleSupportBtn.style.display = 'none';
+                        }
+                    }
+
+                    const recentCard = document.getElementById('recent-expenses-card');
+                    const recentBody = document.getElementById('recent-expenses-body');
+                    const toggleBtn = document.getElementById('toggle-expenses-btn');
+                    if (recentCard && recentBody) {
+                        const monthExpenses = allExpensesList
+                            .filter(e => e.month === selectedMonth && parseInt(e.year) === parseInt(year))
+                            .sort((a, b) => (b.id || 0) - (a.id || 0));
+
+                        if (monthExpenses.length > 0) {
+                            recentCard.style.display = 'block';
+
+                            const limit = showAllExpenses ? monthExpenses.length : 5;
+                            const subset = monthExpenses.slice(0, limit);
+
+                            recentBody.innerHTML = subset.map(e => `
+                                <tr>
+                                    <td>${formatExpenseDate(e)}</td>
+                                    <td>${e.description || '-'}</td>
+                                    <td style="text-align:right;"><strong>$${parseFloat(e.amount || 0).toFixed(2)}</strong></td>
+                                </tr>
+                            `).join('');
+
+                            if (toggleBtn) {
+                                toggleBtn.style.display = monthExpenses.length > 5 ? 'inline-block' : 'none';
+                                toggleBtn.textContent = showAllExpenses ? 'Show Latest 5' : 'View All';
+                            }
+                        } else {
+                            recentCard.style.display = 'block';
+                            recentBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--text-muted);">No spending recorded for this month.</td></tr>';
+                            if (toggleBtn) toggleBtn.style.display = 'none';
+                        }
+                    }
+                }
+                statsGrid.innerHTML = stats.map(s => `
+                    <div class="stat-card">
+                        <div class="stat-icon ${s.color}"><i class="fa-solid ${s.icon}"></i></div>
+                        <div class="stat-info"><h4>${s.value}</h4><p>${s.label}</p></div>
+                    </div>`).join('');
+            }
+
+            // ── Unpaid Table ──────────────────────────────────
+            const unpaidTable = document.getElementById('unpaid-table-body');
+            if (unpaidTable) {
+                if (!isCollector) {
+                    // Group by convocation
+                    const targetConvs = selectedConv === 'All'
+                        ? allConvocations.map(c => c.name)
+                        : [selectedConv];
+
+                    unpaidTable.innerHTML = targetConvs.map(convName => {
+                        const group = finalUnpaid.filter(s =>
+                            s.convocation && s.convocation.toLowerCase() === convName.toLowerCase()
+                        );
+                        if (!group.length) return '';
+                        const safeConv = convName.replace(/\s+/g, '-');
+                        return `
+                            <tr style="background:var(--bg-hover);cursor:pointer;"
+                                onclick="document.querySelectorAll('.ur-${safeConv}').forEach(r=>r.style.display=r.style.display==='none'?'table-row':'none')">
+                                <td colspan="4"><strong>${convName}</strong> (${group.length} Unpaid) <i class="fa-solid fa-chevron-down" style="float:right;margin-top:4px;"></i></td>
+                            </tr>
+                            ${group.map(s => `
+                                <tr class="ur-${safeConv}">
+                                    <td><strong>${s.id}</strong></td>
+                                    <td><div class="d-flex align-center gap-2"><img src="${s.profilePic || ''}" style="width:32px;height:32px;border-radius:50%;" alt=""><span>${s.name}</span></div></td>
+                                    <td>${s.convocation}</td>
+                                    <td style="text-align:right;"><span class="badge badge-unpaid">${selectedMonth} Unpaid</span></td>
+                                </tr>`).join('')}`;
+                    }).join('') || '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-muted);">Hambalyo! Cidna laguma laha bishaan.</td></tr>';
+                } else {
+                    // Collector view - show Collect button
+                    unpaidTable.innerHTML = finalUnpaid.map(s => {
+                        const isSelf = s.id === currentUser.id;
+                        return `
+                            <tr ${isSelf ? 'style="background:rgba(37,99,235,0.06);border-left:3px solid var(--secondary);"' : ''}>
+                                <td><strong>${s.id}</strong> ${isSelf ? '<span class="badge badge-leader" style="font-size:0.7rem;">You</span>' : ''}</td>
+                                <td><div class="d-flex align-center gap-2"><img src="${s.profilePic || ''}" style="width:32px;height:32px;border-radius:50%;" alt=""><span>${s.name}</span></div></td>
+                                <td>${s.convocation}</td>
+                                <td style="text-align:right;">
+                                    <div class="d-flex align-center justify-end gap-3 flex-wrap">
+                                        <span class="badge badge-unpaid">${selectedMonth} Unpaid</span>
+                                        ${!isFutureDate ? `
+                                            <div class="collect-row-action">
+                                                <input type="number" step="0.01" min="0.01" id="collect-amount-${s.id}" class="collect-amount-input collect-amount-input--inline" value="${getDefaultCollectAmount()}" aria-label="Amount USD for ${s.name}">
+                                                <button type="button" class="btn ${isSelf ? 'btn-outline' : 'btn-primary'} collect-row-btn"
+                                                    style="${isSelf ? 'border-color:var(--secondary);color:var(--secondary);' : ''}"
+                                                    onclick="processPayment('${s.id}','${selectedMonth}')">
+                                                    <i class="fa-solid ${isSelf ? 'fa-hand-holding-dollar' : 'fa-money-bill-check'}"></i>
+                                                    Collect
+                                                </button>
+                                            </div>` : ''}
+                                    </div>
+                                </td>
+                            </tr>`;
+                    }).join('') || '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-muted);">Hambalyo! Cidna laguma laha bishaan.</td></tr>';
+                    bindCollectAmountInputs();
+                }
+            }
+
+            // ── Transaction History Table ─────────────────────
+            const histActionCol = document.getElementById('hist-action-col');
+            if (histActionCol) histActionCol.style.display = isCollector ? '' : 'none';
+
+            const histTable = document.getElementById('history-table-body');
+            if (histTable) {
+                const histColspan = isCollector ? 9 : 8;
+                histTable.innerHTML = renderGroupedTransactionHistory(transactions, {
+                    groupByConvocation: !isCollector,
+                    allConvocations,
+                    selectedConv: isCollector ? currentUser.convocation : selectedConv,
+                    isCollector,
+                    isFutureDate,
+                    showAction: isCollector,
+                    colspan: histColspan,
+                });
+            }
+
+            // ── Charts (admin only) ───────────────────────────
+            if (!isCollector) {
+                const charts = document.getElementById('admin-charts');
+                if (charts) {
+                    charts.style.display = 'grid';
+                    const perfData = await getPerformance(selectedMonth, year);
+                    const convChart = document.getElementById('conv-chart');
+                    if (convChart && perfData) {
+                        renderBarChart(convChart, perfData.map(c => ({
+                            label: c.name,
+                            value: c.paymentRate
+                        })), { valueKey: 'value', labelKey: 'label' });
+                    }
+                }
+            }
+        }
+
+        window.processPayment = async (id, month) => {
+            const amountVal = readCollectAmount(id);
+            if (amountVal === null) {
+                alert('Please enter a valid collect amount (e.g. 3.00).');
+                getCollectAmountInput(id)?.focus();
+                return;
+            }
+            if (confirm(`Ma hubtaa inaad lacagta $${amountVal.toFixed(2)} ka qaaday ${id} bisha ${month}?`)) {
+                const mPicker = document.getElementById('month-picker');
+                const yr = mPicker?.value ? parseInt(mPicker.value.split('-')[0], 10) : new Date().getFullYear();
+                const ok = await updateStudentPayment(id, month, currentUser.name, currentUser.convocation, yr, amountVal);
+                if (ok) {
+                    alert('Lacagta si guul leh ayaa loo diiwangeliyey!');
+                    await updateDashboard();
+                } else {
+                    alert('Khalad ayaa dhacay. Isku day mar kale.');
+                }
+            }
+        };
+
+        window.uncollectPayment = async (txnId, studentId, month) => {
+            if (!confirm(`Undo payment for ${studentId} (${month})? They will show as unpaid again.`)) return;
+            const ok = await deleteTransaction(txnId);
+            if (ok) {
+                alert('Payment removed. Member is unpaid again for this month.');
+                await updateDashboard();
+            } else {
+                alert('Could not undo payment. Try again.');
+            }
+        };
+
+        window.submitExpenseEntry = async (event) => {
+            event.preventDefault();
+            const dateInput = document.getElementById('expense-date');
+            const amountInput = document.getElementById('expense-amount');
+            const descInput = document.getElementById('expense-desc');
+
+            const dateVal = dateInput.value;
+            const amountVal = parseFloat(amountInput.value || '0');
+            const descVal = (descInput.value || '').trim();
+
+            if (!dateVal || isNaN(amountVal) || amountVal <= 0) {
+                alert('Please enter a valid date and amount.');
+                return false;
+            }
+
+            const [year, monthNum] = dateVal.split('-');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthName = monthNames[parseInt(monthNum) - 1];
+
+            // Fetch latest account balance to prevent overspending
+            const allTxns = await getTransactions();
+            const allExpenses = await getExpenses();
+            const allFundEntries = await getFundEntries();
+            const currentBalance = calcAccountBalance(allTxns, allExpenses, allFundEntries);
+
+            if (amountVal > currentBalance) {
+                alert(`You cannot spend $${amountVal.toFixed(2)} because the current account balance is only $${currentBalance.toFixed(2)}.`);
+                return false;
+            }
+
+            const confirmMsg = `Confirm to record $${amountVal.toFixed(2)} spent on ${dateVal}?`;
+            if (!confirm(confirmMsg)) return false;
+
+            const res = await addExpense(monthName, parseInt(year), amountVal, descVal, dateVal);
+            if (!res) {
+                alert('Failed to save expense. Please try again.');
+                return false;
+            }
+
+            // Reset form and refresh dashboard so stats update
+            amountInput.value = '';
+            descInput.value = '';
+            await updateDashboard();
+            alert('Expense entry saved successfully.');
+            return false;
+        };
+
+        window.submitSupportEntry = async (event) => {
+            event.preventDefault();
+            const dateInput = document.getElementById('support-date');
+            const amountInput = document.getElementById('support-amount');
+            const descInput = document.getElementById('support-desc');
+
+            const dateVal = dateInput.value;
+            const amountVal = parseFloat(amountInput.value || '0');
+            const descVal = (descInput.value || '').trim();
+
+            if (!dateVal || isNaN(amountVal) || amountVal <= 0) {
+                alert('Please enter a valid date and amount.');
+                return false;
+            }
+
+            const [year, monthNum] = dateVal.split('-');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthName = monthNames[parseInt(monthNum) - 1];
+
+            const confirmMsg = `Record $${amountVal.toFixed(2)} on ${dateVal}? This will increase the account balance.`;
+            if (!confirm(confirmMsg)) return false;
+
+            const res = await addFundEntry(
+                monthName,
+                parseInt(year),
+                amountVal,
+                descVal,
+                dateVal,
+                'Supported',
+                currentUser.name || 'Payment Admin'
+            );
+            if (!res) {
+                alert('Failed to save support entry. Please try again.');
+                return false;
+            }
+
+            amountInput.value = '';
+            descInput.value = '';
+            await updateDashboard();
+            alert('Support entry added to account balance.');
+            return false;
+        };
+
+        window.toggleSupport = () => {
+            showAllSupport = !showAllSupport;
+            updateDashboard();
+        };
+
+        window.toggleExpenses = () => {
+            showAllExpenses = !showAllExpenses;
+            updateDashboard();
+        };
+    </script>
+</body>
+
+</html>

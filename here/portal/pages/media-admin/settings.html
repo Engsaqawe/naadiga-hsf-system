@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Admin Settings - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../main-leader/main_leader_responsive.css" />
+     <style>
+      @media (max-width: 768px) {
+  /* styles here */
+  .section-title{
+    font-size: 1rem;
+  }
+  .section-header>h3{
+    font-size: 0.6rem;
+  }
+
+  .btn-edit-badge{
+    font-size: 0.6rem;
+  }
+
+}
+
+     </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+
+            <div class="dashboard-content fade-in">
+                <!-- Profile Header Card -->
+                <div class="settings-section text-center slide-up">
+                    <div class="profile-avatar-wrapper">
+                        <img src="" id="user-avatar-lg" class="avatar-main" alt="Profile">
+                        <div class="avatar-overlay" onclick="document.getElementById('avatar-input').click()">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <input type="file" id="avatar-input" style="display: none;" accept="image/*">
+                    </div>
+                    <h2 id="header-name" style="margin-bottom: 4px;">User Name</h2>
+                    <p id="header-email" style="color: var(--text-muted); margin-bottom: 1rem;">user@hsf.org</p>
+                    <div id="header-role-badge" class="badge-leader" style="display: inline-block; padding: 6px 16px; border-radius: 20px; font-weight: 600;">Media Admin</div>
+                </div>
+
+                <!-- Personal Information Section -->
+                <div class="settings-section slide-up" style="animation-delay: 0.1s;">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fa-solid fa-user-gear"></i> Personal Information</h3>
+                        <button type="button" class="btn-edit-badge" id="edit-personal-btn">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                    </div>
+
+                    <form id="personal-info-form">
+                        <div class="form-grid-modern">
+                            <div class="form-group">
+                                <label class="floating-label">Full Name</label>
+                                <div class="input-container">
+                                    <input type="text" id="prof-name" class="modern-input" placeholder="Full Name" required disabled>
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="floating-label">ID / Username</label>
+                                <div class="input-container">
+                                    <input type="text" id="prof-username" class="modern-input" placeholder="ID / Username" required disabled autocomplete="username">
+                                    <i class="fa-solid fa-at"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="floating-label">Email Address</label>
+                                <div class="input-container">
+                                    <input type="email" id="prof-email" class="modern-input" placeholder="email@hsf.org" disabled title="Email cannot be changed — notifications are sent here">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="floating-label">Phone Number</label>
+                                <div class="input-container">
+                                    <input type="text" id="prof-phone" class="modern-input" placeholder="+252..." disabled>
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="floating-label">University</label>
+                                <div class="input-container">
+                                    <input type="text" id="prof-university" class="modern-input" placeholder="University" disabled>
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="floating-label">Faculty</label>
+                                <div class="input-container">
+                                    <input type="text" id="prof-faculty" class="modern-input" placeholder="Faculty" disabled>
+                                    <i class="fa-solid fa-building-columns"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="floating-label">Semester</label>
+                                <div class="input-container">
+                                    <input type="text" id="prof-semester" class="modern-input" placeholder="Semester" disabled>
+                                    <i class="fa-solid fa-book-open"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="personal-actions" class="d-flex gap-2" style="margin-top: 2rem; display: none !important;">
+                            <button type="button" class="btn-modern secondary" id="cancel-personal"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                            <button type="submit" class="btn-modern primary" id="save-personal"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Account Security Section -->
+                <div class="settings-section slide-up" style="animation-delay: 0.2s;">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fa-solid fa-shield-halved"></i> Security & Password</h3>
+                        <button type="button" class="btn-edit-badge" id="edit-password-btn">
+                            <i class="fa-solid fa-lock"></i> Change Password
+                        </button>
+                    </div>
+
+                    <form id="password-form" style="max-width: 500px;">
+                        <div class="form-group mb-4">
+                            <label class="floating-label">New Password</label>
+                            <div class="input-container">
+                                <input type="password" id="prof-new-password" class="modern-input" placeholder="••••••••" required disabled>
+                                <i class="fa-solid fa-key"></i>
+                            </div>
+                            <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="show-pass-1" style="cursor: pointer;" onclick="const p = document.getElementById('prof-new-password'); p.type = this.checked ? 'text' : 'password'">
+                                <label for="show-pass-1" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer; font-weight: 500">Show Password</label>
+                            </div>
+                            <div class="strength-meter">
+                                <div id="strength-bar" class="strength-bar"></div>
+                            </div>
+                            <p id="strength-text" class="strength-text"></p>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="floating-label">Confirm Password</label>
+                            <div class="input-container">
+                                <input type="password" id="prof-confirm-password" class="modern-input" placeholder="••••••••" required disabled>
+                                <i class="fa-solid fa-check-double"></i>
+                            </div>
+                            <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="show-pass-2" style="cursor: pointer;" onclick="const p = document.getElementById('prof-confirm-password'); p.type = this.checked ? 'text' : 'password'">
+                                <label for="show-pass-2" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer; font-weight: 500">Show Password</label>
+                            </div>
+                        </div>
+
+                        <div id="password-actions" class="d-flex gap-2" style="display: none !important;">
+                            <button type="button" class="btn-modern secondary" id="cancel-password"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                            <button type="submit" class="btn-modern primary" id="save-password"><i class="fa-solid fa-floppy-disk"></i> Update Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/data.js?v=20260629"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const currentUser = getCurrentUser();
+            if (!currentUser.id) { window.location.href = '../../login.html'; return; }
+            if (currentUser.role !== 'Media Admin' && currentUser.role !== 'Main Leader') {
+                window.location.href = '../../login.html'; return;
+            }
+
+            const userProfile = await getUserById(currentUser.id);
+            if (!userProfile) return;
+
+            Components.init({
+                role: currentUser.role === 'Main Leader' ? 'Main Leader' : 'Media Admin',
+                activePage: 'settings',
+                title: 'Settings',
+                userName: userProfile.name,
+                userRoleLabel: userProfile.role
+            });
+
+            // Initial Data Fill
+            function fillData() {
+                document.getElementById('user-avatar-lg').src = getProfilePicUrl(userProfile);
+                document.getElementById('header-name').textContent = userProfile.name;
+                document.getElementById('header-email').textContent = userProfile.email;
+                applySettingsRoleBadge(document.getElementById('header-role-badge'), userProfile.role);
+
+                document.getElementById('prof-name').value = userProfile.name || '';
+                document.getElementById('prof-username').value = userProfile.username || userProfile.id || '';
+                document.getElementById('prof-email').value = userProfile.email || '';
+                document.getElementById('prof-phone').value = userProfile.phone || '';
+                document.getElementById('prof-university').value = userProfile.university || '';
+                document.getElementById('prof-faculty').value = userProfile.faculty || '';
+                document.getElementById('prof-semester').value = userProfile.semester || '';
+            }
+            fillData();
+
+            // Edit Toggling Logic
+            function setupToggle(sectionId, editBtnId, cancelBtnId, actionsId, inputIds) {
+                const editBtn = document.getElementById(editBtnId);
+                const cancelBtn = document.getElementById(cancelBtnId);
+                const actions = document.getElementById(actionsId);
+                const inputs = inputIds.map(id => document.getElementById(id));
+
+                editBtn.onclick = () => {
+                    inputs.forEach(input => input.disabled = false);
+                    actions.style.setProperty('display', 'flex', 'important');
+                    editBtn.style.display = 'none';
+                    inputs[0].focus();
+                };
+
+                cancelBtn.onclick = () => {
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.classList.remove('valid', 'invalid');
+                    });
+                    actions.style.setProperty('display', 'none', 'important');
+                    editBtn.style.display = 'flex';
+                    fillData(); // Reset values
+                };
+            }
+
+            setupToggle('personal-info-form', 'edit-personal-btn', 'cancel-personal', 'personal-actions', ['prof-name', 'prof-username', 'prof-phone', 'prof-university', 'prof-faculty', 'prof-semester']);
+            setupToggle('password-form', 'edit-password-btn', 'cancel-password', 'password-actions', ['prof-new-password', 'prof-confirm-password']);
+
+            // Validation styles
+            const allInputs = document.querySelectorAll('.modern-input');
+            allInputs.forEach(input => {
+                input.oninput = () => {
+                    if (input.hasAttribute('disabled')) return;
+                    if (input.checkValidity() && input.value.length > 0) {
+                        input.classList.add('valid');
+                        input.classList.remove('invalid');
+                    } else if (input.value.length > 0) {
+                        input.classList.add('invalid');
+                        input.classList.remove('valid');
+                    } else {
+                        input.classList.remove('valid', 'invalid');
+                    }
+                };
+            });
+
+            // Password Strength
+            const newPassInput = document.getElementById('prof-new-password');
+            newPassInput.addEventListener('input', () => {
+                const val = newPassInput.value;
+                const bar = document.getElementById('strength-bar');
+                const text = document.getElementById('strength-text');
+                
+                let score = 0;
+                if (val.length > 6) score++;
+                if (val.match(/[A-Z]/)) score++;
+                if (val.match(/[0-9]/)) score++;
+                if (val.match(/[^A-Za-z0-9]/)) score++;
+
+                const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'];
+                const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+                
+                if (val.length === 0) {
+                    bar.style.width = '0%';
+                    text.innerText = '';
+                } else {
+                    bar.style.width = (score + 1) * 20 + '%';
+                    bar.style.background = colors[score] || colors[0];
+                    text.innerText = labels[score] || labels[0];
+                    text.style.color = colors[score] || colors[0];
+                }
+            });
+
+            // Personal Info Submit
+            document.getElementById('personal-info-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const saveBtn = document.getElementById('save-personal');
+                Components.setLoading(saveBtn, true);
+
+                const updatedData = {
+                    name: document.getElementById('prof-name').value.trim(),
+                    username: document.getElementById('prof-username').value.trim().toLowerCase(),
+                    phone: document.getElementById('prof-phone').value.trim(),
+                    university: document.getElementById('prof-university').value.trim(),
+                    faculty: document.getElementById('prof-faculty').value.trim(),
+                    semester: document.getElementById('prof-semester').value.trim(),
+                    self_update: true,
+                };
+
+                const res = await editStudent(userProfile.id, updatedData);
+                Components.setLoading(saveBtn, false);
+
+                if (res && res.success) {
+                    const saved = res.user || updatedData;
+                    setCurrentUser({ ...currentUser, ...saved });
+                    Components.showToast('Profile updated successfully!', 'success');
+                    document.getElementById('cancel-personal').click(); // Re-lock
+                    Object.assign(userProfile, saved);
+                    fillData();
+                } else {
+                    Components.showToast(res?.error || 'Something went wrong', 'error');
+                }
+            };
+
+            // Password Submit
+            document.getElementById('password-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const newPass = document.getElementById('prof-new-password').value;
+                const confPass = document.getElementById('prof-confirm-password').value;
+
+                if (newPass !== confPass) {
+                    Components.showToast('Passwords do not match!', 'error');
+                    return;
+                }
+
+                const saveBtn = document.getElementById('save-password');
+                Components.setLoading(saveBtn, true);
+
+                const res = await editStudent(userProfile.id, { password: newPass.trim(), self_update: true });
+                Components.setLoading(saveBtn, false);
+
+                if (res && res.success) {
+                    Components.showToast('Password updated successfully!', 'success');
+                    const updatedUser = getCurrentUser();
+                    updatedUser.password = newPass.trim();
+                    setCurrentUser(updatedUser);
+                    document.getElementById('cancel-password').click();
+                } else {
+                    Components.showToast('Failed to update password', 'error');
+                }
+            };
+
+            // Avatar Upload
+            document.getElementById('avatar-input').onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                Components.showToast('Uploading profile picture...', 'success');
+                const res = await uploadProfilePic(userProfile.id, file);
+                
+                if (res && res.success) {
+                    userProfile.profilePic = res.url;
+                    document.getElementById('user-avatar-lg').src = getProfilePicUrl(userProfile);
+                    const updatedUser = getCurrentUser();
+                    updatedUser.profilePic = res.url;
+                    setCurrentUser(updatedUser);
+                    Components.showToast('Photo updated!', 'success');
+                    window.location.reload();
+                } else {
+                    const errorMsg = res?.error || 'Failed to upload image';
+                    Components.showToast(errorMsg, 'error');
+                }
+            };
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Upload — Redirect</title>
+  <meta http-equiv="refresh" content="0;url=../portal/pages/media-admin/dashboard.html">
+  <script>
+    // Media manage now lives in the HSF portal (sidebar).
+    (function () {
+      try {
+        const u = JSON.parse(localStorage.getItem('hsf_current_user') || '{}');
+        if (u.role === 'Media Admin' || u.role === 'Main Leader') {
+          location.replace('../portal/pages/media-admin/dashboard.html');
+          return;
+        }
+      } catch (e) {}
+      location.replace('../portal/login.html');
+    })();
+  </script>
+</head>
+<body>
+  <p>Media Admin moved to the portal. <a href="../portal/pages/media-admin/dashboard.html">Continue</a></p>
+</body>
+</html>

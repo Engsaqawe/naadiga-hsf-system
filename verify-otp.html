@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP | HS Foundation</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .otp-row { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
+    .otp-row input { width: 44px; height: 52px; text-align: center; font-size: 1.25rem; font-weight: 700; border: 1px solid var(--border-color, #ddd); border-radius: 10px; background: var(--bg-main); color: var(--text-main); }
+  </style>
+</head>
+<body class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Verify OTP</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Enter the 6-digit code sent to your email.</p>
+    </div>
+    <form id="otpForm">
+      <div class="otp-row">
+        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" required>
+        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" required>
+        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" required>
+        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" required>
+        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" required>
+        <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" required>
+      </div>
+      <button type="submit" class="btn-full" id="otpBtn">Verify Code</button>
+      <div id="otpMessage" style="font-size: 0.9rem; text-align: center; margin-top: 16px; display: none;"></div>
+    </form>
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="forgot-password.html" style="color: var(--primary-green); font-weight: 700; text-decoration: none;">Resend OTP</a>
+    </div>
+  </div>
+  <script src="assets/js/public-auth-api.js"></script>
+  <script>
+    const email = localStorage.getItem('reset_email');
+    if (!email) window.location.href = 'forgot-password.html';
+    const digits = [...document.querySelectorAll('.otp-digit')];
+    digits.forEach((input, i) => {
+      input.addEventListener('input', () => {
+        if (input.value.length === 1 && i < digits.length - 1) digits[i + 1].focus();
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && i > 0) digits[i - 1].focus();
+      });
+    });
+    document.getElementById('otpForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const otp = digits.map(d => d.value).join('');
+      const msg = document.getElementById('otpMessage');
+      const btn = document.getElementById('otpBtn');
+      btn.disabled = true;
+      try {
+        const data = await publicAuthFetch('/verify-otp', {
+          method: 'POST',
+          body: JSON.stringify({ email, otp }),
+        });
+        if (data.success) {
+          localStorage.setItem('reset_otp', otp);
+          window.location.href = 'reset-password.html';
+        } else {
+          msg.style.color = '#ef4444';
+          msg.textContent = data.message || 'Invalid OTP';
+          msg.style.display = 'block';
+        }
+      } catch (err) {
+        msg.style.color = '#ef4444';
+        msg.textContent = 'Verification failed.';
+        msg.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

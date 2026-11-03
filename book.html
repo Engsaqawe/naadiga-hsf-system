@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book | NAHS Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/site-header.css">
+  <link rel="stylesheet" href="assets/css/floating-actions.css">
+  <link rel="stylesheet" href="assets/css/articles.css">
+  <link rel="stylesheet" href="assets/css/books.css">
+</head>
+<body class="articles-page books-page" id="bookPage">
+
+  <div class="navbar" id="mainNavbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-container">
+      <a href="index.html" class="logo" aria-label="NAHS Foundation home">
+        <img src="portal/img/logo.svg" alt="HS Foundation Logo">
+        <div class="logo-text-wrapper">
+          <h1>Naadiga Ardayda Hormuud Salaam Foundation</h1>
+          <p>Scholarship students • Giving back</p>
+        </div>
+      </a>
+      <div class="menu-icon" id="menuToggle" aria-label="Toggle menu" role="button" tabindex="0"><i class="fas fa-bars"></i></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#mission-vision">Mission</a></li>
+        <li><a href="articles.html">Articles</a></li>
+        <li><a href="books.html" class="active-nav">Books</a></li>
+        <li><a href="team.html">Our Team</a></li>
+        <li><a href="index.html#activities">Activities</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="admin_login.html" class="btn-outline">Login</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="bookLoading" class="spinner-wrap" role="status" aria-live="polite">
+    <i class="fas fa-spinner fa-spin fa-2x"></i>
+    <p style="margin-top:1.2rem;font-size:.95rem">Loading book…</p>
+  </div>
+
+  <div id="bookNotFound" style="display:none;text-align:center;padding:4rem 1.5rem;" role="alert">
+    <h2>Book not found</h2>
+    <p style="color:#7a9ab2;margin:.8rem 0 1.5rem">This book may have been removed or the link is incorrect.</p>
+    <a href="books.html" class="back-link">← Back to Books</a>
+  </div>
+
+  <article id="bookContent" style="display:none">
+    <div class="book-detail-wrap">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html"><i class="fas fa-home" style="margin-right:4px"></i>Home</a>
+        <i class="fas fa-chevron-right" style="font-size:.7rem;color:#a0b4c2"></i>
+        <a href="books.html">Books</a>
+        <i class="fas fa-chevron-right" style="font-size:.7rem;color:#a0b4c2"></i>
+        <span id="breadcrumbTitle">Book</span>
+      </nav>
+
+      <div class="book-hero-block" id="bookCoverWrap"></div>
+
+      <span class="category-pill book-category-pill" id="bookCategory">Graduation</span>
+      <h1 id="bookTitle">Book title</h1>
+      <p id="bookExcerpt" class="book-excerpt"></p>
+
+      <div class="meta-bar book-meta-bar">
+        <span id="bookAuthor"><i class="fas fa-user"></i> Author</span>
+        <span id="bookDate"><i class="far fa-calendar"></i> Date</span>
+        <span id="bookViews"><i class="far fa-eye"></i> 0 views</span>
+      </div>
+
+      <section class="book-pdf-section" id="bookPdfSection" style="display:none">
+        <div class="book-pdf-toolbar">
+          <h2><i class="fas fa-file-pdf"></i> Read online</h2>
+          <a id="bookDownloadBtn" class="btn-primary book-download-btn" href="#" download target="_blank" rel="noopener">
+            <i class="fas fa-download"></i> Download PDF
+          </a>
+        </div>
+        <iframe id="bookPdfFrame" title="Book PDF viewer" class="book-pdf-frame"></iframe>
+        <div id="bookPdfMobileFallback" class="book-pdf-mobile-fallback" hidden>
+          <i class="fas fa-file-pdf book-pdf-mobile-icon" aria-hidden="true"></i>
+          <p>PDF preview is not available in mobile browsers.</p>
+          <a id="bookOpenPdfBtn" class="btn-primary book-open-pdf-btn" href="#" target="_blank" rel="noopener">
+            <i class="fas fa-external-link-alt"></i> Open PDF
+          </a>
+        </div>
+      </section>
+
+      <p id="bookNoPdf" class="book-no-pdf" style="display:none">PDF not uploaded yet.</p>
+    </div>
+  </article>
+
+  <script src="assets/js/site-header.js"></script>
+  <script src="assets/js/floating-actions.js"></script>
+  <script src="assets/js/book-detail.js"></script>
+</body>
+</html>

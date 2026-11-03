@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Member Dashboard - HSF</title>
+
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="stylesheet" href="../../assets/css/style.css?v=20260713">
+        <link rel="stylesheet" href="../main-leader/main_leader_responsive.css">
+
+        <style>
+        input[type="month"] {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            height: 38px;
+        }
+
+        .table-wrapper1 {
+  width: 100%;
+  overflow-x: auto;   /* 🔥 enable scroll */
+}
+  @media (max-width: 768px) {
+
+  .table-wrapper1 .data-table {
+    min-width: 500px;   /* enough for 3 columns */
+    width: max-content; /* 🔥 allows scrolling */
+    overflow-x: scroll;
+  }
+
+}
+    </style>
+    </head>
+
+    <body>
+
+        <div class="app-container">
+
+            <aside class="sidebar" id="sidebar"></aside>
+
+            <main class="main-content">
+
+                <header class="top-navbar" id="top-navbar"></header>
+
+                <div class="dashboard-content">
+
+                    <!-- MONTH -->
+                    <div class="d-flex align-center gap-3 mb-4">
+                        <label style="font-weight:600;color:var(--text-muted);">
+                            <i class="fa-solid fa-calendar-days"></i> Select
+                            Month:
+                        </label>
+                        <input type="month" id="month-picker"
+                            class="search-input" style="width:auto;">
+                    </div>
+
+                    <!-- PROFILE CARD (SHARED UI) -->
+                    <div class="profile-card">
+
+                        <img id="student-profile-pic" src class="profile-img"
+                            alt="Profile">
+
+                        <div class="profile-info">
+
+                            <h2 id="student-display-name"
+                                class="profile-name"></h2>
+
+                            <div class="profile-meta">
+                                <span>
+                                    <i class="fa-solid fa-hashtag"></i>
+                                    <span id="student-display-id"></span>
+                                </span>
+
+                                <span>
+                                    <i class="fa-solid fa-users"></i>
+                                    <span id="student-display-conv"></span>
+                                </span>
+                            </div>
+
+                            <div class="profile-status">
+                                <span id="student-payment-badge"
+                                    class="badge"></span>
+                                <span id="student-grad-badge"
+                                    class="badge badge-leader"
+                                    style="display:none;">
+                                    Graduated
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- STATS -->
+                    <div class="stats-grid">
+
+                        <div class="stat-card">
+                            <div class="stat-icon icon-blue">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 id="attended-meetings">0</h4>
+                                <p>Meetings Attended</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon icon-red">
+                                <i class="fa-solid fa-calendar-xmark"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4 id="missed-meetings">0</h4>
+                                <p>Meetings Missed</p>
+                            </div>
+                        </div>
+
+                        <div id="unpaid-months-container"></div>
+
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="card-table" style="margin-top:2rem;">
+
+                        <div class="table-header">
+                            <h3 id="table-month-title">Meeting & Payment
+                                Status</h3>
+                        </div>
+
+                        <div class="table-wrapper1">
+                            <table class="data-table">
+
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="payment-history-body"></tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+            </main>
+        </div>
+
+        <!-- SCRIPTS -->
+        <script src="../../assets/js/data.js"></script>
+        <script src="../../assets/js/components.js"></script>
+
+        <script>
+document.addEventListener('DOMContentLoaded', async () => {
+
+    const currentUser = getCurrentUser();
+    if (!currentUser.id || currentUser.role === 'Public User') {
+        localStorage.removeItem('hsf_current_user'); // Clear corrupted session if any
+        window.location.href = "../../login.html";
+        return;
+    }
+
+    // Media Admin home is Media Gallery — never show member dashboard
+    if (currentUser.role === 'Media Admin') {
+        window.location.replace('../media-admin/dashboard.html');
+        return;
+    }
+    if (currentUser.role === 'Main Leader') {
+        window.location.replace('../main-leader/dashboard.html');
+        return;
+    }
+    if (currentUser.role === 'Payment Admin' || currentUser.role === 'payment-admin' || currentUser.role === 'payment-leader') {
+        window.location.replace('../payment-leader/dashboard.html');
+        return;
+    }
+    if (currentUser.role === 'Leader' || currentUser.role === 'Payment Sub Admin' || currentUser.role === 'convocation-leader') {
+        window.location.replace('../convocation-leader/dashboard.html');
+        return;
+    }
+
+    const student = await getUserById(currentUser.id);
+    if (!isValidUserRecord(student)) {
+        localStorage.removeItem('hsf_current_user');
+        window.location.href = "../../login.html";
+        return;
+    }
+
+    Components.init({
+        role: currentUser.role,
+        activePage: 'dashboard',
+        title: 'My Dashboard',
+        userName: student.name,
+        userRoleLabel: student.role || 'Member'
+    });
+
+    // PROFILE
+    document.getElementById('student-profile-pic').src = getProfilePicUrl(student);
+
+    document.getElementById('student-display-name').innerText = student.name;
+    document.getElementById('student-display-id').innerText = student.id;
+    document.getElementById('student-display-conv').innerText = student.convocation;
+
+    if (student.isGraduated) {
+        document.getElementById('student-grad-badge').style.display = 'inline-block';
+    }
+
+    const monthPicker = document.getElementById('month-picker');
+
+    let showAllMeetings = false;
+
+    async function updateDashboard() {
+        const dateVal = monthPicker.value;
+        let selectedYear = '';
+        let selectedMonthNum = '';
+        let selectedMonthName = 'All Time';
+
+        if (dateVal) {
+            const [y, m] = dateVal.split('-');
+            selectedYear = y;
+            selectedMonthNum = m;
+            const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            selectedMonthName = months[parseInt(selectedMonthNum) - 1];
+        }
+
+        const [meetings, transactions, attendance] = await Promise.all([
+            getMeetings(),
+            getTransactions({ 
+                student_id: student.id, 
+                month: dateVal ? selectedMonthName : undefined, 
+                year: dateVal ? selectedYear : undefined 
+            }),
+            getAttendance({ student_id: student.id })
+        ]);
+
+        // Payment Badge
+        const badge = document.getElementById('student-payment-badge');
+        if (dateVal) {
+            const isPaid = transactions.length > 0;
+            badge.innerText = `${selectedMonthName} ${isPaid ? 'Paid' : 'Unpaid'}`;
+            badge.className = 'badge ' + (isPaid ? 'badge-paid' : 'badge-unpaid');
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+
+        const studentCreated = student.created_at ? new Date(student.created_at) : new Date(0);
+        studentCreated.setHours(0, 0, 0, 0);
+
+        // CALCULATE STATS (finalized only) + TABLE (includes upcoming scheduled)
+        const allRelevantMeetings = meetings.filter(m =>
+            typeof meetingDashboardAppliesToStudent === 'function'
+            && meetingDashboardAppliesToStudent(m, student, attendance)
+        );
+
+        const statsMeetings = meetings.filter(m =>
+            typeof meetingAppliesToStudent === 'function'
+            && meetingAppliesToStudent(m, student, attendance)
+        );
+
+        let displayStatsMeetings = statsMeetings;
+        if (dateVal) {
+            displayStatsMeetings = statsMeetings.filter(m => {
+                const [mYear, mMonth] = m.date.split('-');
+                return mYear === selectedYear && mMonth === selectedMonthNum;
+            });
+        }
+        
+        let attendedCount = 0;
+        let missedCount = 0;
+        
+        displayStatsMeetings.forEach(m => {
+            const meetingDate = new Date(m.date);
+            meetingDate.setHours(0, 0, 0, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const record = attendance.find(
+                (a) => a.meeting_id === m.id && a.student_id === student.id
+            );
+
+            if (record && (record.status === 'Present' || record.status === 'Late')) {
+                attendedCount++;
+            } else if (meetingDate <= today && record) {
+                missedCount++;
+            }
+        });
+
+        document.getElementById('attended-meetings').innerText = attendedCount;
+        document.getElementById('missed-meetings').innerText = missedCount;
+
+        // RENDER TABLE
+        let tableMeetings = allRelevantMeetings;
+        if (dateVal && !showAllMeetings) {
+            tableMeetings = allRelevantMeetings.filter(m => {
+                const [mYear, mMonth] = m.date.split('-');
+                return mYear === selectedYear && mMonth === selectedMonthNum;
+            });
+        }
+        
+        tableMeetings.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        const limit = 5;
+        const displayMeetings = showAllMeetings ? tableMeetings : tableMeetings.slice(0, limit);
+        
+        let meetingRows = displayMeetings.map(m => {
+            const record = attendance.find(
+                (a) => a.meeting_id === m.id && a.student_id === student.id
+            );
+            const present = record && (record.status === 'Present' || record.status === 'Late');
+            const excused = record && record.is_excused && !present;
+            const isFuture = new Date(m.date) > new Date();
+            return `
+                <tr>
+                    <td><strong>Meeting:</strong> ${m.topic}</td>
+                    <td>${m.date}</td>
+                    <td><span class="badge ${isFuture ? 'badge-student' : (present ? 'badge-paid' : (excused ? 'badge-student' : 'badge-unpaid'))}">${isFuture ? 'Scheduled' : (present ? 'Present' : (excused ? 'Excused' : 'Absent'))}</span></td>
+                </tr>
+            `;
+        }).join('');
+
+        const hasMore = tableMeetings.length > displayMeetings.length;
+        const loadMoreRow = (hasMore && !showAllMeetings) ? `
+            <tr>
+                <td colspan="3" style="text-align:center; padding: 1.5rem;">
+                    <button class="btn btn-outline btn-sm" onclick="expandMeetings()">
+                        <i class="fa-solid fa-chevron-down"></i> Show More
+                    </button>
+                </td>
+            </tr>
+        ` : '';
+
+        document.getElementById('table-month-title').innerText = dateVal 
+            ? (showAllMeetings ? `All Records (${selectedMonthName} Filtered)` : `${selectedMonthName} ${selectedYear} Status`)
+            : `All-Time Meeting History`;
+
+        document.getElementById('payment-history-body').innerHTML = `
+            ${dateVal ? `
+            <tr style="background: var(--bg-hover);">
+                <td><strong>Monthly Payment (${selectedMonthName} ${selectedYear})</strong></td>
+                <td>-</td>
+                <td><span class="badge ${transactions.length > 0 ? 'badge-paid' : 'badge-unpaid'}">${transactions.length > 0 ? 'Paid' : 'Unpaid'}</span></td>
+            </tr>` : ''}
+            ${meetingRows}
+            ${loadMoreRow}
+         `;
+
+        // Render Unpaid Months stat card
+        const unpaidContainer = document.getElementById("unpaid-months-container");
+        if (unpaidContainer) {
+            if (student.unpaidMonths && student.unpaidMonths.length > 0) {
+                unpaidContainer.innerHTML = `
+                    <div class="stat-card" style="overflow: visible;">
+                        <div class="stat-icon icon-orange">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info" style="overflow: visible;">
+                            <div class="hsf-tooltip">
+                                <h4 style="margin: 0; display: inline-flex; align-items: center; gap: 6px;">
+                                    ${student.unpaidMonths.length}
+                                    <i class="fa-solid fa-eye" style="font-size: 0.95rem; color: var(--text-muted); cursor: pointer;"></i>
+                                </h4>
+                                <span class="tooltip-text">${student.unpaidMonths.join('<br>')}</span>
+                            </div>
+                            <p>Unpaid Months</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                unpaidContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon icon-green">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4>0</h4>
+                            <p>Unpaid Months</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    window.expandMeetings = () => {
+        showAllMeetings = true;
+        updateDashboard();
+    };
+
+    // Initialize without a month for "All Time" default view
+    monthPicker.value = ""; 
+    monthPicker.onchange = () => {
+        showAllMeetings = false;
+        updateDashboard();
+    };
+
+    await updateDashboard();
+});
+</script>
+
+    </body>
+</html>

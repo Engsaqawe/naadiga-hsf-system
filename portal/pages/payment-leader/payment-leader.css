@@ -1,0 +1,869 @@
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
+    width: 100%;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px;
+  }
+
+  .stat-card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  #grad-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #grad-form select,
+  #grad-form button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-table {
+    overflow-x: visible;
+  }
+
+  .card-table > .table-wrapper {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .card-table > .table-wrapper > .data-table {
+    display: table !important;
+    width: max-content;
+    min-width: 100%;
+    overflow: visible !important;
+    white-space: nowrap;
+  }
+
+  .card-table > .table-wrapper > .data-table thead th {
+    position: static;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-table > .table-wrapper > .data-table {
+    display: table !important;
+    overflow: visible !important;
+  }
+  .card-table > .table-wrapper > .data-table thead th {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    height: 100%;
+    z-index: 1000;
+    transition: 0.3s;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 70px; /* adjust based on header height */
+  }
+
+  .top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  h1 {
+    font-size: 18px;
+  }
+
+  h3 {
+    font-size: 16px;
+  }
+
+  p, span {
+    font-size: 13px;
+  }
+
+  .stat-card h4 {
+    font-size: 18px;
+  }
+
+}
+
+
+/* not shure  */
+
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.data-table {
+  min-width: 600px;
+}
+
+
+.table-header h3 {
+  font-size: 16px;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+
+
+
+.modal-content {
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+
+
+body {
+  overflow-x: hidden;
+}
+
+.card-table {
+  width: 100%;
+}
+
+
+
+/* ========================= */
+/* FIX HEADER + TABLE SCROLL */
+/* ========================= */
+
+/* Prevent full page overflow */
+body {
+  overflow-x: hidden;
+}
+
+/* Only table scrolls */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* Force table width so scroll appears */
+.data-table {
+  min-width: 700px;
+}
+
+/* ========================= */
+/* MOBILE HEADER FIX */
+/* ========================= */
+@media (max-width: 768px) {
+
+  .table-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .table-header h4 {
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+}
+
+/* ========================= */
+/* SMALL MOBILE */
+/* ========================= */
+@media (max-width: 480px) {
+
+  .table-header h4 {
+    font-size: 14px;
+  }
+
+}
+
+/* ========================= */
+/* OPTIONAL (PRO LOOK) */
+/* ========================= */
+
+/* Sticky table header */
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 2;
+}
+
+
+/* ========================= */
+/* TABLE HEADER BEAUTIFY */
+/* ========================= */
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Title */
+.table-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+
+/* ========================= */
+/* MONTH PICKER BEAUTIFY */
+/* ========================= */
+
+#meeting-month-picker {
+  min-width: 140px;
+  height: 38px;
+
+  border-radius: 10px;
+  border: 1px solid var(--border);
+
+  padding: 6px 10px;
+  font-size: 13px;
+
+  background: var(--bg-card);
+  transition: 0.2s ease;
+}
+
+/* Focus effect */
+#meeting-month-picker:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+@media (max-width: 768px) {
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  #meeting-month-picker {
+    width: 100%;
+  }
+
+}
+
+
+/* ========================= */
+/* MONTH PICKER FIX (SAFE) */
+/* ========================= */
+
+@media (max-width: 480px) {
+
+  #meeting-month-picker {
+    width: 100%;
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  /* Prevent parent overflow */
+  .table-header {
+    overflow: visible;
+  }
+
+}
+
+
+.card-table {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+
+
+.table-header {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ========================= */
+/* MODAL FINAL POLISH */
+/* ========================= */
+
+.modal-content {
+  width: 90%;
+  max-width: 380px; /* safer for mobile */
+  margin: auto;
+  border-radius: 16px;
+}
+
+
+.modal {
+  padding: 10px;
+}
+
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: none;
+
+  justify-content: center;
+
+  align-items: flex-start; /* 🔥 CHANGE THIS */
+
+  background: rgba(0,0,0,0.4);
+  z-index: 2000;
+
+  padding: 20px 10px; /* space top + bottom */
+
+  overflow-y: auto; /* 🔥 allow full scroll */
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 380px;
+
+  max-height: none; /* 🔥 REMOVE LIMIT */
+  overflow: visible; /* 🔥 let modal handle scroll */
+
+  border-radius: 16px;
+}
+
+
+
+/* ========================= */
+/* KEEP PAYMENT FILTERS INLINE */
+/* ========================= */
+
+.payment-filters {
+  display: flex;
+  flex-wrap: nowrap; /* ❌ no wrap */
+  gap: 10px;
+
+  overflow-x: auto; /* ✅ allow scroll */
+  padding-bottom: 5px;
+}
+
+/* prevent shrinking */
+.payment-filters > * {
+  flex: 0 0 auto;
+}
+
+
+/* ========================= */
+/* TABLE SCROLL FIX */
+/* ========================= */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* force horizontal scroll on small screens */
+.data-table {
+  min-width: 600px;
+}
+
+/* OPTIONAL: sticky table header */
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 2;
+}
+
+
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.data-table {
+  min-width: 800px; /* 🔥 bigger because more columns */
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 2;
+}
+
+
+.data-table {
+  min-width: 700px;   /* ✅ only this */
+  width: max-content; /* 🔥 KEY FIX */
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+
+
+
+
+
+/* ========================= */
+/* FIX HEADER (PROFILE) */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+  .top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+
+  .main-content {
+    padding-top: 70px; /* space for fixed header */
+  }
+
+}
+
+
+/* ========================= */
+/* PROFILE TEXT RESIZE */
+/* ========================= */
+
+@media (max-width: 480px) {
+
+  .profile-card h2 {
+    font-size: 18px;
+  }
+
+  .profile-card h3 {
+    font-size: 16px;
+  }
+  
+
+  /* ========================= */
+/* FIX RECENT SPENDING ONLY */
+/* ========================= */
+
+.table-wrapper.no-scroll .data-table {
+  width: 100%;        /* fill container */
+  min-width: unset;   /* ❌ remove forced width */
+}
+
+  .profile-card p,
+  .profile-card span {
+    font-size: 13px;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .stat-card h4 {
+    font-size: 16px;
+  }
+
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;              /* ✅ full width */
+  border-collapse: collapse;
+}
+
+
+
+
+/* ========================= */
+/* PROFILE CARD CLEAN FIX */
+/* ========================= */
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+
+  margin-bottom: 2rem;
+}
+
+/* IMAGE */
+.profile-img {
+  width: 80px;   /* 🔥 reduced */
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--border);
+}
+
+/* INFO */
+.profile-info {
+  flex: 1;
+  min-width: 0; /* 🔥 prevents overflow */
+}
+
+/* NAME */
+.profile-name {
+  font-size: 18px; /* 🔥 smaller */
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* META (ID + CONVOCATION) */
+.profile-meta {
+  display: flex;
+  gap: 10px;
+
+  font-size: 13px;
+  color: var(--text-muted);
+
+  flex-wrap: wrap; /* 🔥 VERY IMPORTANT */
+}
+
+/* STATUS */
+.profile-status {
+  margin-top: 8px;
+}
+
+/* ========================= */
+/* MOBILE FIX */
+/* ========================= */
+
+@media (max-width: 480px) {
+
+  .profile-card {
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .profile-img {
+    width: 65px;
+    height: 65px;
+  }
+
+  .profile-name {
+    font-size: 16px;
+  }
+
+  .profile-meta {
+    font-size: 12px;
+  }
+
+}
+
+/* Payment admin toolbar */
+.month-selector--payment-admin .convocation-filter-input {
+  min-height: 42px;
+  padding-left: 12px;
+  min-width: 160px;
+}
+
+.month-selector--payment-admin .toolbar-month-label {
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+/* Payment Admin dashboard toolbar (not collector) */
+.month-selector--payment-admin-panel .month-field-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.month-selector--payment-admin-panel #month-picker {
+  min-height: 42px;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .month-selector--payment-admin-panel,
+  .month-selector--payment-admin {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .month-selector--payment-admin-panel #filters-container,
+  .month-selector--payment-admin #filters-container {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    order: 1;
+  }
+
+  .month-selector--payment-admin-panel .month-field-group,
+  .month-selector--payment-admin .month-field-group {
+    flex: 1 1 50% !important;
+    width: auto !important;
+    max-width: 50%;
+    min-width: 0;
+  }
+
+  .month-selector--payment-admin-panel .toolbar-month-label {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+  }
+
+  .month-selector--payment-admin-panel #month-picker,
+  .month-selector--payment-admin .month-field-group input[type="month"] {
+    flex: 1;
+    min-width: 0;
+    width: 100% !important;
+    max-width: none;
+    font-size: 0.85rem;
+  }
+
+  .month-selector--payment-admin-panel #convocation-filter,
+  .month-selector--payment-admin #convocation-filter {
+    flex: 1 1 50% !important;
+    width: auto !important;
+    min-width: 0;
+    font-size: 0.85rem;
+  }
+
+  .month-selector--payment-admin-panel .search-wrapper,
+  .month-selector--payment-admin .search-wrapper {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    flex: 1 1 100% !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .month-selector--payment-admin #filters-container {
+    flex-wrap: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .month-selector--payment-admin .month-field-group {
+    flex: 0 0 auto;
+  }
+
+  .month-selector--payment-admin #convocation-filter {
+    flex: 0 0 auto;
+    min-width: 180px;
+  }
+
+  .month-selector--payment-admin .search-wrapper {
+    margin-left: auto;
+  }
+}
+
+/* Support / money-in entry */
+.support-entry-card {
+  border-color: rgba(46, 148, 106, 0.35);
+}
+
+.support-entry-head {
+  background: linear-gradient(135deg, rgba(46, 148, 106, 0.1), rgba(26, 146, 212, 0.06));
+}
+
+.support-balance-pill {
+  background: linear-gradient(135deg, #2E946A, #1A92D4);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  max-width: min(100%, 520px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.support-save-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #2E946A, #1A92D4) !important;
+  border: none !important;
+}
+
+.support-report-card {
+  border-color: rgba(46, 148, 106, 0.25);
+}
+
+@media (max-width: 640px) {
+  .support-balance-pill {
+    font-size: 0.68rem;
+    padding: 8px 10px;
+    max-width: 58%;
+  }
+}
+
+/* Expense entry card */
+.expense-entry-card {
+  margin-top: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.expense-entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, rgba(30, 74, 109, 0.06), rgba(46, 148, 106, 0.08));
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .expense-entry-head {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .expense-balance-pill {
+    flex: 0 1 auto;
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+
+  .expense-entry-title {
+    flex: 0 0 auto;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+}
+
+.expense-entry-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.expense-balance-pill {
+  background: var(--primary);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.expense-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 20px 24px 24px;
+}
+
+.expense-field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.expense-field--full {
+  grid-column: 1 / -1;
+}
+
+.expense-field--action {
+  grid-column: 1 / -1;
+}
+
+.expense-save-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 12px 20px;
+}
+
+@media (max-width: 640px) {
+  .expense-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

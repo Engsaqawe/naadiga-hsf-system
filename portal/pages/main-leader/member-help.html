@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messages - HSF</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="./main_leader_responsive.css" />
+  <style>
+    body.help-modal-open {
+      overflow: hidden;
+    }
+    .help-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(2px);
+      overflow: hidden;
+    }
+    .help-modal-overlay.is-open {
+      display: flex;
+    }
+    .help-detail-modal {
+      background: var(--bg-card);
+      border-radius: 20px;
+      max-width: 620px;
+      width: 100%;
+      max-height: calc(100dvh - 40px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+      margin: auto;
+    }
+    .help-detail-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      padding: 1.25rem 1.35rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+      z-index: 2;
+    }
+    .help-detail-modal-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0.85rem 1.35rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .help-detail-modal-body::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+    .help-detail-modal-footer {
+      flex-shrink: 0;
+      padding: 0 1.35rem 1.25rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+    #detailContent p {
+      margin: 0 0 5px;
+      font-size: .88rem;
+      color: var(--text-main);
+    }
+    .help-detail-message {
+      white-space: pre-wrap;
+      line-height: 1.55;
+      font-size: .88rem;
+      margin-top: 8px;
+      color: var(--text-main);
+    }
+    .help-detail-actions {
+      display: none;
+      gap: 10px;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .help-detail-actions.is-visible {
+      display: flex;
+    }
+    .help-detail-fields {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 10px;
+      font-size: .84rem;
+    }
+    .help-detail-fields td {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      vertical-align: top;
+      color: var(--text-main);
+    }
+    .help-detail-fields td:first-child {
+      width: 34%;
+      font-weight: 700;
+      background: var(--bg-surface-muted);
+      color: var(--text-main);
+    }
+    .help-detail-apology {
+      margin: 8px 0 10px;
+      line-height: 1.5;
+      font-size: .88rem;
+      color: var(--text-main);
+    }
+    .help-detail-reason {
+      margin: 12px 0 10px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+    }
+    .help-detail-reason strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-main);
+      font-size: .84rem;
+    }
+    .help-detail-reason p {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.55;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      max-width: 100%;
+      color: var(--text-main);
+    }
+    .help-detail-message,
+    .help-detail-apology,
+    .help-detail-closing p {
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      max-width: 100%;
+    }
+    .help-detail-closing {
+      font-size: .8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .help-detail-closing p {
+      margin: 0 0 4px;
+    }
+    .help-detail-actions .btn-approve {
+      flex: 1;
+      min-width: 120px;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #2c7a4d;
+      color: #fff;
+    }
+    .help-detail-actions .btn-reject {
+      flex: 1;
+      min-width: 120px;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #dc2626;
+      color: #fff;
+    }
+    .help-detail-actions .btn-approve:disabled,
+    .help-detail-actions .btn-reject:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .help-response-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+    .help-response-badge.approved { background: #dcfce7; color: #166534; }
+    .help-response-badge.rejected { background: #fee2e2; color: #991b1b; }
+    .help-response-badge.pending { background: #f1f5f9; color: #475569; }
+    .help-response-badge.new { background: #dcfce7; color: #2c7a4d; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="top-navbar" id="top-navbar"></header>
+      <div class="dashboard-content">
+        <div class="card-table" style="padding:1.5rem;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+              <strong style="color:var(--primary);">Cudurdaar maqnaanshaha</strong>
+              <p style="font-size:.82rem;color:var(--text-muted);margin:4px 0 0;">Absence apology form submitted by verified members.</p>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+              <input type="checkbox" id="toggleHelpOpen" onchange="onHelpOpenToggle()"> Open for requests
+            </label>
+          </div>
+          <p style="font-size:.78rem;color:var(--text-muted);margin:8px 0 0;">The public <strong>help.html</strong> form is available only when this is checked. When closed, members see <strong>Closed</strong> and cannot submit.</p>
+          <div id="helpFormSettingsFields">
+          <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:12px 0 6px;">Form title</label>
+          <input type="text" id="helpHeadline" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Cudurdaar Maqnaanshaha">
+          <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:10px 0 6px;">Subtitle</label>
+          <input type="text" id="helpSubtitle" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Naadiga Ardayda Deeqda Waxbarasho HSF">
+          </div>
+          <p id="formSettingsMsg" style="font-size:.82rem;color:var(--secondary);margin:8px 0 0;"></p>
+        </div>
+        <div class="card-table" style="padding:1.5rem;">
+          <div class="section-header" style="margin-bottom:1rem;">
+            <h3 class="section-title" style="margin:0;color:var(--primary);">
+              <i class="fa-solid fa-envelope"></i> Messages
+            </h3>
+            <p style="color:var(--text-muted);font-size:.88rem;margin:.5rem 0 0;">Absence apologies submitted by verified members.</p>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table" style="width:100%;border-collapse:collapse;">
+              <thead>
+                <tr style="text-align:left;border-bottom:2px solid var(--border);">
+                  <th style="padding:10px;">Date</th>
+                  <th style="padding:10px;">Member</th>
+                  <th style="padding:10px;">Username</th>
+                  <th style="padding:10px;">Type</th>
+                  <th style="padding:10px;">Status</th>
+                  <th style="padding:10px;"></th>
+                </tr>
+              </thead>
+              <tbody id="helpBody">
+                <tr><td colspan="6" style="padding:20px;text-align:center;color:var(--text-muted);">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="detailModal" class="help-modal-overlay" onclick="if(event.target===this)closeDetail()">
+    <div class="help-detail-modal" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+      <div class="help-detail-modal-header">
+        <h3 id="helpModalTitle" style="margin:0;color:var(--primary);">Cudurdaar maqnaanshaha</h3>
+        <button type="button" class="portal-modal-close" onclick="closeDetail()" aria-label="Close">&times;</button>
+      </div>
+      <div id="detailContent" class="help-detail-modal-body"></div>
+      <div class="help-detail-modal-footer">
+        <div id="detailActions" class="help-detail-actions">
+          <button type="button" class="btn-approve" id="approveHelpBtn" onclick="respondHelp('approve')"><i class="fa-solid fa-check"></i> Approve</button>
+          <button type="button" class="btn-reject" id="rejectHelpBtn" onclick="respondHelp('reject')"><i class="fa-solid fa-xmark"></i> Reject</button>
+        </div>
+        <p id="detailRespondMsg" style="font-size:.82rem;margin:10px 0 0;color:var(--secondary);"></p>
+      </div>
+    </div>
+  </div>
+  <script src="../../assets/js/components.js"></script>
+  <script src="../../assets/js/data.js"></script>
+  <script>
+    const API = API_BASE.replace(/\/api$/, '') + '/api/applications';
+    let requests = [];
+    let activeHelpId = null;
+
+    Components.init({ role: 'main-leader', activePage: 'member-help', pageTitle: 'Messages' });
+
+    function syncHelpFormSettingsVisibility() {
+      const open = !!document.getElementById('toggleHelpOpen')?.checked;
+      const fields = document.getElementById('helpFormSettingsFields');
+      if (fields) fields.hidden = !open;
+    }
+
+    async function onHelpOpenToggle() {
+      syncHelpFormSettingsVisibility();
+      await saveFormSettings();
+    }
+
+    async function loadFormSettings() {
+      const res = await fetch(`${API}/form-settings`);
+      const s = await res.json();
+      document.getElementById('toggleHelpOpen').checked = !!s.help_open;
+      document.getElementById('helpHeadline').value = s.help_headline || '';
+      document.getElementById('helpSubtitle').value = s.help_subtitle || '';
+      syncHelpFormSettingsVisibility();
+    }
+    async function saveFormSettings() {
+      const res = await fetch(`${API}/form-settings`);
+      const current = await res.json();
+      const payload = {
+        ...current,
+        help_open: document.getElementById('toggleHelpOpen').checked,
+        help_headline: document.getElementById('helpHeadline').value.trim(),
+        help_subtitle: document.getElementById('helpSubtitle').value.trim(),
+      };
+      await fetch(`${API}/form-settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const msg = document.getElementById('formSettingsMsg');
+      if (msg) { msg.textContent = 'Saved.'; setTimeout(() => msg.textContent = '', 2000); }
+    }
+    loadFormSettings();
+
+    function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+    function openDetailModal() {
+      document.getElementById('detailModal').classList.add('is-open');
+      document.body.classList.add('help-modal-open');
+    }
+
+    function closeDetail() {
+      document.getElementById('detailModal').classList.remove('is-open');
+      document.body.classList.remove('help-modal-open');
+      activeHelpId = null;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('detailModal').classList.contains('is-open')) {
+        closeDetail();
+      }
+    });
+
+    function helpStatus(r) {
+      return String(r.response_status || 'pending').trim().toLowerCase();
+    }
+
+    function statusBadge(r) {
+      const s = helpStatus(r);
+      if (s === 'approved') return '<span class="help-response-badge approved">Approved</span>';
+      if (s === 'rejected') return '<span class="help-response-badge rejected">Rejected</span>';
+      if (!r.is_read) return '<span class="help-response-badge new">New</span>';
+      return '<span class="help-response-badge pending">Pending</span>';
+    }
+
+    function parseHelpMessage(message) {
+      const fields = {};
+      let apology = '';
+      let reason = '';
+      const closing = [];
+      if (!message) return { fields, apology, reason, closing };
+
+      let mode = 'fields';
+      for (const line of message.split('\n')) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        const fieldMatch = trimmed.match(/^(Magac|ID#|Dufcadda|Jaamacadda|Kulliyadda|Numberka):\s*(.*)$/i);
+        if (mode === 'fields' && fieldMatch) {
+          fields[fieldMatch[1].toLowerCase()] = fieldMatch[2].trim();
+          continue;
+        }
+        if (trimmed.startsWith('Waxaan si daacad')) {
+          apology = trimmed;
+          mode = 'afterApology';
+          continue;
+        }
+        if (/^Sababta/i.test(trimmed)) {
+          const inline = trimmed.replace(/^Sababta[^:]*:\s*/i, '').trim();
+          if (inline) reason = reason ? `${reason}\n${inline}` : inline;
+          mode = 'reason';
+          continue;
+        }
+        if (mode === 'reason' && /^Sababta[^:]*:\s*$/i.test(trimmed)) {
+          continue;
+        }
+        if (trimmed.startsWith('Waan fahamsanahay') || trimmed.startsWith('Waxaan mudnaan')) {
+          mode = 'closing';
+          closing.push(trimmed);
+          continue;
+        }
+        if (mode === 'reason') reason = reason ? `${reason}\n${trimmed}` : trimmed;
+        else if (mode === 'closing') closing.push(trimmed);
+      }
+      return { fields, apology, reason, closing };
+    }
+
+    function renderHelpDetailHtml(r) {
+      const parsed = parseHelpMessage(r.message);
+      const rows = [
+        ['Magac', parsed.fields.magac],
+        ['ID#', parsed.fields['id#'] || parsed.fields.id],
+        ['Dufcadda', parsed.fields.dufcadda],
+        ['Jaamacadda', parsed.fields.jaamacadda],
+        ['Kulliyadda', parsed.fields.kulliyadda],
+        ['Numberka', parsed.fields.numberka],
+      ].filter(([, value]) => value);
+
+      const meetingDateLabel = r.meeting_date
+        ? new Date(r.meeting_date + 'T12:00:00').toLocaleDateString()
+        : '';
+      let html = `
+        <p><strong>Member:</strong> ${esc(r.member_name)}</p>
+        <p><strong>Username:</strong> ${esc(r.username)}</p>
+        <p><strong>Email:</strong> ${esc(r.member_email)}</p>
+        <p><strong>Subject:</strong> ${esc(r.subject)}</p>
+        <p><strong>Status:</strong> ${statusBadge(r)}</p>
+      `;
+      if (r.meeting_date || r.meeting_topic) {
+        html += `<p><strong>Scheduled meeting:</strong> ${esc(meetingDateLabel || r.meeting_date)}${r.meeting_topic ? ` — <em>${esc(r.meeting_topic)}</em>` : ''}${r.meeting_place ? ` (${esc(r.meeting_place)})` : ''}</p>`;
+      }
+
+      if (rows.length) {
+        html += `<table class="help-detail-fields"><tbody>${rows.map(([label, value]) => `
+          <tr><td>${esc(label)}</td><td>${esc(value)}</td></tr>
+        `).join('')}</tbody></table>`;
+      }
+
+      if (parsed.apology) {
+        html += `<p class="help-detail-apology">${esc(parsed.apology)}</p>`;
+      }
+      if (parsed.reason) {
+        html += `<div class="help-detail-reason"><strong>Sababta maqnaanshaha:</strong><p>${esc(parsed.reason)}</p></div>`;
+      }
+      if (parsed.closing.length) {
+        html += `<div class="help-detail-closing">${parsed.closing.map((p) => `<p>${esc(p)}</p>`).join('')}</div>`;
+      }
+      if (!parsed.apology && !parsed.reason && r.message) {
+        html += `<div class="help-detail-message">${esc(r.message)}</div>`;
+      }
+      return html;
+    }
+
+    function setHelpActionsVisible(show) {
+      const actionsEl = document.getElementById('detailActions');
+      actionsEl.classList.toggle('is-visible', !!show);
+      document.getElementById('approveHelpBtn').disabled = !show;
+      document.getElementById('rejectHelpBtn').disabled = !show;
+    }
+
+    function showDetail(id) {
+      const r = requests.find((x) => x.id === id);
+      if (!r) return;
+      activeHelpId = id;
+      const msgEl = document.getElementById('detailRespondMsg');
+      msgEl.textContent = '';
+
+      document.getElementById('detailContent').innerHTML = renderHelpDetailHtml(r);
+      setHelpActionsVisible(helpStatus(r) === 'pending');
+
+      openDetailModal();
+      if (!r.is_read) markRead(id);
+    }
+
+    async function respondHelp(action) {
+      if (!activeHelpId) return;
+      const msgEl = document.getElementById('detailRespondMsg');
+      const approveBtn = document.getElementById('approveHelpBtn');
+      const rejectBtn = document.getElementById('rejectHelpBtn');
+      const label = action === 'approve' ? 'approve' : 'reject';
+      if (!confirm(`${label.charAt(0).toUpperCase() + label.slice(1)} this apology and email the member?`)) return;
+
+      approveBtn.disabled = true;
+      rejectBtn.disabled = true;
+      msgEl.textContent = 'Sending…';
+      try {
+        const res = await fetch(`${API}/help/${activeHelpId}/respond`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not update.');
+        if (action === 'approve') {
+          msgEl.textContent = data.excused_linked
+            ? 'Approved. Member marked absent with excuse (toggle locked). Email sent.'
+            : 'Approved and email sent. Could not link a meeting — check meeting date on the apology.';
+        } else {
+          msgEl.textContent = 'Rejected. Notification email sent. Attendance unchanged.';
+        }
+        await loadHelp();
+        showDetail(activeHelpId);
+      } catch (e) {
+        msgEl.textContent = e.message;
+        approveBtn.disabled = false;
+        rejectBtn.disabled = false;
+      }
+    }
+
+    async function markRead(id) {
+      await fetch(`${API}/help/${id}/read`, { method: 'POST' });
+      loadHelp();
+    }
+
+    async function loadHelp() {
+      const tbody = document.getElementById('helpBody');
+      try {
+        const res = await fetch(`${API}/help`);
+        requests = await res.json();
+        if (!requests.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--text-muted);">No help requests yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = requests.map((r) => `
+          <tr style="border-bottom:1px solid var(--border);${!r.is_read && (r.response_status || 'pending') === 'pending' ? 'background:rgba(44,122,77,.06);' : ''}">
+            <td style="padding:10px;font-size:.82rem;">${r.created_at ? new Date(r.created_at).toLocaleDateString() : '—'}</td>
+            <td style="padding:10px;">${esc(r.member_name)}</td>
+            <td style="padding:10px;">${esc(r.username)}</td>
+            <td style="padding:10px;">${esc(r.subject)}</td>
+            <td style="padding:10px;">${statusBadge(r)}</td>
+            <td style="padding:10px;"><button type="button" class="btn btn-sm btn-primary" onclick="showDetail(${r.id})">View</button></td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:#dc2626;">Could not load data.</td></tr>';
+      }
+    }
+    loadHelp();
+  </script>
+</body>
+</html>

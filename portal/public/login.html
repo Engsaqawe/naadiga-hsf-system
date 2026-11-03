@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | HS Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="logo-text">HS FOUNDATION</div>
+      <h1 style="margin-top: 12px;">Admin Login</h1>
+      <p style="color:var(--text-muted); margin-top: 8px;">Enter your credentials to manage the club platform.</p>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username / Email</label>
+        <input type="text" id="username" placeholder="admin@hsf.so" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-full" id="loginBtn">Login to Dashboard</button>
+      <div id="loginMessage" style="color: #ef4444; font-size: 0.9rem; text-align: center; margin-top: 16px; display: none;">Invalid credentials!</div>
+    </form>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> Back to Website</a>
+    </div>
+  </div>
+
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

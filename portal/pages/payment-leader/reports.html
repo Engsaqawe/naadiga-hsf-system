@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Reports - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="payment-leader.css?v=20260625" />
+    <link rel="stylesheet" href="reports.css" />
+    <link rel="stylesheet" href="../../assets/css/report-export.css?v=20260629" />
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+            <div class="dashboard-content">
+                <div class="reports-hero">
+                    <h2><i class="fa-solid fa-file-invoice"></i> Payment Reports</h2>
+                    <p id="reports-subtitle">View paid / unpaid summaries by convocation.</p>
+                </div>
+
+                <div class="reports-toolbar">
+                    <div class="field">
+                        <label for="report-month">Single month</label>
+                        <input type="month" id="report-month" class="search-input month-picker-input">
+                    </div>
+                    <div class="report-range-divider" aria-hidden="true">or</div>
+                    <div class="report-period-range">
+                        <div class="field report-range-field">
+                            <label for="report-month-from">From month</label>
+                            <input type="month" id="report-month-from" class="search-input month-picker-input" aria-label="Report from month">
+                        </div>
+                        <div class="field report-range-field">
+                            <label for="report-month-to">To month</label>
+                            <input type="month" id="report-month-to" class="search-input month-picker-input" aria-label="Report to month">
+                        </div>
+                    </div>
+                    <div class="field" id="all-summary-wrap" style="display:none;">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-primary" id="view-all-btn" style="width:100%;">
+                            <i class="fa-solid fa-chart-pie"></i> View All Convocations
+                        </button>
+                    </div>
+                    <div class="field" id="all-unpaid-wrap" style="display:none;">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-outline" id="view-all-unpaid-btn" style="width:100%;">
+                            <i class="fa-solid fa-file-circle-xmark"></i> All Unpaid (Every Dufcad)
+                        </button>
+                    </div>
+                    <div class="field" id="collector-view-wrap" style="display:none;">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-primary" id="view-collector-btn" style="width:100%;">
+                            <i class="fa-solid fa-eye"></i> View Full Report
+                        </button>
+                    </div>
+                    <div class="field" id="collector-unpaid-wrap" style="display:none;">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn btn-outline" id="view-collector-unpaid-btn" style="width:100%;">
+                            <i class="fa-solid fa-file-circle-xmark"></i> Unpaid Only
+                        </button>
+                    </div>
+                </div>
+
+                <div id="admin-conv-grid-wrap" style="display:none;">
+                    <h3 class="reports-section-title">Per-convocation payments</h3>
+                    <div class="conv-report-grid" id="conv-report-grid"></div>
+                </div>
+
+                <div id="unpaid-reports-wrap" style="display:none;">
+                    <h3 class="reports-section-title"><i class="fa-solid fa-file-circle-xmark"></i> Unpaid reports</h3>
+                    <p style="color:var(--text-muted);font-size:0.9rem;margin:-8px 0 16px;">Lists only members who have not paid for the selected period.</p>
+                </div>
+
+                <div id="support-report-wrap" class="expense-report-card support-report-card" style="display:none;">
+                    <div class="expense-report-head">
+                        <div>
+                            <h3 class="reports-section-title" style="margin:0;"><i class="fa-solid fa-hand-holding-heart"></i> Support & Contributions</h3>
+                            <p style="color:var(--text-muted);font-size:0.9rem;margin:0.35rem 0 0;">Manual money-in from supporters and helpers — included in account balance.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="view-support-btn">
+                            <i class="fa-solid fa-file-arrow-down"></i> View / Download
+                        </button>
+                    </div>
+                </div>
+
+                <div id="expense-report-wrap" class="expense-report-card" style="display:none;">
+                    <div class="expense-report-head">
+                        <div>
+                            <h3 class="reports-section-title" style="margin:0;"><i class="fa-solid fa-receipt"></i> Expense Report</h3>
+                            <p style="color:var(--text-muted);font-size:0.9rem;margin:0.35rem 0 0;">Downloadable summary of recorded expenses for the selected month.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="view-expense-btn">
+                            <i class="fa-solid fa-file-arrow-down"></i> View / Download
+                        </button>
+                    </div>
+                </div>
+
+                <div id="report-preview" class="report-preview" style="display:none;">
+                    <div class="report-preview-toolbar">
+                        <h3 id="report-preview-title">Report</h3>
+                        <div class="export-dropdown">
+                            <button type="button" class="btn btn-primary btn-sm export-btn" id="payment-export-toggle">
+                                <i class="fa-solid fa-file-export"></i> Export
+                            </button>
+                            <div class="export-options" id="payment-export-menu">
+                                <div class="export-item" data-export-action="print"><i class="fa-solid fa-print"></i> Print</div>
+                                <div class="export-item" data-export-action="image"><i class="fa-solid fa-image"></i> Download Image</div>
+                                <div class="export-item" data-export-action="pdf"><i class="fa-solid fa-file-pdf"></i> Download PDF</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="report-preview-body"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="../../assets/js/report-export.js?v=20260629"></script>
+    <script src="../../assets/js/data.js?v=20260628"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script src="../../assets/js/report-viewer.js?v=20260627"></script>
+    <script>
+        const MONTH_NAMES = ['January','February','March','April','May','June',
+            'July','August','September','October','November','December'];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const currentUser = getCurrentUser();
+            if (!currentUser.id) {
+                window.location.href = '../../login.html';
+                return;
+            }
+            const user = await getUserById(currentUser.id);
+            if (!user) return;
+
+            const isCollector = user.role === 'Payment Sub Admin' || user.role === 'Leader' || user.role === 'convocation-leader';
+            const isPaymentAdmin = user.role === 'Payment Admin';
+
+            const showUnpaidAllDufcads = async (period) => {
+                const data = await fetchDufcadMemberListsForPeriod(period);
+                if (!hasDufcadMemberReportData(data)) {
+                    Components.showToast('No dufcad payment data for this period.', 'error');
+                    return;
+                }
+                ReportViewer.showUnpaidAllDufcads(data);
+            };
+
+            const showConvocationUnpaid = async (conv, collectorName, period) => {
+                const data = await fetchMonthlyReportDataForPeriod(conv, period, collectorName);
+                if (data?.error) {
+                    Components.showToast(data.error, 'error');
+                    return;
+                }
+                ReportViewer.showMonthlyUnpaidOnly(data);
+            };
+
+            Components.init({
+                role: currentUser.role,
+                activePage: 'reports',
+                title: 'Payment Reports',
+                userName: user.name,
+                userRoleLabel: user.role,
+            });
+
+            const monthInput = document.getElementById('report-month');
+            const monthFromInput = document.getElementById('report-month-from');
+            const monthToInput = document.getElementById('report-month-to');
+            const now = new Date();
+            const currentMonthVal = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            monthInput.value = currentMonthVal;
+
+            const getReportPeriod = () => {
+                const singleVal = (monthInput.value || '').trim();
+                const fromVal = (monthFromInput?.value || '').trim();
+                const toVal = (monthToInput?.value || '').trim();
+                const period = (fromVal && toVal)
+                    ? resolveReportPeriod('', fromVal, toVal)
+                    : resolveReportPeriod(singleVal, '', '');
+                if (!period) {
+                    Components.showToast('Choose a single month or a valid from–to range.', 'error');
+                    return null;
+                }
+                return period;
+            };
+
+            const runReportPreview = async (loader) => {
+                ReportViewer.setPreviewLoader(loader);
+                await loader();
+            };
+
+            const refreshReportPreview = async () => {
+                if (typeof ReportViewer?.refreshPreviewIfOpen === 'function') {
+                    await ReportViewer.refreshPreviewIfOpen();
+                }
+            };
+
+            const bindReportPeriodPickers = () => {
+                monthInput?.addEventListener('change', async () => {
+                    if (monthFromInput) monthFromInput.value = '';
+                    if (monthToInput) monthToInput.value = '';
+                    await refreshReportPreview();
+                });
+                const onRangeChange = async () => {
+                    if (monthInput && (monthFromInput?.value?.trim() || monthToInput?.value?.trim())) {
+                        monthInput.value = '';
+                    }
+                    await refreshReportPreview();
+                };
+                monthFromInput?.addEventListener('change', onRangeChange);
+                monthToInput?.addEventListener('change', onRangeChange);
+            };
+            bindReportPeriodPickers();
+
+            if (isPaymentAdmin) {
+                document.getElementById('reports-subtitle').textContent =
+                    'View payment summaries, unpaid lists, support contributions, and expense reports.';
+                document.getElementById('all-summary-wrap').style.display = 'block';
+                document.getElementById('all-unpaid-wrap').style.display = 'block';
+                document.getElementById('admin-conv-grid-wrap').style.display = 'block';
+                document.getElementById('unpaid-reports-wrap').style.display = 'block';
+                document.getElementById('support-report-wrap').style.display = 'block';
+                document.getElementById('expense-report-wrap').style.display = 'block';
+
+                const convocations = await getConvocations();
+                const grid = document.getElementById('conv-report-grid');
+                grid.innerHTML = convocations.map(c => `
+                    <div class="conv-report-card">
+                        <h4>${c.name}</h4>
+                        <p>Paid / unpaid for selected period</p>
+                        <div class="conv-report-actions">
+                            <button type="button" class="btn btn-outline btn-sm conv-view-btn" data-conv="${c.name}">
+                                <i class="fa-solid fa-eye"></i> Full Report
+                            </button>
+                            <button type="button" class="btn btn-outline btn-sm conv-unpaid-btn" data-conv="${c.name}">
+                                <i class="fa-solid fa-file-circle-xmark"></i> Unpaid Only
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('view-all-btn').onclick = () => runReportPreview(async () => {
+                    const period = getReportPeriod();
+                    if (!period) return;
+                    const data = await fetchAllConvocationsReportDataForPeriod(period);
+                    if (data?.error) {
+                        Components.showToast(data.error, 'error');
+                        return;
+                    }
+                    ReportViewer.showAllConvocations({ ...data, admin_name: user.name });
+                });
+
+                document.getElementById('view-all-unpaid-btn').onclick = () => runReportPreview(async () => {
+                    const period = getReportPeriod();
+                    if (!period) return;
+                    await showUnpaidAllDufcads(period);
+                });
+
+                grid.querySelectorAll('.conv-view-btn').forEach(btn => {
+                    const conv = btn.dataset.conv;
+                    btn.onclick = () => runReportPreview(async () => {
+                        const period = getReportPeriod();
+                        if (!period) return;
+                        const data = await fetchMonthlyReportDataForPeriod(conv, period, user.name);
+                        if (data?.error) {
+                            Components.showToast(data.error, 'error');
+                            return;
+                        }
+                        ReportViewer.showMonthly(data);
+                    });
+                });
+
+                grid.querySelectorAll('.conv-unpaid-btn').forEach(btn => {
+                    const conv = btn.dataset.conv;
+                    btn.onclick = () => runReportPreview(async () => {
+                        const period = getReportPeriod();
+                        if (!period) return;
+                        await showConvocationUnpaid(conv, user.name, period);
+                    });
+                });
+
+                document.getElementById('view-support-btn').onclick = () => runReportPreview(async () => {
+                    const period = getReportPeriod();
+                    if (!period) return;
+                    const data = await fetchFundEntriesReportDataForPeriod(period);
+                    if (data?.error) {
+                        Components.showToast(data.error, 'error');
+                        return;
+                    }
+                    ReportViewer.showFundEntries(data);
+                });
+
+                document.getElementById('view-expense-btn').onclick = () => runReportPreview(async () => {
+                    const period = getReportPeriod();
+                    if (!period) return;
+                    const data = await fetchExpensesReportDataForPeriod(period);
+                    if (data?.error) {
+                        Components.showToast(data.error, 'error');
+                        return;
+                    }
+                    ReportViewer.showExpenses(data);
+                });
+            } else if (isCollector) {
+                document.getElementById('reports-subtitle').textContent =
+                    `View reports for ${user.convocation} — full summary or unpaid only.`;
+                document.getElementById('collector-view-wrap').style.display = 'block';
+                document.getElementById('collector-unpaid-wrap').style.display = 'block';
+                document.getElementById('unpaid-reports-wrap').style.display = 'block';
+                document.getElementById('view-collector-btn').onclick = () => runReportPreview(async () => {
+                    const period = getReportPeriod();
+                    if (!period) return;
+                    const data = await fetchMonthlyReportDataForPeriod(user.convocation, period, user.name);
+                    if (data?.error) {
+                        Components.showToast(data.error, 'error');
+                        return;
+                    }
+                    ReportViewer.showMonthly(data);
+                });
+                document.getElementById('view-collector-unpaid-btn').onclick = () => runReportPreview(async () => {
+                    const period = getReportPeriod();
+                    if (!period) return;
+                    await showConvocationUnpaid(user.convocation, user.name, period);
+                });
+            } else {
+                window.location.href = '../student/dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcasting Portal - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../main-leader/main_leader_responsive.css" />
+    <style>
+        .broadcast-form-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .form-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .broadcast-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+            <div class="dashboard-content">
+                <div class="broadcast-form-container">
+                    <h2 class="form-title">
+                        <i class="fa-solid fa-paper-plane"></i> HSF Email Broadcasting
+                    </h2>
+                    <p class="form-desc">Send announcements, custom messages, or automatic outstanding payment reminders to members instantly.</p>
+                    
+                    <form id="broadcast-form">
+                        <div class="broadcast-form-grid">
+                            <!-- Target Filters (Main Leader / Payment Admin Only) -->
+                            <div class="form-group" id="filter-conv-group">
+                                <label for="target-convocation">Target Convocation</label>
+                                <select id="target-convocation" class="search-input" style="width:100%; height:44px; padding-left:12px;"></select>
+                            </div>
+                            <div class="form-group" id="filter-role-group">
+                                <label for="target-role">Target Role</label>
+                                <select id="target-role" class="search-input" style="width:100%; height:44px; padding-left:12px;">
+                                    <option value="All">All Roles</option>
+                                    <option value="Student">Member</option>
+                                    <option value="Payment Sub Admin">Convocation Leader / Collector</option>
+                                    <option value="Payment Admin">Main Payment Admin</option>
+                                    <option value="Main Leader">Main Leader (System Admin)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Static Target Info (For Sub-Admins) -->
+                        <div id="static-target-info" style="display:none; padding:12px; background:rgba(30,74,109,0.05); border-radius:12px; margin-bottom:1.5rem; color:var(--primary); font-weight:600;">
+                            <i class="fa-solid fa-users"></i> Target Audience: Members of <span id="assigned-conv-name"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="broadcast-type">Broadcast Type</label>
+                            <select id="broadcast-type" class="search-input" style="width:100%; height:44px; padding-left:12px;">
+                                <option value="manual">Manual Message (Type Custom Subject/Body)</option>
+                                <option value="automatic">Automatic Payment Reminder (Calculates & alerts unpaid months)</option>
+                            </select>
+                        </div>
+
+                        <div id="manual-fields-wrap">
+                            <div class="form-group">
+                                <label for="email-subject">Subject</label>
+                                <input type="text" id="email-subject" class="search-input" style="width:100%; padding-left:12px;" placeholder="e.g., Monthly Subscription Payment Reminder - May 2026" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email-body">Message Body</label>
+                                <textarea id="email-body" class="search-input" style="width:100%; height:200px; padding:12px; font-family:inherit; resize:vertical;" placeholder="Write your message here..." required></textarea>
+                            </div>
+                        </div>
+
+                        <div id="automatic-fields-wrap" style="display:none; padding:1.5rem; background:rgba(46,148,106,0.08); border-radius:12px; border-left:4px solid var(--primary); margin-bottom:1.5rem;">
+                            <h4 style="color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-magic"></i> Automatic Payment Reminders</h4>
+                            <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:12px;">
+                                The system will automatically check each targeted member's registration date and verify their payments in the transaction log database. Members with outstanding balances will receive a personalized email listing those outstanding months:
+                            </p>
+                            <div style="background:var(--bg-main); padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem; border:1px solid var(--border); color:var(--text-main);">
+                                <strong>Subject:</strong> Outstanding (kugu taagan) Payment Reminder - HSF System<br><br>
+                                Dear [Member Name],<br><br>
+                                You have outstanding (kugu taagan) subscription payments for the following month(s):<br>
+                                - Month Year<br>
+                                - Month Year<br><br>
+                                Please contact your Convocation Leader / Collector to clear your dues.<br><br>
+                                Best regards,<br>
+                                Naadiga Ardayda Deeqda Waxbarasho HSF
+                            </div>
+                        </div>
+
+                        <button type="submit" id="send-btn" class="btn btn-primary" style="width:100%; padding:14px; justify-content:center;">
+                            <i class="fa-solid fa-paper-plane"></i> Send Broadcast Announcement
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/data.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const currentUser = getCurrentUser();
+            if (!currentUser.id) {
+                window.location.href = "../../login.html";
+                return;
+            }
+
+            const user = await getUserById(currentUser.id);
+            if (!user) return;
+
+            // Page Initialization
+            Components.init({
+                role: currentUser.role,
+                activePage: 'broadcast',
+                title: 'Broadcasting Portal',
+                userName: user.name,
+                userRoleLabel: user.role
+            });
+
+            const form = document.getElementById('broadcast-form');
+            const sendBtn = document.getElementById('send-btn');
+            const targetConv = document.getElementById('target-convocation');
+            const targetRole = document.getElementById('target-role');
+            const filterConvGroup = document.getElementById('filter-conv-group');
+            const filterRoleGroup = document.getElementById('filter-role-group');
+            const staticTargetInfo = document.getElementById('static-target-info');
+            const assignedConvName = document.getElementById('assigned-conv-name');
+            
+            const typeSelect = document.getElementById('broadcast-type');
+            const manualFields = document.getElementById('manual-fields-wrap');
+            const autoFields = document.getElementById('automatic-fields-wrap');
+            const emailSubject = document.getElementById('email-subject');
+            const emailBody = document.getElementById('email-body');
+
+            const isMainAdmin = user.role === 'Main Leader' || user.role === 'Payment Admin';
+            const isSubAdmin = user.role === 'Payment Sub Admin' || user.role === 'Leader';
+
+            if (isMainAdmin) {
+                // Populate convocations dropdown
+                const convocations = await getConvocations();
+                let opts = '<option value="All">All Convocations</option>';
+                opts += convocations.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+                targetConv.innerHTML = opts;
+            } else if (isSubAdmin) {
+                // Hide dropdowns and show static assigned convocation info
+                filterConvGroup.style.display = 'none';
+                filterRoleGroup.style.display = 'none';
+                staticTargetInfo.style.display = 'block';
+                assignedConvName.textContent = user.convocation || 'assigned convocation';
+            } else {
+                // Non-authorized roles redirected
+                window.location.href = "../student/dashboard.html";
+                return;
+            }
+
+            typeSelect.onchange = () => {
+                const v = typeSelect.value;
+                manualFields.style.display = v === 'manual' ? 'block' : 'none';
+                autoFields.style.display = v === 'automatic' ? 'block' : 'none';
+                if (v === 'manual') {
+                    emailSubject.setAttribute('required', 'required');
+                    emailBody.setAttribute('required', 'required');
+                } else {
+                    emailSubject.removeAttribute('required');
+                    emailBody.removeAttribute('required');
+                }
+            };
+
+            // Form Submit Handler
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+
+                const v = typeSelect.value;
+                const isAuto = v === 'automatic';
+                const subject = isAuto ? '' : emailSubject.value.trim();
+                const message = isAuto ? '' : emailBody.value.trim();
+
+                if (v === 'manual' && (!subject || !message)) {
+                    Components.showToast('Please fill out all fields.', 'error');
+                    return;
+                }
+
+                const confirmLabel = v === 'automatic' ? 'automatic payment reminder' : 'broadcast email';
+                if (!confirm(`Are you sure you want to send this ${confirmLabel} to targeted members?`)) {
+                    return;
+                }
+
+                Components.setLoading(sendBtn, true);
+
+                try {
+                    const payload = {
+                        sender_id: user.id,
+                        broadcast_type: typeSelect.value,
+                        subject: subject,
+                        message: message,
+                        target_convocation: isMainAdmin ? targetConv.value : user.convocation,
+                        target_role: isMainAdmin ? targetRole.value : 'All'
+                    };
+
+                    const response = await sendBroadcast(payload);
+
+                    if (response && response.success) {
+                        Components.showToast(response.message || 'Broadcast message sent successfully!', 'success');
+                        form.reset();
+                        // Reset to manual defaults
+                        typeSelect.value = 'manual';
+                        manualFields.style.display = 'block';
+                        autoFields.style.display = 'none';
+                        emailSubject.setAttribute('required', 'required');
+                        emailBody.setAttribute('required', 'required');
+                    } else {
+                        Components.showToast(response?.error || 'Failed to send broadcast.', 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Components.showToast('Failed to connect to the server.', 'error');
+                } finally {
+                    Components.setLoading(sendBtn, false);
+                }
+            };
+        });
+    </script>
+</body>
+</html>

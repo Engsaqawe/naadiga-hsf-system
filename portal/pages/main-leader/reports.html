@@ -1,0 +1,3231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Reports - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/report-export.css?v=20260631">
+    <link rel="stylesheet" href="../payment-leader/reports.css">
+    <link rel="stylesheet" href="./main_leader_responsive.css?v=20260631">
+    <style>
+        /* Tabs Container */
+        .report-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+        }
+        .report-tab-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1 1 auto;
+            min-width: 0;
+            white-space: nowrap;
+        }
+        @media (max-width: 640px) {
+            .report-tabs {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                border-bottom: none;
+                padding-bottom: 4px;
+            }
+            .report-tab-btn {
+                width: 100%;
+                font-size: 0.72rem;
+                padding: 10px 8px;
+                white-space: normal;
+                text-align: center;
+                line-height: 1.25;
+            }
+            .report-tab-btn i { font-size: 0.85rem; }
+        }
+        .app-report-kpis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        @media (max-width: 768px) {
+            .app-report-kpis { grid-template-columns: 1fr; }
+        }
+        .app-history-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .app-icon-btn {
+            width: 34px;
+            height: 34px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-main);
+            color: var(--primary);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .app-icon-btn:hover { background: #f1f5f9; }
+        .app-icon-btn.danger { color: #dc2626; }
+        .app-icon-btn.danger:hover { background: #fef2f2; }
+        .quran-top3-block {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .quran-top3-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        @media (max-width: 600px) {
+            .quran-top3-grid { grid-template-columns: 1fr; }
+        }
+        .quran-top3-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+        .quran-top3-rank {
+            display: block;
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .quran-top3-name { font-weight: 600; color: var(--primary); font-size: .9rem; }
+        .registrations-filter-bar .reg-filter-input,
+        .registrations-filter-bar .reg-filter-select {
+            flex: 1 1 140px;
+            min-width: 0;
+            max-width: 100%;
+            height: 42px;
+            padding: 0 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 0.85rem;
+            background: var(--bg-card);
+            box-sizing: border-box;
+        }
+        .registrations-filter-bar .reg-filter-input { flex: 2 1 180px; }
+        @media (max-width: 768px) {
+            .registrations-filter-bar:not(.applications-reg-filter) { flex-direction: column; align-items: stretch; }
+            .registrations-filter-bar:not(.applications-reg-filter) .reg-filter-input,
+            .registrations-filter-bar:not(.applications-reg-filter) .reg-filter-select { width: 100%; flex: 1 1 100%; height: 42px; }
+            .registrations-filter-count { margin-left: 0; text-align: right; }
+        }
+        .report-tab-btn:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+        .report-tab-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        [data-theme="dark"] .report-tab-btn:hover {
+            background: #334155;
+            color: white;
+        }
+
+        /* Overview Tab Layout */
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        .report-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .bar-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            height: 200px;
+            margin-top: 1.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .bar {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            transition: var(--transition);
+            position: relative;
+        }
+        .bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .bar-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* Modern Filter Bar for Detailed tab */
+        .detailed-filter-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 180px;
+        }
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filter-select, .filter-input {
+            width: 100%;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            background: var(--bg-main);
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .filter-select:focus, .filter-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* Branded Official Report Paper Mockup */
+        .report-paper {
+            background: var(--bg-card);
+            color: var(--text-main);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            max-width: 900px;
+            margin: 0 auto;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        
+        /* Official Header Branding */
+        .paper-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            gap: 20px;
+        }
+        .paper-logo {
+            width: 75px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 50%;
+            background-color: white;
+            padding: 3px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .paper-title-area {
+            flex-grow: 1;
+            text-align: center;
+        }
+        .paper-title-area h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e4a6d; /* Official Blue */
+            margin: 0 0 4px;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+        .paper-title-area h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #10b981; /* Official Green */
+            margin: 0 0 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .paper-title-area p {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin: 0;
+        }
+        .paper-divider {
+            height: 4px;
+            border-top: 3px double #1e4a6d;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Metainfo Board inside Report Paper */
+        .paper-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            background: var(--bg-main);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px dashed var(--border);
+            margin-bottom: 2rem;
+            font-size: 0.825rem;
+        }
+        .meta-item {
+            display: flex;
+            gap: 8px;
+        }
+        .meta-label {
+            font-weight: 700;
+            color: #475569;
+            min-width: 140px;
+        }
+        .meta-value {
+            color: #0f172a;
+        }
+
+        /* Modern Month Picker Style */
+        input[type="month"] {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            height: 38px;
+            outline: none;
+            cursor: pointer;
+        }
+        input[type="month"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: grayscale(100%) opacity(0.5);
+        }
+
+        /* Export Dropdown */
+        .export-btn-compact {
+            white-space: nowrap;
+        }
+
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .export-options {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            min-width: 200px;
+            z-index: 1001;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .export-options.active {
+            display: block;
+        }
+        .export-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .export-item:hover {
+            background: var(--bg-main);
+            color: var(--primary);
+        }
+        .export-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Custom Responsive Adjustments */
+        .report-actions-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .report-actions-row .report-action-btn,
+        .report-actions-row .report-action-export {
+            flex: 1 1 50%;
+            min-width: 0;
+        }
+
+        .report-actions-row .report-action-export .export-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .report-actions-row .report-action-export .export-options {
+            width: 100%;
+            min-width: 0;
+            right: auto;
+            left: 0;
+        }
+
+        .report-period-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .report-period-toolbar .report-period-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .report-period-or {
+            align-self: flex-end;
+            padding-bottom: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .report-period-range {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            gap: 10px;
+            flex: 1 1 auto;
+            min-width: min(100%, 440px);
+        }
+
+        .report-period-range-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        .report-period-range-field input[type="month"] {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .report-actions-row {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+
+            .report-actions-row .report-action-export .export-options {
+                position: static;
+            }
+
+            #overview-tab-content > .d-flex.justify-between {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            #overview-tab-content > .d-flex.justify-between.mb-4 {
+                gap: 16px;
+            }
+
+            #overview-tab-content > .d-flex.justify-between.mb-4 h4 {
+                width: 100%;
+            }
+
+            .report-period-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                gap: 12px;
+            }
+
+            .report-period-toolbar > div:not(.report-period-range):not(.export-dropdown) {
+                width: 100%;
+            }
+
+            .report-period-range {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .report-period-toolbar input[type="month"] {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .report-period-or {
+                align-self: center;
+                padding-bottom: 0;
+                width: 100%;
+                text-align: center;
+            }
+
+            .report-period-toolbar .export-dropdown {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+
+            .report-period-toolbar .export-btn-compact {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .report-period-toolbar .export-options {
+                position: static;
+                width: 100%;
+            }
+
+            #overview-tab-content .d-flex.gap-2 {
+                width: 100%;
+            }
+
+            #overview-tab-content .d-flex.gap-2 input[type="month"] {
+                flex: 1;
+                min-width: 0;
+            }
+
+            #overview-tab-content .d-flex.gap-2 .export-dropdown {
+                flex: 1;
+                min-width: 0;
+                width: auto;
+            }
+
+            #overview-tab-content .d-flex.gap-2 .export-btn-compact {
+                width: 100%;
+                justify-content: center;
+            }
+
+            #overview-tab-content .d-flex.gap-2 .export-options {
+                position: static;
+                width: 100%;
+                min-width: 0;
+            }
+
+            .report-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                width: 100%;
+            }
+            .report-paper {
+                padding: 1.5rem !important;
+                border-radius: 12px;
+            }
+            .paper-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            .paper-logo {
+                margin: 0 auto;
+            }
+            .paper-meta-grid {
+                grid-template-columns: 1fr !important;
+                gap: 8px;
+                padding: 10px;
+            }
+            .meta-label {
+                min-width: 100px;
+            }
+        }
+
+        /* Print — show open report preview only (matches payment-leader reports.css) */
+        @media print {
+            @page {
+                size: auto;
+                margin: 10mm;
+            }
+            html, body {
+                height: auto !important;
+                min-height: 0 !important;
+            }
+            body {
+                background: white !important;
+                color: #0f172a !important;
+            }
+            .no-print, .sidebar, .top-navbar, .theme-toggle, .mobile-toggle, .report-tabs, .detailed-filter-card, #footer-copyright {
+                display: none !important;
+            }
+            .app-container {
+                display: block !important;
+            }
+            .main-content {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #report-preview, #report-preview * {
+                visibility: visible;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #report-preview {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+            #report-preview[style*="display: none"],
+            #report-preview[style*="display:none"] {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            .report-preview-toolbar {
+                display: none !important;
+            }
+            .report-paper, .report-sheet {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                background: white !important;
+                color: #0f172a !important;
+            }
+            .paper-meta-grid, .report-meta-grid {
+                background: none !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+            .data-table th, .report-table th {
+                background: #f1f5f9 !important;
+                color: #0f172a !important;
+            }
+            .badge, .report-badge {
+                border: 1px solid #cbd5e1 !important;
+                background: none !important;
+                color: #0f172a !important;
+            }
+            tr {
+                page-break-inside: avoid !important;
+            }
+            .report-table tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid-page !important;
+            }
+            .cohort-report-section, .report-month-section, .report-meeting-section {
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+            }
+            .report-meeting-section + .report-meeting-section,
+            .report-month-section + .report-month-section {
+                page-break-before: always !important;
+                break-before: page !important;
+            }
+            .report-block, .report-sheet-header, .report-footer-bar {
+                page-break-inside: avoid !important;
+                break-inside: avoid-page !important;
+            }
+            .report-paper .print-only {
+                margin-top: 2rem !important;
+            }
+        }
+
+        .report-preview {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: visible;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+        }
+        #report-preview-body { overflow-x: auto; border-radius: 0 0 20px 20px; }
+        .report-preview-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--bg-main), var(--bg-card));
+        }
+        .report-preview-toolbar h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            color: var(--primary);
+        }
+        .report-preview-toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-left: auto;
+        }
+        .meetings-report-filters {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .meetings-report-filters.is-visible {
+            display: flex;
+        }
+        .meetings-report-filters label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+        }
+        .meetings-report-filters select {
+            height: 36px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 10px;
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 0.88rem;
+            max-width: 180px;
+        }
+        #report-preview-body .report-month-section-title {
+            color: #1e4a6d !important;
+        }
+        .meeting-report-btn {
+            min-width: 38px;
+            padding: 6px 10px;
+        }
+        .meetings-report-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0.35rem 0 0;
+        }
+        .admin-finance-reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+        .finance-report-total {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-top: 0.5rem;
+        }
+        .finance-report-meta {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        .grad-employment-cards {
+            margin-bottom: 1.5rem;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        @media (max-width: 1100px) {
+            .grad-employment-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 560px) {
+            .grad-employment-cards { grid-template-columns: 1fr; }
+        }
+        .report-section-label {
+            margin: 0 0 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+        .report-section-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .meetings-panel-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            width: 100%;
+        }
+        .meetings-panel-stack .report-chart-full,
+        .meetings-panel-stack .report-meetings-list-card {
+            width: 100%;
+            min-width: 0;
+        }
+        .report-chart-full .bar-container {
+            min-height: 240px;
+        }
+        .report-meetings-list-card {
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .report-meetings-list-card .table-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            margin: 0;
+            flex-shrink: 0;
+        }
+        .report-meetings-list-card .meetings-report-sub {
+            margin: 0.35rem 0 0;
+        }
+        .report-meetings-list-card .meetings-table-wrap {
+            overflow-x: auto;
+            flex: 1;
+        }
+        .meetings-month-overview {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+        .meetings-month-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+        }
+        .meetings-month-card h4 {
+            margin: 0 0 0.35rem;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        .meetings-month-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+        .report-meetings-list-card .data-table {
+            margin: 0;
+            width: 100%;
+        }
+        .report-meetings-list-card .data-table th,
+        .report-meetings-list-card .data-table td {
+            padding: 0.65rem 0.75rem;
+            font-size: 0.82rem;
+            vertical-align: middle;
+        }
+        @media (max-width: 768px) {
+            .finance-kpi-grid,
+            .meetings-kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .report-chart-full {
+            width: 100%;
+        }
+        .report-chart-full .bar-container {
+            min-height: 240px;
+        }
+        .finance-kpi-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            margin-bottom: 0;
+        }
+        @media (max-width: 1200px) {
+            .finance-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        @media (max-width: 768px) {
+            .finance-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        .finance-stat-card,
+        .meeting-stat-card {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.65rem;
+            padding: 1rem 1.1rem;
+            min-height: 0;
+        }
+        .finance-stat-card-body,
+        .meeting-stat-card-body {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            min-width: 0;
+        }
+        .finance-stat-card .stat-icon,
+        .meeting-stat-card .stat-icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            font-size: 1.1rem;
+        }
+        .finance-kpi-grid .stat-info h4,
+        .meeting-kpi-grid .stat-info h4 {
+            font-size: 1.35rem;
+            margin: 0 0 0.15rem;
+            line-height: 1.2;
+        }
+        .finance-kpi-grid .stat-info p,
+        .meeting-kpi-grid .stat-info p {
+            margin: 0;
+            line-height: 1.35;
+        }
+        .kpi-label-main {
+            display: block;
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .kpi-label-period {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0.85;
+            margin-top: 0.15rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .kpi-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid var(--border);
+            padding-top: 0.55rem;
+            margin-top: auto;
+        }
+        .kpi-export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 9px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-main);
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+        .kpi-export-btn:hover {
+            background: #f1f5f9;
+            border-color: var(--primary);
+        }
+        .report-section-block,
+        .finance-reports-section,
+        .employment-report-section {
+            margin-top: 2rem;
+        }
+        .finance-reports-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .finance-reports-head h4 {
+            margin: 0;
+        }
+        @media (max-width: 768px) {
+            .finance-reports-head {
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 0.65rem;
+            }
+            .finance-reports-head h4 {
+                flex: 1 1 auto;
+                min-width: 0;
+                font-size: 0.95rem;
+                line-height: 1.3;
+            }
+            .finance-reports-head .export-dropdown {
+                flex: 0 0 auto;
+            }
+            .finance-reports-head .export-btn-compact {
+                padding-left: 10px;
+                padding-right: 10px;
+                white-space: nowrap;
+            }
+            .report-label-mobile-hide {
+                display: none;
+            }
+        }
+        .meetings-kpi-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-bottom: 0;
+            gap: 1rem;
+        }
+        @media (max-width: 560px) {
+            .finance-kpi-grid,
+            .meetings-kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .grad-employment-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 16px;
+            margin-top: 0.5rem;
+        }
+        .grad-employment-filters .filter-group {
+            min-width: 160px;
+        }
+        @media (max-width: 768px) {
+            .expense-report-head {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+            .expense-report-head > .btn {
+                width: 100%;
+            }
+        }
+        .reports-type-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+        .reports-type-bar label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: block;
+        }
+        .reports-type-select {
+            min-width: min(100%, 280px);
+            height: 42px;
+        }
+        .overview-payment-actions {
+            margin-bottom: 24px;
+        }
+        .overview-payment-actions .btn {
+            width: 100%;
+            max-width: 320px;
+        }
+        @media (max-width: 768px) {
+            .overview-payment-actions .btn {
+                max-width: none;
+            }
+        }
+        .report-month-breakdown {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+            gap: 12px;
+            margin-bottom: 1.25rem;
+        }
+        .report-month-breakdown.is-visible {
+            display: grid;
+        }
+        .report-month-breakdown-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+            box-shadow: var(--shadow);
+        }
+        .report-month-breakdown-card h5 {
+            margin: 0 0 0.65rem;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+        .report-month-breakdown-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 10px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .report-month-breakdown-stats strong {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+        .report-month-section-head td {
+            background: var(--bg-main);
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--primary);
+            padding: 12px 10px !important;
+            border-top: 2px solid var(--border);
+        }
+        tr.report-month-section-head:first-child td {
+            border-top: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+
+            <div class="dashboard-content">
+                <div class="d-flex justify-between align-center mb-4">
+                    <div>
+                        <h3 class="page-section-title">System Reports | <span style="font-weight: 400; color: var(--text-muted);">Warbixinnada Mareegta</span></h3>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="report-tabs no-print">
+                    <button class="report-tab-btn active" id="tab-btn-overview" onclick="switchReportTab('overview')">
+                        <i class="fa-solid fa-chart-pie"></i> Reports
+                    </button>
+                    <button class="report-tab-btn" id="tab-btn-members" onclick="switchReportTab('members')">
+                        <i class="fa-solid fa-users"></i> Members List
+                    </button>
+                </div>
+
+                <!-- TABS CONTAINER 1: Visual Overview -->
+                <div id="overview-tab-content">
+                    <div class="reports-type-bar no-print">
+                        <label for="overview-report-type">Choose report</label>
+                        <select id="overview-report-type" class="filter-select reports-type-select" aria-label="Choose report type">
+                            <option value="payment">Payment / Finance</option>
+                            <option value="meetings">Meetings &amp; Attendance</option>
+                            <option value="employment">Graduated Employment</option>
+                            <option value="system">System Report</option>
+                            <option value="quran">Quran Contest</option>
+                            <option value="summer">Summer Course</option>
+                        </select>
+                    </div>
+
+                    <div id="overview-reports-shell">
+                        <div class="reports-hero no-print" id="overview-reports-hero">
+                            <h2 id="overview-reports-hero-title"><i class="fa-solid fa-file-invoice"></i> Finance Reports</h2>
+                            <p id="overview-reports-subtitle">View payment summaries, support contributions, and expense reports.</p>
+                        </div>
+
+                        <div id="overview-shared-toolbar" class="reports-toolbar no-print">
+                            <div class="field">
+                                <label for="report-month-picker">Single month</label>
+                                <input type="month" id="report-month-picker" class="search-input month-picker-input" aria-label="Single report month">
+                            </div>
+                            <div class="report-range-divider" aria-hidden="true">or</div>
+                            <div class="report-period-range">
+                                <div class="field report-range-field">
+                                    <label for="report-month-from">From month</label>
+                                    <input type="month" id="report-month-from" class="search-input month-picker-input" aria-label="Report from month">
+                                </div>
+                                <div class="field report-range-field">
+                                    <label for="report-month-to">To month</label>
+                                    <input type="month" id="report-month-to" class="search-input month-picker-input" aria-label="Report to month">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="overview-panel-payment" class="overview-report-panel">
+                            <div class="overview-payment-actions no-print">
+                                <button type="button" class="btn btn-primary" id="view-all-convocations-btn">
+                                    <i class="fa-solid fa-chart-pie"></i> View All Convocations
+                                </button>
+                                <button type="button" class="btn btn-outline" id="view-all-unpaid-btn">
+                                    <i class="fa-solid fa-file-circle-xmark"></i> All Unpaid (Every Dufcad)
+                                </button>
+                            </div>
+                            <div id="admin-conv-grid-wrap" class="no-print">
+                                <h3 class="reports-section-title">Per-convocation payments</h3>
+                                <p style="color:var(--text-muted);font-size:0.9rem;margin:-8px 0 16px;">Full report or unpaid-only list for each dufcad.</p>
+                                <div class="conv-report-grid" id="conv-report-grid"></div>
+                            </div>
+                            <div id="support-report-wrap" class="expense-report-card support-report-card no-print">
+                                <div class="expense-report-head">
+                                    <div>
+                                        <h3 class="reports-section-title" style="margin:0;"><i class="fa-solid fa-hand-holding-heart"></i> Support &amp; Contributions</h3>
+                                        <p style="color:var(--text-muted);font-size:0.9rem;margin:0.35rem 0 0;">Manual money-in from supporters and helpers — included in account balance.</p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="view-support-btn">
+                                        <i class="fa-solid fa-file-arrow-down"></i> View / Download
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="expense-report-wrap" class="expense-report-card no-print">
+                                <div class="expense-report-head">
+                                    <div>
+                                        <h3 class="reports-section-title" style="margin:0;"><i class="fa-solid fa-receipt"></i> Expense Report</h3>
+                                        <p style="color:var(--text-muted);font-size:0.9rem;margin:0.35rem 0 0;">Downloadable summary of recorded expenses for the selected month.</p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="view-expense-btn">
+                                        <i class="fa-solid fa-file-arrow-down"></i> View / Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="overview-panel-meetings" class="overview-report-panel" hidden>
+                            <div id="meetings-report-wrap" class="expense-report-card no-print">
+                                <div class="expense-report-head">
+                                    <div>
+                                        <h3 class="reports-section-title" style="margin:0;"><i class="fa-solid fa-users"></i> Meetings &amp; Attendance</h3>
+                                        <p class="finance-report-meta" id="meetings-period-hint" style="margin:0.35rem 0 0;">Uses month filter above.</p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="view-meetings-btn">
+                                        <i class="fa-solid fa-file-arrow-down"></i> View / Download
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="meetings-month-overview" class="meetings-month-overview no-print"></div>
+                            <div id="meetings-list-wrap" class="report-meetings-list-card no-print">
+                                <div class="table-header">
+                                    <h3>All Meetings</h3>
+                                    <p class="meetings-report-sub" id="meetings-list-hint">Each completed meeting can be exported individually.</p>
+                                </div>
+                                <div class="meetings-table-wrap">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Topic</th>
+                                                <th>Presenter</th>
+                                                <th>Place</th>
+                                                <th>Convocation</th>
+                                                <th class="text-center">Present</th>
+                                                <th class="text-center">Absent</th>
+                                                <th class="text-center">Status</th>
+                                                <th class="text-right">Export</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="meetings-list-table-body">
+                                            <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Select a period above.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="overview-panel-employment" class="overview-report-panel" hidden>
+                            <div id="employment-report-wrap" class="expense-report-card no-print">
+                                <div class="expense-report-head">
+                                    <div>
+                                        <h3 class="reports-section-title" style="margin:0;"><i class="fa-solid fa-briefcase"></i> Graduated Employment</h3>
+                                        <p class="finance-report-meta" id="grad-report-period-hint" style="margin:0.35rem 0 0;">Works / not working — uses month filter above.</p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="view-grad-employment-btn">
+                                        <i class="fa-solid fa-file-arrow-down"></i> View / Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="overview-panel-system" class="overview-report-panel" hidden>
+                            <div id="system-report-wrap" class="expense-report-card no-print">
+                                <div class="expense-report-head">
+                                    <div>
+                                        <h3 class="reports-section-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> System Report</h3>
+                                        <p style="color:var(--text-muted);font-size:0.9rem;margin:0.35rem 0 0;">Members, convocations, programs, meetings, and employment — same key metrics as the admin dashboard.</p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="view-system-report-btn">
+                                        <i class="fa-solid fa-file-arrow-down"></i> View / Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TABS CONTAINER 2: Members List -->
+                <div id="members-tab-content" style="display: none;">
+                    <div id="members-list-wrap" class="expense-report-card no-print">
+                        <div class="expense-report-head">
+                            <div>
+                                <h3 class="reports-section-title" style="margin:0;"><i class="fa-solid fa-users"></i> Members List</h3>
+                                <p style="color:var(--text-muted);font-size:0.9rem;margin:0.35rem 0 0;">Active or graduated members — card number, name, university, faculty, and phone — grouped by dufcad.</p>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="view-members-list-btn">
+                                <i class="fa-solid fa-file-arrow-down"></i> View / Download
+                            </button>
+                        </div>
+                        <div class="filter-row" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+                            <div class="filter-group">
+                                <label for="members-status-filter">Status</label>
+                                <select id="members-status-filter" class="filter-select" aria-label="Filter members by status">
+                                    <option value="active" selected>Active</option>
+                                    <option value="graduated">Graduated</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="members-dufcad-filter">Dufcad</label>
+                                <select id="members-dufcad-filter" class="filter-select" aria-label="Filter members by dufcad">
+                                    <option value="all">Loading dufcads…</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="report-preview" class="report-preview" style="display:none;">
+                    <div class="report-preview-toolbar no-print">
+                        <h3 id="report-preview-title">Report</h3>
+                        <div class="report-preview-toolbar-actions">
+                            <div id="meetings-report-filters" class="meetings-report-filters" aria-label="Meetings report filters">
+                                <label for="meetingsReportView">Report</label>
+                                <select id="meetingsReportView" aria-label="Meetings report type">
+                                    <option value="overview">Overview</option>
+                                    <option value="missed_attended">Missed / Attended</option>
+                                </select>
+                                <label for="meetingsReportFocus">Status</label>
+                                <select id="meetingsReportFocus" aria-label="Missed attended focus">
+                                    <option value="all">All members</option>
+                                    <option value="most_present">Most present (unabsent)</option>
+                                    <option value="most_absent">Most absent</option>
+                                </select>
+                                <label for="meetingsReportOrder">Order</label>
+                                <select id="meetingsReportOrder" aria-label="Member order">
+                                    <option value="alpha">Alphabetical</option>
+                                    <option value="dufcad">By dufcad</option>
+                                </select>
+                            </div>
+                            <div class="export-dropdown">
+                                <button type="button" class="btn btn-primary btn-sm export-btn" id="payment-export-toggle">
+                                    <i class="fa-solid fa-file-export"></i> Export
+                                </button>
+                                <div class="export-options" id="payment-export-menu">
+                                    <div class="export-item" data-export-action="print"><i class="fa-solid fa-print"></i> Print</div>
+                                    <div class="export-item" data-export-action="image"><i class="fa-solid fa-image"></i> Download Image</div>
+                                    <div class="export-item" data-export-action="pdf"><i class="fa-solid fa-file-pdf"></i> Download PDF</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="report-preview-body"></div>
+                </div>
+
+                <!-- TAB: Quran Contest Report (identical to Quran Contest portal page) -->
+                <div id="quran-tab-content" style="display: none;">
+                    <div class="month-selector quran-contest-toolbar quran-contest-toolbar--reports no-print">
+                        <div class="program-report-toolbar-main">
+                            <div class="month-field-group program-report-month">
+                                <label class="toolbar-month-label toolbar-month-label--caps" for="globalMonthPicker">Filter by month</label>
+                                <input type="month" id="globalMonthPicker" class="month-picker-input" aria-label="Filter by month">
+                            </div>
+                            <span class="program-report-or" aria-hidden="true">or</span>
+                            <div class="program-report-range registrations-filter-dates registrations-filter-dates--row" id="quranDateBetween">
+                                <div class="registrations-filter-date-group program-report-date-field">
+                                    <label class="toolbar-month-label toolbar-month-label--caps" for="quranDateFrom">From</label>
+                                    <input type="date" id="quranDateFrom" class="month-picker-input program-report-date-input" aria-label="Quran from date">
+                                </div>
+                                <div class="registrations-filter-date-group program-report-date-field">
+                                    <label class="toolbar-month-label toolbar-month-label--caps" for="quranDateTo">To</label>
+                                    <input type="date" id="quranDateTo" class="month-picker-input program-report-date-input" aria-label="Quran to date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-table" style="padding:1.5rem;margin-bottom:1rem;">
+                        <div id="quran-report-print-area">
+                                <div class="portal-section-head portal-section-head--toolbar">
+                                    <h3 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Contest History</h3>
+                                    <div class="export-dropdown no-print">
+                                        <button type="button" class="btn btn-primary export-btn" id="quran-report-export-toggle" style="height:42px;">
+                                            <i class="fa-solid fa-file-export"></i> Export
+                                        </button>
+                                        <div class="export-options" id="quran-report-export-menu">
+                                            <div class="export-item" data-export-action="print"><i class="fa-solid fa-print"></i> Print</div>
+                                            <div class="export-item" data-export-action="image"><i class="fa-solid fa-image"></i> Download Image</div>
+                                            <div class="export-item" data-export-action="pdf"><i class="fa-solid fa-file-pdf"></i> Preview PDF</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="applications-table-scroll applications-table-scroll--history">
+                                    <table class="data-table applications-history-table applications-history-table--reports" style="width:100%;border-collapse:collapse;">
+                                        <thead>
+                                            <tr style="text-align:left;border-bottom:2px solid var(--border);">
+                                            <th style="padding:10px;">Contest</th>
+                                            <th style="padding:10px;">Date</th>
+                                            <th style="padding:10px;">Competitors</th>
+                                            <th style="padding:10px;" class="no-print reg-action-col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historyBody">
+                                        <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-muted);">Loading…</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+                <!-- TAB: Summer Course Report -->
+                <div id="summer-tab-content" style="display: none;">
+                    <div class="month-selector quran-contest-toolbar quran-contest-toolbar--reports no-print">
+                        <div class="program-report-toolbar-main">
+                            <div class="month-field-group program-report-month">
+                                <label class="toolbar-month-label toolbar-month-label--caps" for="summerGlobalMonthPicker">Filter by month</label>
+                                <input type="month" id="summerGlobalMonthPicker" class="month-picker-input" aria-label="Filter by month">
+                            </div>
+                            <span class="program-report-or" aria-hidden="true">or</span>
+                            <div class="program-report-range registrations-filter-dates registrations-filter-dates--row" id="summerDateBetween">
+                                <div class="registrations-filter-date-group program-report-date-field">
+                                    <label class="toolbar-month-label toolbar-month-label--caps" for="summerDateFrom">From</label>
+                                    <input type="date" id="summerDateFrom" class="month-picker-input program-report-date-input" aria-label="Summer from date">
+                                </div>
+                                <div class="registrations-filter-date-group program-report-date-field">
+                                    <label class="toolbar-month-label toolbar-month-label--caps" for="summerDateTo">To</label>
+                                    <input type="date" id="summerDateTo" class="month-picker-input program-report-date-input" aria-label="Summer to date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-table" style="padding:1.5rem;margin-bottom:1rem;">
+                        <div id="summer-report-print-area">
+                            <div class="portal-section-head portal-section-head--toolbar">
+                                <h3 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Program History</h3>
+                                <div class="export-dropdown no-print summer-export-portal">
+                                    <button type="button" class="btn btn-primary export-btn" id="summer-report-export-toggle" style="height:42px;">
+                                        <i class="fa-solid fa-file-export"></i> Export
+                                    </button>
+                                    <div class="export-options" id="summer-report-export-menu">
+                                        <div class="export-item" data-export-action="print"><i class="fa-solid fa-print"></i> Print</div>
+                                        <div class="export-item" data-export-action="image"><i class="fa-solid fa-image"></i> Download Image</div>
+                                        <div class="export-item" data-export-action="pdf"><i class="fa-solid fa-file-pdf"></i> Preview PDF</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="applications-table-scroll applications-table-scroll--history">
+                                <table class="data-table applications-history-table applications-history-table--reports" style="width:100%;border-collapse:collapse;">
+                                    <thead>
+                                        <tr style="text-align:left;border-bottom:2px solid var(--border);">
+                                            <th style="padding:10px;">Program</th>
+                                            <th style="padding:10px;">Date</th>
+                                            <th style="padding:10px;">Registered</th>
+                                            <th style="padding:10px;" class="no-print reg-action-col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="summerHistoryBody">
+                                        <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-muted);">Loading…</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quran Contest modals (shared with portal page) -->
+                <div id="contestModal" class="portal-modal-overlay" style="z-index:3001;">
+                    <div class="portal-modal-card portal-modal-card--lg portal-modal-card--program">
+                        <div class="portal-modal-head" id="contestModalHead">
+                            <h3 id="contestModalTitle">Contest</h3>
+                            <button type="button" class="portal-modal-close" onclick="closeContestModal()" aria-label="Close">&times;</button>
+                        </div>
+                        <div id="contestViewPanel" class="hsf-program-modal-panel"></div>
+                        <form id="contestEditForm" style="display:none;">
+                            <input type="hidden" id="editYear">
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Contest date</label><input type="date" id="editDate" class="filter-select" style="width:100%"></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Place</label><input type="text" id="editPlace" class="filter-select" style="width:100%"></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>1st place — member</label><select id="editW1" class="filter-select" style="width:100%"></select></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>2nd place — member</label><select id="editW2" class="filter-select" style="width:100%"></select></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>3rd place — member</label><select id="editW3" class="filter-select" style="width:100%"></select></div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Save contest info</button>
+                        </form>
+                    </div>
+                </div>
+                <div id="detailModal" class="portal-modal-overlay" style="z-index:3001;">
+                    <div class="portal-modal-card portal-modal-card--lg">
+                        <div class="portal-modal-head">
+                            <h3>Registration details</h3>
+                            <button type="button" class="portal-modal-close" onclick="closeDetail()" aria-label="Close">&times;</button>
+                        </div>
+                        <div id="detailContent" style="font-size:.9rem;line-height:1.6;"></div>
+                    </div>
+                </div>
+                <div id="regEditModal" class="portal-modal-overlay" style="z-index:3001;">
+                    <div class="portal-modal-card portal-modal-card--md">
+                        <div class="portal-modal-head">
+                            <h3 id="regEditTitle">Edit registration</h3>
+                            <button type="button" class="portal-modal-close" onclick="closeRegEdit()" aria-label="Close">&times;</button>
+                        </div>
+                        <form id="regEditForm">
+                            <input type="hidden" id="regEditId">
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Full name</label><input type="text" id="regEditName" class="filter-select" style="width:100%" required></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>WhatsApp</label><input type="tel" id="regEditWhatsapp" class="filter-select" style="width:100%" required></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Telephone</label><input type="tel" id="regEditTelephone" class="filter-select" style="width:100%" required></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Dufcad</label><input type="text" id="regEditDufcad" class="filter-select" style="width:100%" required></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Participated before?</label>
+                                <select id="regEditParticipated" class="filter-select" style="width:100%">
+                                    <option value="Maya">Maya</option>
+                                    <option value="Haa">Haa</option>
+                                </select>
+                            </div>
+                            <div id="regEditPrevSectionWrap" class="filter-group" style="margin-bottom:8px;" hidden>
+                                <label>Previous section</label>
+                                <select id="regEditPrevSection" class="filter-select" style="width:100%">
+                                    <option value="">—</option>
+                                    <option value="10 Juz">10 Juz</option>
+                                    <option value="20 Juz">20 Juz</option>
+                                    <option value="30 Juz">30 Juz</option>
+                                    <option value="Midna">Midna</option>
+                                </select>
+                            </div>
+                            <div id="regEditWonBeforeWrap" class="filter-group" style="margin-bottom:8px;" hidden>
+                                <label>Won before</label>
+                                <select id="regEditWonBefore" class="filter-select" style="width:100%">
+                                    <option value="">—</option>
+                                    <option value="Kaalinta 1aad">Kaalinta 1aad</option>
+                                    <option value="Kaalinta 2aad">Kaalinta 2aad</option>
+                                    <option value="Kaalinta 3aad">Kaalinta 3aad</option>
+                                    <option value="Midna">Midna</option>
+                                </select>
+                            </div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Section this year</label>
+                                <select id="regEditSection" class="filter-select" style="width:100%" required>
+                                    <option value="Qeybta 10-ka Jus">Qeybta 10-ka Jus</option>
+                                    <option value="Qeybta 20-ka Jus">Qeybta 20-ka Jus</option>
+                                    <option value="Qeybta 30-ka Jus">Qeybta 30-ka Jus</option>
+                                </select>
+                            </div>
+                            <p id="regEditMsg" style="font-size:.82rem;margin:0 0 8px;"></p>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Save changes</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Summer Course modals -->
+                <div id="summerProgramModal" class="portal-modal-overlay" style="z-index:3001;">
+                    <div class="portal-modal-card portal-modal-card--lg portal-modal-card--program">
+                        <div class="portal-modal-head" id="summerProgramModalHead">
+                            <h3 id="summerProgramModalTitle">Program</h3>
+                            <button type="button" class="portal-modal-close" aria-label="Close">&times;</button>
+                        </div>
+                        <div id="summerProgramViewPanel" class="hsf-program-modal-panel"></div>
+                        <form id="summerProgramEditForm" style="display:none;">
+                            <input type="hidden" id="summerEditYear">
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Place</label><input type="text" id="summerEditPlace" class="filter-select" style="width:100%"></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Courses offered (one per line)</label><textarea id="summerEditCourses" rows="5" class="filter-select" style="width:100%;resize:vertical"></textarea></div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Save program info</button>
+                        </form>
+                    </div>
+                </div>
+                <div id="summerDetailModal" class="portal-modal-overlay" style="z-index:3001;">
+                    <div class="portal-modal-card portal-modal-card--lg">
+                        <div class="portal-modal-head">
+                            <h3>Registration details</h3>
+                            <button type="button" class="portal-modal-close" aria-label="Close">&times;</button>
+                        </div>
+                        <div id="summerDetailContent" style="font-size:.9rem;line-height:1.6;"></div>
+                    </div>
+                </div>
+                <div id="summerRegEditModal" class="portal-modal-overlay" style="z-index:3001;">
+                    <div class="portal-modal-card portal-modal-card--md">
+                        <div class="portal-modal-head">
+                            <h3 id="summerRegEditTitle">Edit registration</h3>
+                            <button type="button" class="portal-modal-close" aria-label="Close">&times;</button>
+                        </div>
+                        <form id="summerRegEditForm">
+                            <input type="hidden" id="summerRegEditId">
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Name</label><input type="text" id="summerRegEditName" class="filter-select" style="width:100%" required></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Dufcad</label><input type="text" id="summerRegEditDufcad" class="filter-select" style="width:100%" required></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>Faculty</label><input type="text" id="summerRegEditFaculty" class="filter-select" style="width:100%" required></div>
+                            <div class="filter-group" style="margin-bottom:8px;"><label>University</label><input type="text" id="summerRegEditUniversity" class="filter-select" style="width:100%" required></div>
+                            <p id="summerRegEditMsg" style="font-size:.82rem;margin:0 0 8px;"></p>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Save changes</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modals: Summer year (legacy) -->
+                <div id="appReportModal" class="portal-modal-overlay" style="z-index:3000;">
+                    <div class="portal-modal-card portal-modal-card--md">
+                        <div class="portal-modal-head">
+                            <h3 id="appReportModalTitle">Details</h3>
+                            <button type="button" id="appReportModalClose" class="portal-modal-close" aria-label="Close">&times;</button>
+                        </div>
+                        <div id="appReportModalBody"></div>
+                        <div id="appReportModalForm" style="display:none;margin-top:1rem;"></div>
+                        <button type="button" id="appReportModalSave" class="btn btn-primary" style="display:none;width:100%;margin-top:1rem;">Save</button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="../../assets/js/report-export.js?v=20260631"></script>
+    <script src="../../assets/js/data.js?v=20260713"></script>
+    <script src="../../assets/js/chart-bars.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script src="../../assets/js/report-viewer.js?v=20260627"></script>
+    <script src="../../assets/js/quran-contest-admin.js?v=20260713d"></script>
+    <script src="../../assets/js/summer-course-admin.js?v=20260713d"></script>
+    <script src="../../assets/js/application-reports.js?v=20260618"></script>
+    <script>
+        // ==========================================
+        // HELPER: Identify actual student members
+        // Uses case-insensitive role matching.
+        // Includes: Student, Leader, Payment Sub Admin
+        // Excludes: Main Leader, Public User, admin roles
+        // ==========================================
+        function isStudentRole(role) {
+            if (!role) return false;
+            const r = role.toLowerCase().trim();
+            return r !== 'public user';
+        }
+
+        // ==========================================
+        // EXPOSE ALL FUNCTIONS TO WINDOW SCOPE
+        // ==========================================
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const cu = getCurrentUser();
+            Components.init({
+                role: cu.role || 'main-leader',
+                activePage: 'reports',
+                title: 'System Reports',
+                userName: cu.name || 'Admin Gadoomiya',
+                userRoleLabel: cu.role || 'Main Leader'
+            });
+
+            populateInitial();
+            bindReportPeriodPickers();
+            if (window.AppReports) window.AppReports.init();
+            await initOverviewPaymentReports();
+            bindOverviewReportTypePicker();
+            switchOverviewReportType('payment');
+            updateFilters();
+        });
+
+        const OVERVIEW_REPORT_TYPES = {
+            payment: {
+                title: 'Finance Reports',
+                icon: 'fa-file-invoice',
+                subtitle: 'View payment summaries, support contributions, and expense reports.',
+                panelId: 'overview-panel-payment',
+                monthToolbar: true,
+            },
+            meetings: {
+                title: 'Meetings & Attendance',
+                icon: 'fa-users',
+                subtitle: 'View and export meeting attendance reports for the selected period.',
+                panelId: 'overview-panel-meetings',
+                monthToolbar: true,
+            },
+            employment: {
+                title: 'Graduated Employment',
+                icon: 'fa-briefcase',
+                subtitle: 'Works / not working report for graduated members — uses month filter above.',
+                panelId: 'overview-panel-employment',
+                monthToolbar: true,
+            },
+            system: {
+                title: 'System Report',
+                icon: 'fa-chart-pie',
+                subtitle: 'Members, convocations, programs, meetings, and employment key metrics.',
+                panelId: 'overview-panel-system',
+                monthToolbar: true,
+            },
+            quran: {
+                title: 'Quran Contest',
+                icon: 'fa-book-quran',
+                subtitle: 'Contest history and registrations — filter by date below.',
+                externalId: 'quran-tab-content',
+                onShow: () => loadQuranContestTab(),
+            },
+            summer: {
+                title: 'Summer Course',
+                icon: 'fa-sun',
+                subtitle: 'Program history and registrations — filter by date below.',
+                externalId: 'summer-tab-content',
+                onShow: () => loadSummerCourseTab(),
+            },
+        };
+
+        function bindOverviewReportTypePicker() {
+            const select = document.getElementById('overview-report-type');
+            select?.addEventListener('change', () => {
+                switchOverviewReportType(select.value);
+            });
+        }
+
+        function switchOverviewReportType(type) {
+            if (typeof ReportExport !== 'undefined' && typeof ReportExport.closeAllDropdowns === 'function') {
+                ReportExport.closeAllDropdowns();
+            }
+            const config = OVERVIEW_REPORT_TYPES[type] || OVERVIEW_REPORT_TYPES.payment;
+            const select = document.getElementById('overview-report-type');
+            if (select && select.value !== type) select.value = type;
+
+            const shell = document.getElementById('overview-reports-shell');
+            const hero = document.getElementById('overview-reports-hero');
+            const toolbar = document.getElementById('overview-shared-toolbar');
+            const heroTitle = document.getElementById('overview-reports-hero-title');
+            const heroSubtitle = document.getElementById('overview-reports-subtitle');
+
+            document.querySelectorAll('.overview-report-panel').forEach((panel) => {
+                panel.hidden = true;
+            });
+            ['quran-tab-content', 'summer-tab-content'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
+            if (config.externalId) {
+                if (shell) shell.style.display = 'block';
+                if (hero) hero.style.display = 'block';
+                if (toolbar) toolbar.style.display = 'none';
+                if (heroTitle) {
+                    heroTitle.innerHTML = `<i class="fa-solid ${config.icon}"></i> ${config.title}`;
+                }
+                if (heroSubtitle) heroSubtitle.textContent = config.subtitle;
+                const external = document.getElementById(config.externalId);
+                if (external) external.style.display = 'block';
+                if (typeof config.onShow === 'function') config.onShow();
+                if (typeof ReportViewer?.clearPreview === 'function') ReportViewer.clearPreview();
+                return;
+            }
+
+            if (shell) shell.style.display = 'block';
+            if (hero) hero.style.display = 'block';
+            if (toolbar) toolbar.style.display = config.monthToolbar ? 'flex' : 'none';
+            if (heroTitle) {
+                heroTitle.innerHTML = `<i class="fa-solid ${config.icon}"></i> ${config.title}`;
+            }
+            if (heroSubtitle) heroSubtitle.textContent = config.subtitle;
+
+            const panel = document.getElementById(config.panelId);
+            if (panel) panel.hidden = false;
+
+            if (typeof ReportViewer?.clearPreview === 'function') ReportViewer.clearPreview();
+        }
+        window.switchOverviewReportType = switchOverviewReportType;
+
+        async function initOverviewPaymentReports() {
+            const cu = getCurrentUser();
+            const user = cu.id ? await getUserById(cu.id) : null;
+            const adminName = user?.name || cu.name || 'HSF Main Leader';
+
+            const convocations = await getConvocations();
+            const grid = document.getElementById('conv-report-grid');
+            if (grid) {
+                grid.innerHTML = convocations.map((c) => `
+                    <div class="conv-report-card">
+                        <h4>${c.name}</h4>
+                        <p>Paid / unpaid for selected period</p>
+                        <div class="conv-report-actions">
+                            <button type="button" class="btn btn-outline btn-sm conv-view-btn" data-conv="${c.name}">
+                                <i class="fa-solid fa-eye"></i> Full Report
+                            </button>
+                            <button type="button" class="btn btn-outline btn-sm conv-unpaid-btn" data-conv="${c.name}">
+                                <i class="fa-solid fa-file-circle-xmark"></i> Unpaid Only
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                grid.querySelectorAll('.conv-view-btn').forEach((btn) => {
+                    btn.addEventListener('click', () => runReportPreview(async () => {
+                        const period = requireOverviewPeriod();
+                        if (!period) return;
+                        const data = await fetchMonthlyReportDataForPeriod(btn.dataset.conv, period, adminName);
+                        if (data?.error) {
+                            Components.showToast(data.error, 'error');
+                            return;
+                        }
+                        ReportViewer.showMonthly(data);
+                    }));
+                });
+
+                grid.querySelectorAll('.conv-unpaid-btn').forEach((btn) => {
+                    btn.addEventListener('click', () => runReportPreview(async () => {
+                        const period = requireOverviewPeriod();
+                        if (!period) return;
+                        const data = await fetchMonthlyReportDataForPeriod(btn.dataset.conv, period, adminName);
+                        if (data?.error) {
+                            Components.showToast(data.error, 'error');
+                            return;
+                        }
+                        ReportViewer.showMonthlyUnpaidOnly(data);
+                    }));
+                });
+            }
+
+            document.getElementById('view-all-convocations-btn')?.addEventListener('click', () => runReportPreview(async () => {
+                const period = requireOverviewPeriod();
+                if (!period) return;
+                const data = await fetchAllConvocationsReportDataForPeriod(period);
+                if (data?.error) {
+                    Components.showToast(data.error, 'error');
+                    return;
+                }
+                ReportViewer.showAllConvocations({ ...data, admin_name: adminName });
+            }));
+
+            document.getElementById('view-all-unpaid-btn')?.addEventListener('click', () => runReportPreview(async () => {
+                const period = requireOverviewPeriod();
+                if (!period) return;
+                const data = await fetchDufcadMemberListsForPeriod(period);
+                if (!hasDufcadMemberReportData(data)) {
+                    Components.showToast('No dufcad payment data for this period.', 'error');
+                    return;
+                }
+                ReportViewer.showUnpaidAllDufcads(data);
+            }));
+
+            document.getElementById('view-support-btn')?.addEventListener('click', () => runReportPreview(async () => {
+                const period = requireOverviewPeriod();
+                if (!period) return;
+                const data = await fetchFundEntriesReportDataForPeriod(period);
+                if (data?.error) {
+                    Components.showToast(data.error, 'error');
+                    return;
+                }
+                ReportViewer.showFundEntries(data);
+            }));
+
+            document.getElementById('view-expense-btn')?.addEventListener('click', () => runReportPreview(async () => {
+                const period = requireOverviewPeriod();
+                if (!period) return;
+                const data = await fetchExpensesReportDataForPeriod(period);
+                if (data?.error) {
+                    Components.showToast(data.error, 'error');
+                    return;
+                }
+                ReportViewer.showExpenses(data);
+            }));
+
+            document.getElementById('view-meetings-btn')?.addEventListener('click', () => runReportPreview(() => openMeetingsPreview('all')));
+
+            document.getElementById('view-grad-employment-btn')?.addEventListener('click', () => runReportPreview(openGraduatedEmploymentPreview));
+
+            document.getElementById('view-system-report-btn')?.addEventListener('click', () => runReportPreview(openWholeSystemReportPreview));
+            document.getElementById('view-members-list-btn')?.addEventListener('click', () => runReportPreview(openMembersListPreview));
+            document.getElementById('members-dufcad-filter')?.addEventListener('change', () => {
+                ReportViewer.setPreviewLoader(openMembersListPreview);
+                ReportViewer?.refreshPreviewIfOpen?.();
+            });
+            document.getElementById('members-status-filter')?.addEventListener('change', () => {
+                ReportViewer.setPreviewLoader(openMembersListPreview);
+                ReportViewer?.refreshPreviewIfOpen?.();
+            });
+        }
+
+        function populateInitial() {
+            const now = new Date();
+            const currentMonthVal = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const monthPicker = document.getElementById('report-month-picker');
+            const from = document.getElementById('report-month-from');
+            const to = document.getElementById('report-month-to');
+            if (monthPicker) monthPicker.value = currentMonthVal;
+            if (from) from.value = '';
+            if (to) to.value = '';
+        }
+        window.populateInitial = populateInitial;
+
+        function getOverviewReportPeriod() {
+            const fromEl = document.getElementById('report-month-from');
+            const toEl = document.getElementById('report-month-to');
+            const singleEl = document.getElementById('report-month-picker');
+            const fromVal = (fromEl?.value || '').trim();
+            const toVal = (toEl?.value || '').trim();
+            const singleVal = (singleEl?.value || '').trim();
+            // Range only when both ends are set; otherwise use single month picker
+            if (fromVal && toVal) {
+                return resolveReportPeriod('', fromVal, toVal);
+            }
+            if (singleVal) {
+                return resolveReportPeriod(singleVal, '', '');
+            }
+            // Empty filters → show everything
+            return { mode: 'all', label: 'All time' };
+        }
+
+        function bindReportPeriodPickers() {
+            const single = document.getElementById('report-month-picker');
+            const from = document.getElementById('report-month-from');
+            const to = document.getElementById('report-month-to');
+
+            single?.addEventListener('change', () => {
+                if (from) from.value = '';
+                if (to) to.value = '';
+                updateFilters();
+            });
+            const onRangeChange = () => {
+                if (single && ((from?.value || '').trim() || (to?.value || '').trim())) {
+                    single.value = '';
+                }
+                updateFilters();
+            };
+            from?.addEventListener('change', onRangeChange);
+            to?.addEventListener('change', onRangeChange);
+        }
+
+        function updateGradEmploymentPeriodHint(periodLabel) {
+            const el = document.getElementById('grad-report-period-hint');
+            if (!el) return;
+            el.textContent = periodLabel
+                ? `Period: ${periodLabel} — working = job started in this month/range`
+                : 'Period: set month at top of page';
+        }
+
+        function updateFilters() {
+            const period = getOverviewReportPeriod();
+            if (!period) return;
+            renderReports(period);
+            if (typeof ReportViewer?.refreshPreviewIfOpen === 'function') {
+                ReportViewer.refreshPreviewIfOpen();
+            }
+        }
+        window.updateFilters = updateFilters;
+
+        function monthFinanceStats(pm, activeStudents, allTransactions) {
+            const mp = singleMonthPeriod(pm);
+            const tx = allTransactions.filter((t) => transactionInReportPeriod(t, mp));
+            const paidIds = new Set(tx.map((t) => t.student_id));
+            const paid = activeStudents.filter((s) => paidIds.has(s.id)).length;
+            const collected = tx.reduce((sum, t) => sum + parseTxnAmount(t.amount), 0);
+            return {
+                paid,
+                unpaid: Math.max(0, activeStudents.length - paid),
+                collected,
+            };
+        }
+
+        function monthMeetingStats(pm, meetings, activeStudents, allAttendance) {
+            const mp = singleMonthPeriod(pm);
+            const monthMeetings = meetings.filter((m) => meetingInReportPeriod(m, mp));
+            const finalized = monthMeetings.filter((m) => isMeetingAttendanceFinalized(m));
+            const rates = finalized
+                .map((m) => getMeetingParticipationRate(m, activeStudents, allAttendance))
+                .filter((r) => r !== null);
+            const avgAtt = rates.length
+                ? Math.round(rates.reduce((sum, r) => sum + r, 0) / rates.length)
+                : 0;
+            return { total: monthMeetings.length, completed: finalized.length, avgAtt };
+        }
+
+        function fundTotalForMonth(fundData, pm) {
+            if (!fundData?.entries) return 0;
+            return fundData.entries
+                .filter(
+                    (e) =>
+                        String(e.month || '').toLowerCase() === pm.name.toLowerCase() &&
+                        parseInt(e.year, 10) === pm.year
+                )
+                .reduce((sum, e) => sum + Number(e.amount || 0), 0);
+        }
+
+        function expenseTotalForMonth(expenseData, pm) {
+            if (!expenseData?.expenses) return 0;
+            return expenseData.expenses
+                .filter(
+                    (e) =>
+                        String(e.month || '').toLowerCase() === pm.name.toLowerCase() &&
+                        parseInt(e.year, 10) === pm.year
+                )
+                .reduce((sum, e) => sum + Number(e.amount || 0), 0);
+        }
+
+        function renderMonthBreakdown(period, activeStudents, allTransactions, meetings, allAttendance, fundData, expenseData) {
+            const el = document.getElementById('report-month-breakdown');
+            if (!el) return;
+            if (period.mode !== 'range' || !period.months || period.months.length < 2) {
+                el.classList.remove('is-visible');
+                el.innerHTML = '';
+                return;
+            }
+            el.classList.add('is-visible');
+            el.innerHTML = period.months.map((pm) => {
+                const fin = monthFinanceStats(pm, activeStudents, allTransactions);
+                const meet = monthMeetingStats(pm, meetings, activeStudents, allAttendance);
+                const moneyIn = fundTotalForMonth(fundData, pm);
+                const expenses = expenseTotalForMonth(expenseData, pm);
+                return `
+                    <div class="report-month-breakdown-card">
+                        <h5>${pm.name} ${pm.year}</h5>
+                        <div class="report-month-breakdown-stats">
+                            <div>Collected<strong>$${fin.collected.toFixed(2)}</strong></div>
+                            <div>Paid<strong>${fin.paid}</strong></div>
+                            <div>Unpaid<strong>${fin.unpaid}</strong></div>
+                            <div>Meetings<strong>${meet.total}</strong></div>
+                            <div>Avg attendance<strong>${meet.avgAtt}%</strong></div>
+                            <div>Money in<strong>$${moneyIn.toFixed(2)}</strong></div>
+                            <div>Expenses<strong>$${expenses.toFixed(2)}</strong></div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function convocationMatrixRows(activeStudents, convocations, paidIds) {
+            return convocations.map((conv) => {
+                const cohortStudents = activeStudents.filter(
+                    (s) => s.convocation && s.convocation.toLowerCase() === conv.name.toLowerCase()
+                );
+                const correctTotal = cohortStudents.length;
+                const correctPaid = cohortStudents.filter((s) => paidIds.has(s.id)).length;
+                const correctUnpaid = Math.max(0, correctTotal - correctPaid);
+                const correctRate = correctTotal > 0 ? Math.round((correctPaid / correctTotal) * 100) : 0;
+                return `
+                    <tr>
+                        <td><strong>${conv.name}</strong></td>
+                        <td style="text-align: center;">${correctTotal}</td>
+                        <td style="text-align: center; color: var(--danger);"><strong>${correctUnpaid}</strong></td>
+                        <td style="text-align: center;">
+                            <div class="d-flex align-center gap-2" style="justify-content: center;">
+                                <div style="width: 100px; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                    <div style="width: ${correctRate}%; height: 100%; background: var(--success);"></div>
+                                </div>
+                                <span>${correctRate}%</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right;"><span class="badge ${correctRate > 90 ? 'badge-paid' : 'badge-unpaid'}">${correctRate > 90 ? 'Excellent' : 'Needs Review'}</span></td>
+                    </tr>`;
+            }).join('');
+        }
+
+        async function runReportPreview(loader) {
+            ReportViewer.setPreviewLoader(loader);
+            await loader();
+        }
+
+        async function renderReports(period) {
+            try {
+                // Fetch ALL raw data from backend in parallel
+                const [studentsRaw, meetingsRaw, convocationsRaw, allTransactionsRaw, allAttendanceRaw, fundData, expenseData] = await Promise.all([
+                    getUsers(),
+                    getMeetings(),
+                    getConvocations(),
+                    getTransactions(),
+                    getAttendance(),
+                    fetchFundEntriesReportDataForPeriod(period),
+                    fetchExpensesReportDataForPeriod(period),
+                ]);
+                
+                const students = studentsRaw || [];
+                const meetings = meetingsRaw || [];
+                const convocations = convocationsRaw || [];
+                const allTransactions = allTransactionsRaw || [];
+                const allAttendance = allAttendanceRaw || [];
+
+                const periodLabel = period.label;
+
+                // Count actual student members using case-insensitive role check
+                const activeStudents = students.filter(s => isStudentRole(s.role));
+                const activeMemberCount = activeStudents.filter(s => !s.isGraduated).length;
+
+                // 1. Transactions in selected period
+                const monthTransactions = allTransactions.filter(t => transactionInReportPeriod(t, period));
+                const paidIds = new Set(monthTransactions.map(t => t.student_id));
+
+                const paidForMonth = activeStudents.filter(s => paidIds.has(s.id)).length;
+                const unpaidForMonth = Math.max(0, activeStudents.length - paidForMonth);
+                const monthCollectedTotal = monthTransactions.reduce(
+                    (sum, t) => sum + parseTxnAmount(t.amount), 0
+                );
+
+                // 2. Meetings in period
+                const periodMeetings = meetings.filter(m => meetingInReportPeriod(m, period));
+                const totalMeetingsCount = periodMeetings.length;
+                const completedMeetingsCount = periodMeetings.filter(m => isMeetingAttendanceFinalized(m)).length;
+
+                const filteredMeetings = periodMeetings.filter(m => isMeetingAttendanceFinalized(m));
+
+                const meetingRates = filteredMeetings
+                    .map(meet => getMeetingParticipationRate(meet, activeStudents, allAttendance))
+                    .filter(rate => rate !== null);
+
+                const avgAttendancePct = meetingRates.length > 0
+                    ? Math.round(meetingRates.reduce((sum, r) => sum + r, 0) / meetingRates.length)
+                    : 0;
+
+                const moneyInTotal = (!fundData?.error && fundData?.total != null) ? Number(fundData.total) : 0;
+                const expenseTotal = (!expenseData?.error && expenseData?.total != null) ? Number(expenseData.total) : 0;
+
+                const meetingsHint = document.getElementById('meetings-period-hint');
+                if (meetingsHint) meetingsHint.textContent = period.mode === 'range' && period.months.length > 1
+                    ? `Period: ${periodLabel} — overview by month, then each meeting with present / absent / excused lists.`
+                    : `Period: ${periodLabel} — all meetings listed; export each meeting for attendance detail.`;
+                renderMeetingsPanel(period, periodMeetings, activeStudents, allAttendance);
+                updateGradEmploymentPeriodHint(periodLabel);
+
+                const kpiExportBtn = (type, label) => `
+                    <button type="button" class="kpi-export-btn" data-finance-export="${type}" title="Export ${label}">
+                        <i class="fa-solid fa-file-export"></i> Export
+                    </button>`;
+                const meetingExportBtn = (type, label) => `
+                    <button type="button" class="kpi-export-btn" data-meeting-export="${type}" title="Export ${label}">
+                        <i class="fa-solid fa-file-export"></i> Export
+                    </button>`;
+
+                // Render meeting KPIs
+                const kpisContainer = document.getElementById('report-kpis');
+                if (kpisContainer) {
+                    kpisContainer.innerHTML = `
+                        <div class="stat-card meeting-stat-card">
+                            <div class="meeting-stat-card-body">
+                                <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+                                <div class="stat-info"><h4>${totalMeetingsCount}</h4><p><span class="kpi-label-main">Total Meetings</span><span class="kpi-label-period">${completedMeetingsCount} completed · ${periodLabel}</span></p></div>
+                            </div>
+                            <div class="kpi-card-actions">${meetingExportBtn('meetings', 'meetings list')}</div>
+                        </div>
+                        <div class="stat-card meeting-stat-card">
+                            <div class="meeting-stat-card-body">
+                                <div class="stat-icon icon-blue"><i class="fa-solid fa-calendar-check"></i></div>
+                                <div class="stat-info"><h4>${avgAttendancePct}%</h4><p><span class="kpi-label-main">Avg Attendance</span><span class="kpi-label-period">${periodLabel}</span></p></div>
+                            </div>
+                            <div class="kpi-card-actions">${meetingExportBtn('attendance', 'attended & missed by dufcad')}</div>
+                        </div>
+                    `;
+                }
+
+                const financeKpis = document.getElementById('finance-kpis');
+                if (financeKpis) {
+                    financeKpis.innerHTML = `
+                        <div class="stat-card finance-stat-card">
+                            <div class="finance-stat-card-body">
+                                <div class="stat-icon icon-red"><i class="fa-solid fa-file-circle-xmark"></i></div>
+                                <div class="stat-info"><h4>${unpaidForMonth}</h4><p><span class="kpi-label-main">Unpaid Units</span><span class="kpi-label-period">${periodLabel} · by dufcad</span></p></div>
+                            </div>
+                            <div class="kpi-card-actions">${kpiExportBtn('unpaid', 'unpaid dufcad report')}</div>
+                        </div>
+                        <div class="stat-card finance-stat-card">
+                            <div class="finance-stat-card-body">
+                                <div class="stat-icon icon-green"><i class="fa-solid fa-file-circle-check"></i></div>
+                                <div class="stat-info"><h4>${paidForMonth}</h4><p><span class="kpi-label-main">Paid Members</span><span class="kpi-label-period">${periodLabel} · by dufcad</span></p></div>
+                            </div>
+                            <div class="kpi-card-actions">${kpiExportBtn('paid', 'paid dufcad report')}</div>
+                        </div>
+                        <div class="stat-card finance-stat-card">
+                            <div class="finance-stat-card-body">
+                                <div class="stat-icon icon-green"><i class="fa-solid fa-sack-dollar"></i></div>
+                                <div class="stat-info"><h4>$${monthCollectedTotal.toFixed(2)}</h4><p><span class="kpi-label-main">Collected</span><span class="kpi-label-period">${periodLabel}</span></p></div>
+                            </div>
+                            <div class="kpi-card-actions">${kpiExportBtn('collected', 'collections report')}</div>
+                        </div>
+                        <div class="stat-card finance-stat-card">
+                            <div class="finance-stat-card-body">
+                                <div class="stat-icon icon-green"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                                <div class="stat-info"><h4>$${moneyInTotal.toFixed(2)}</h4><p><span class="kpi-label-main">Money In</span><span class="kpi-label-period">${periodLabel}</span></p></div>
+                            </div>
+                            <div class="kpi-card-actions">${kpiExportBtn('money-in', 'money in report')}</div>
+                        </div>
+                        <div class="stat-card finance-stat-card">
+                            <div class="finance-stat-card-body">
+                                <div class="stat-icon icon-red"><i class="fa-solid fa-receipt"></i></div>
+                                <div class="stat-info"><h4>$${expenseTotal.toFixed(2)}</h4><p><span class="kpi-label-main">Expenses</span><span class="kpi-label-period">${periodLabel}</span></p></div>
+                            </div>
+                            <div class="kpi-card-actions">${kpiExportBtn('expenses', 'expense report')}</div>
+                        </div>
+                    `;
+                }
+
+                window._reportsDashboardCache = {
+                    students: activeStudents,
+                    meetings,
+                    attendance: allAttendance,
+                    transactions: allTransactions,
+                    period,
+                    periodMeetings,
+                    periodLabel,
+                    paidForMonth,
+                    unpaidForMonth,
+                    monthCollectedTotal,
+                    moneyInTotal,
+                    expenseTotal,
+                    totalMeetingsCount,
+                    avgAttendancePct,
+                    activeMemberCount,
+                };
+
+                populateGraduatedConvocationFilter(convocations);
+                await refreshGraduatedEmploymentKpis();
+
+                renderMonthBreakdown(period, activeStudents, allTransactions, meetings, allAttendance, fundData, expenseData);
+
+                const paymentChartTitle = document.getElementById('payment-chart-title');
+                const paymentChartSubtitle = document.getElementById('payment-chart-subtitle');
+                if (paymentChartTitle) {
+                    paymentChartTitle.textContent = period.mode === 'range' && period.months.length > 1
+                        ? 'Collections by Month'
+                        : 'Collections by Convocation';
+                }
+                if (paymentChartSubtitle) {
+                    paymentChartSubtitle.textContent = period.mode === 'range' && period.months.length > 1
+                        ? 'Total collected each month in chronological order.'
+                        : 'Payment rates across all convocations.';
+                }
+
+                // 3. Payment chart — by convocation (single month) or by month (range)
+                const paymentChartContainer = document.getElementById('payment-chart');
+                if (paymentChartContainer) {
+                    let paymentBars = [];
+                    if (period.mode === 'range') {
+                        const rawBars = period.months.map((pm) => {
+                            const tx = allTransactions.filter(
+                                (t) =>
+                                    transactionInReportPeriod(t, singleMonthPeriod(pm))
+                            );
+                            const collected = tx.reduce((sum, t) => sum + parseTxnAmount(t.amount), 0);
+                            return { label: `${pm.name} ${pm.year}`, collected };
+                        });
+                        const maxCollected = Math.max(...rawBars.map((b) => b.collected), 1);
+                        paymentBars = rawBars.map((b) => ({
+                            label: `${b.label} · $${b.collected.toFixed(0)}`,
+                            value: Math.round((b.collected / maxCollected) * 100),
+                        }));
+                        renderBarChart(paymentChartContainer, paymentBars, { valueKey: 'value', labelKey: 'label' });
+                    } else {
+                        paymentBars = convocations.map(conv => {
+                            const cohortStudents = activeStudents.filter(s =>
+                                s.convocation && s.convocation.toLowerCase() === conv.name.toLowerCase()
+                            );
+                            const correctTotal = cohortStudents.length;
+                            const correctPaid = cohortStudents.filter(s => paidIds.has(s.id)).length;
+                            const correctRate = correctTotal > 0 ? Math.round((correctPaid / correctTotal) * 100) : 0;
+                            return { label: conv.name, value: correctRate };
+                        });
+                        renderBarChart(paymentChartContainer, paymentBars, { valueKey: 'value', labelKey: 'label' });
+                    }
+                }
+
+                // 4. Render Attendance Chart - Show REAL meetings from backend
+                // Only show meetings from the selected month — never fall back to other months
+                const attendanceChartContainer = document.getElementById('attendance-chart');
+                const attendanceBadge = document.getElementById('attendance-badge');
+                
+                if (attendanceChartContainer) {
+                    if (period.mode === 'range' && period.months.length > 1) {
+                        const attBars = period.months.map((pm) => {
+                            const stats = monthMeetingStats(pm, meetings, activeStudents, allAttendance);
+                            return { label: `${pm.name}`, value: stats.avgAtt };
+                        });
+                        if (attendanceBadge) {
+                            attendanceBadge.textContent = 'By Month';
+                        }
+                        renderBarChart(attendanceChartContainer, attBars, {
+                            valueKey: 'value',
+                            labelKey: 'label',
+                            color: 'linear-gradient(180deg, #60a5fa 0%, #2563eb 100%)',
+                        });
+                    } else {
+                    // Only use meetings that belong to the selected month
+                    let chartMeetings = filteredMeetings.slice().sort((a, b) => a.date.localeCompare(b.date));
+                    // Cap at 5 most recent within the filtered month
+                    chartMeetings = chartMeetings.slice(-5);
+
+                    // Update badge to reflect actual count
+                    if (attendanceBadge) {
+                        if (chartMeetings.length > 0) {
+                            attendanceBadge.textContent = chartMeetings.length === 1 
+                                ? '1 Meeting' 
+                                : `Last ${chartMeetings.length} Meetings`;
+                        } else {
+                            attendanceBadge.textContent = 'No Meetings';
+                        }
+                    }
+
+                    if (chartMeetings.length > 0) {
+                        const attBars = chartMeetings
+                            .filter(m => isMeetingAttendanceFinalized(m))
+                            .map(m => {
+                            const percentage = getMeetingParticipationRate(m, activeStudents, allAttendance) ?? 0;
+                            const label = m.date ? m.date.split('-').slice(1).join('/') : 'Meeting';
+                            return { label, value: percentage };
+                        });
+                        renderBarChart(attendanceChartContainer, attBars, {
+                            valueKey: 'value',
+                            labelKey: 'label',
+                            color: 'linear-gradient(180deg, #60a5fa 0%, #2563eb 100%)',
+                        });
+                    } else {
+                        attendanceChartContainer.innerHTML = `
+                            <div style="width:100%; text-align:center; color:var(--text-muted); padding: 2rem 1rem; display:flex; flex-direction:column; align-items:center; gap:0.5rem; margin:auto;">
+                                <i class="fa-solid fa-calendar-xmark" style="font-size:2rem; opacity:0.4;"></i>
+                                <span style="font-size:0.9rem;">No meetings in ${periodLabel}</span>
+                            </div>`;
+                    }
+                    }
+                }
+
+                // 5. Convocation Performance Matrix - Real data from backend
+                const paymentsTbody = document.getElementById('payments-table-body');
+                if (paymentsTbody) {
+                    if (period.mode === 'range' && period.months.length > 1) {
+                        paymentsTbody.innerHTML = period.months.map((pm) => {
+                            const mp = singleMonthPeriod(pm);
+                            const tx = allTransactions.filter((t) => transactionInReportPeriod(t, mp));
+                            const monthPaidIds = new Set(tx.map((t) => t.student_id));
+                            return `
+                                <tr class="report-month-section-head">
+                                    <td colspan="5">${pm.name} ${pm.year}</td>
+                                </tr>
+                                ${convocationMatrixRows(activeStudents, convocations, monthPaidIds)}`;
+                        }).join('');
+                    } else {
+                        paymentsTbody.innerHTML = convocationMatrixRows(activeStudents, convocations, paidIds);
+                    }
+                }
+
+                // 6. Meetings Table — all meetings in period; export when attendance is finalized
+                const meetingsTbody = document.getElementById('meetings-table-body');
+                if (meetingsTbody) {
+                    const sortedPeriodMeetings = [...periodMeetings].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    const meetingRowHtml = (m) => {
+                        const finalized = isMeetingAttendanceFinalized(m);
+                        const reportData = finalized
+                            ? buildSingleMeetingReportData(m, activeStudents, allAttendance)
+                            : null;
+                        const attendedCount = reportData ? reportData.attended_count : '—';
+                        const missedCount = reportData ? (reportData.absent_count ?? reportData.missed_count) : '—';
+                        const statusBadge = finalized
+                            ? '<span class="badge badge-paid">Completed</span>'
+                            : '<span class="badge badge-unpaid">Pending</span>';
+                        const exportBtn = finalized
+                            ? `<button type="button" class="btn btn-outline btn-sm meeting-report-btn" data-meeting-id="${m.id}" title="View & export meeting report" aria-label="Export meeting report">
+                                    <i class="fa-solid fa-file-export"></i>
+                               </button>`
+                            : '<span style="color:var(--text-muted);font-size:0.8rem;">—</span>';
+
+                        return `
+                            <tr>
+                                <td>${m.date}</td>
+                                <td><strong>${m.topic}</strong></td>
+                                <td>${m.presenter}</td>
+                                <td style="text-align: center;"><span class="badge badge-paid">${attendedCount}</span></td>
+                                <td style="text-align: center;"><span class="badge badge-unpaid">${missedCount}</span></td>
+                                <td style="text-align: center;">${statusBadge}</td>
+                                <td style="text-align: right;">${exportBtn}</td>
+                            </tr>`;
+                    };
+
+                    if (period.mode === 'range' && period.months.length > 1) {
+                        meetingsTbody.innerHTML = period.months.map((pm) => {
+                            const mp = singleMonthPeriod(pm);
+                            const monthMeetings = sortedPeriodMeetings.filter((m) => meetingInReportPeriod(m, mp));
+                            if (!monthMeetings.length) {
+                                return `
+                                    <tr class="report-month-section-head"><td colspan="7">${pm.name} ${pm.year}</td></tr>
+                                    <tr><td colspan="7" style="text-align:center;padding:1rem;color:var(--text-muted);">No meetings this month</td></tr>`;
+                            }
+                            return `
+                                <tr class="report-month-section-head"><td colspan="7">${pm.name} ${pm.year}</td></tr>
+                                ${monthMeetings.map(meetingRowHtml).join('')}`;
+                        }).join('');
+                    } else {
+                        meetingsTbody.innerHTML = sortedPeriodMeetings.length > 0
+                            ? sortedPeriodMeetings.map(meetingRowHtml).join('')
+                            : '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No meetings for this period</td></tr>';
+                    }
+                }
+            } catch (err) {
+                console.error("Error rendering Visual Dashboard reports:", err);
+            }
+        }
+        window.renderReports = renderReports;
+
+        async function openMeetingReport(meetingId) {
+            const id = Number(meetingId);
+            if (!id) return;
+
+            let data = null;
+            const cache = window._reportsDashboardCache;
+            const meet = cache?.meetings?.find((m) => m.id === id);
+            if (meet && isMeetingAttendanceFinalized(meet)) {
+                data = buildSingleMeetingReportData(meet, cache.students, cache.attendance);
+            } else {
+                const remote = await fetchMeetingAttendanceReportData(id);
+                if (remote?.error) {
+                    Components.showToast(remote.error, 'error');
+                    return;
+                }
+                data = remote;
+            }
+
+            if (!data) {
+                Components.showToast('Attendance has not been recorded for this meeting yet.', 'error');
+                return;
+            }
+
+            if (typeof ReportViewer !== 'undefined') {
+                ReportViewer.setPreviewLoader(null);
+                ReportViewer.showMeetingAttendance(data);
+            }
+        }
+        window.openMeetingReport = openMeetingReport;
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.meeting-report-btn');
+            if (!btn) return;
+            e.preventDefault();
+            openMeetingReport(btn.dataset.meetingId);
+        });
+
+        function populateGraduatedConvocationFilter(convocations) {
+            const sel = document.getElementById('grad-report-convocation');
+            if (!sel) return;
+            const current = sel.value || 'all';
+            const names = (convocations || []).map(c => c.name).filter(Boolean);
+            sel.innerHTML = '<option value="all">All Convocations</option>'
+                + names.map(n => `<option value="${n}">${n}</option>`).join('');
+            if ([...sel.options].some(o => o.value === current)) sel.value = current;
+        }
+
+        function entryInReportPeriod(entry, period) {
+            if (!entry || !period) return true;
+            if (period.mode === 'all') return true;
+            const yr = parseInt(entry.year, 10);
+            const m = String(entry.month || '').toLowerCase();
+            if (period.mode === 'single') {
+                return m === period.month.toLowerCase() && yr === period.year;
+            }
+            return (period.months || []).some((pm) => pm.name.toLowerCase() === m && pm.year === yr);
+        }
+
+        function buildFinanceReportForPeriod(period, transactions, fundEntries, expenses) {
+            const txns = (transactions || []).filter((t) => transactionInReportPeriod(t, period));
+            const funds = (fundEntries || []).filter((e) => entryInReportPeriod(e, period));
+            const exps = (expenses || []).filter((e) => entryInReportPeriod(e, period));
+            const totalCollected = sumTxnCollected(txns);
+            const totalMoneyIn = sumFundEntriesTotal(funds);
+            const totalExpenses = sumExpenseTotal(exps);
+            const sortedTxns = txns.slice().sort((a, b) => {
+                const ay = Number(a.year) || 0;
+                const by = Number(b.year) || 0;
+                if (ay !== by) return ay - by;
+                return String(a.month || '').localeCompare(String(b.month || ''));
+            });
+            return {
+                periodLabel: period?.label || 'Selected period',
+                totalCollected,
+                totalMoneyIn,
+                totalExpenses,
+                netBalance: totalCollected + totalMoneyIn - totalExpenses,
+                collectionCount: txns.length,
+                moneyInCount: funds.length,
+                expenseCount: exps.length,
+                transactions: sortedTxns,
+                fundEntries: funds.slice().sort((a, b) => (Number(a.year) || 0) - (Number(b.year) || 0)),
+                expenses: exps.slice().sort((a, b) => (Number(a.year) || 0) - (Number(b.year) || 0)),
+                generated: new Date().toUTCString(),
+            };
+        }
+
+        function requireOverviewPeriod() {
+            const period = getOverviewReportPeriod();
+            if (!period) {
+                Components.showToast('Choose a single month or a valid from–to range at the top.', 'error');
+                return null;
+            }
+            return period;
+        }
+
+        async function fetchApplicationStats() {
+            try {
+                const base = (typeof API_BASE !== 'undefined' ? API_BASE : 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
+                const res = await fetch(`${base}/api/applications/stats`);
+                if (!res.ok) return {};
+                return await res.json();
+            } catch {
+                return {};
+            }
+        }
+
+        async function fetchGraduatedEmploymentForMonthKey(monthKey, convocation = 'all', status = 'all') {
+            const base = (typeof API_BASE !== 'undefined' ? API_BASE : 'http://127.0.0.1:5000/api');
+            const qs = new URLSearchParams({
+                convocation: convocation || 'all',
+                status: status || 'all',
+                month_key: monthKey,
+            });
+            try {
+                const res = await fetch(`${base}/reports/graduated-employment-data?${qs}`);
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    return { error: err.error || 'Could not load graduated employment report.' };
+                }
+                return await res.json();
+            } catch {
+                return { error: 'Could not load graduated employment report.' };
+            }
+        }
+
+        async function buildGraduatedEmploymentReportForPeriod(period) {
+            const conv = document.getElementById('grad-report-convocation')?.value || 'all';
+            const status = document.getElementById('grad-report-status')?.value || 'all';
+
+            if (period.mode === 'range' && period.months?.length > 1) {
+                const parts = await Promise.all(
+                    period.months.map((pm) => fetchGraduatedEmploymentForMonthKey(monthKeyFromPm(pm), conv, status))
+                );
+                const monthSections = parts
+                    .map((data, i) => {
+                        if (!data || data.error) return null;
+                        const pm = period.months[i];
+                        return {
+                            ...data,
+                            periodLabel: `${pm.name} ${pm.year}`,
+                        };
+                    })
+                    .filter(Boolean);
+                if (!monthSections.length) {
+                    return { error: 'No graduated employment data for this period.' };
+                }
+                return {
+                    convocation: monthSections[0].convocation || 'All Convocations',
+                    convocation_filter: monthSections[0].convocation_filter || conv,
+                    status_filter: monthSections[0].status_filter || status,
+                    status_label: monthSections[0].status_label || 'All',
+                    periodLabel: period.label,
+                    generated: monthSections[0].generated || new Date().toUTCString(),
+                    isRange: true,
+                    monthSections,
+                };
+            }
+
+            if (period.mode === 'range' && period.months?.length === 1) {
+                const pm = period.months[0];
+                const data = await fetchGraduatedEmploymentForMonthKey(monthKeyFromPm(pm), conv, status);
+                if (data?.error) return data;
+                return { ...data, period_label: `${pm.name} ${pm.year}`, isRange: false };
+            }
+
+            const params = { convocation: conv, status };
+            if (period.mode === 'single' && period.singleVal) {
+                params.month_key = period.singleVal;
+            }
+            const base = (typeof API_BASE !== 'undefined' ? API_BASE : 'http://127.0.0.1:5000/api');
+            const qs = new URLSearchParams(params);
+            try {
+                const res = await fetch(`${base}/reports/graduated-employment-data?${qs}`);
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    return { error: err.error || 'Could not load graduated employment report.' };
+                }
+                const data = await res.json();
+                return { ...data, isRange: false };
+            } catch {
+                return { error: 'Could not load graduated employment report.' };
+            }
+        }
+
+        async function openGraduatedEmploymentPreview() {
+            const period = requireOverviewPeriod();
+            if (!period) return null;
+            const data = await buildGraduatedEmploymentReportForPeriod(period);
+            if (data?.error) {
+                Components.showToast(data.error, 'error');
+                return null;
+            }
+            ReportViewer.showGraduatedEmployment(data);
+            return data;
+        }
+
+        async function fetchProgramYears() {
+            try {
+                const base = (typeof API_BASE !== 'undefined' ? API_BASE : 'http://127.0.0.1:5000/api').replace(/\/api$/, '');
+                const [qRes, sRes] = await Promise.all([
+                    fetch(`${base}/api/applications/quran-contest/years-history`),
+                    fetch(`${base}/api/applications/summer-course/years-history`),
+                ]);
+                const quran = qRes.ok ? await qRes.json() : [];
+                const summer = sRes.ok ? await sRes.json() : [];
+                const pickYears = (rows) => (Array.isArray(rows) ? rows : [])
+                    .map((row) => parseInt(row.year ?? row, 10))
+                    .filter((y) => !Number.isNaN(y));
+                return { quranYears: pickYears(quran), summerYears: pickYears(summer) };
+            } catch {
+                return { quranYears: [], summerYears: [] };
+            }
+        }
+
+        function monthKeyFromPm(pm) {
+            return `${pm.year}-${String((pm.monthIndex ?? 0) + 1).padStart(2, '0')}`;
+        }
+
+        function programsThroughMonth(years, pm) {
+            return (years || []).filter((y) => y <= pm.year).length;
+        }
+
+        function buildSystemDashboardMetrics(stats, apps, employment, monthMeetingsCount, quranCount, summerCount) {
+            return {
+                total_members: stats?.totalStudents ?? 0,
+                total_convocations: stats?.totalConvocations ?? 0,
+                quran_contests: quranCount ?? apps?.quran_total_contests ?? 0,
+                summer_programs: summerCount ?? apps?.summer_total_programs ?? 0,
+                total_meetings: monthMeetingsCount ?? stats?.totalMeetings ?? 0,
+                graduated: employment?.graduated_count ?? employment?.total ?? 0,
+                working: employment?.working_count ?? 0,
+                not_working: employment?.not_working_count ?? 0,
+                active_members: stats?.onProgressStudents ?? 0,
+            };
+        }
+
+        async function buildSystemReportSectionForMonth(pm, stats, apps, meetings, programYears) {
+            const monthKey = monthKeyFromPm(pm);
+            const employment = await fetchGraduatedEmploymentForMonthKey(monthKey);
+            const mp = singleMonthPeriod(pm);
+            const monthMeetings = (meetings || []).filter((m) => meetingInReportPeriod(m, mp));
+            return {
+                periodLabel: `${pm.name} ${pm.year}`,
+                ...buildSystemDashboardMetrics(
+                    stats,
+                    apps,
+                    employment?.error ? null : employment,
+                    monthMeetings.length,
+                    apps?.quran_total_contests ?? (programYears.quranYears || []).length,
+                    apps?.summer_total_programs ?? (programYears.summerYears || []).length,
+                ),
+            };
+        }
+
+        async function buildSystemReportPayload(period) {
+            const [stats, apps, meetings, programYears] = await Promise.all([
+                getStats('', ''),
+                fetchApplicationStats(),
+                getMeetings(),
+                fetchProgramYears(),
+            ]);
+
+            if (period.mode === 'all') {
+                return {
+                    periodLabel: period.label,
+                    generated: new Date().toUTCString(),
+                    isRange: false,
+                    dashboard: {
+                        periodLabel: period.label,
+                        ...buildSystemDashboardMetrics(
+                            stats,
+                            apps,
+                            null,
+                            (meetings || []).filter((m) => meetingInReportPeriod(m, period)).length,
+                            apps?.quran_total_contests ?? (programYears.quranYears || []).length,
+                            apps?.summer_total_programs ?? (programYears.summerYears || []).length,
+                        ),
+                    },
+                };
+            }
+
+            if (period.mode === 'range' && period.months?.length > 1) {
+                const monthSections = await Promise.all(
+                    period.months.map((pm) => buildSystemReportSectionForMonth(pm, stats, apps, meetings, programYears))
+                );
+                return {
+                    periodLabel: period.label,
+                    generated: new Date().toUTCString(),
+                    isRange: true,
+                    monthSections,
+                };
+            }
+
+            const pm = period.mode === 'range' ? period.months[0] : {
+                name: period.month,
+                year: period.year,
+                monthIndex: period.monthIndex,
+            };
+            const section = await buildSystemReportSectionForMonth(pm, stats, apps, meetings, programYears);
+            return {
+                periodLabel: period.label,
+                generated: new Date().toUTCString(),
+                isRange: false,
+                dashboard: section,
+            };
+        }
+
+        async function openWholeSystemReportPreview() {
+            const period = requireOverviewPeriod();
+            if (!period) return null;
+
+            const payload = await buildSystemReportPayload(period);
+
+            if (typeof ReportViewer !== 'undefined') {
+                ReportViewer.showWholeSystemReport(payload);
+            }
+            return payload;
+        }
+
+        async function openFinancePreviewForPeriod() {
+            const period = requireOverviewPeriod();
+            if (!period) return null;
+            const cache = window._reportsDashboardCache || {};
+            const [transactions, fundEntries, expenses, dufcadMembers] = await Promise.all([
+                cache.transactions ? Promise.resolve(cache.transactions) : getTransactions(),
+                getFundEntries(),
+                getExpenses(),
+                fetchDufcadMemberListsForPeriod(period),
+            ]);
+            const data = {
+                ...buildFinanceReportForPeriod(period, transactions, fundEntries, expenses),
+                dufcadMembers,
+            };
+            if (typeof ReportViewer !== 'undefined') {
+                ReportViewer.showFinanceSummary(data);
+            }
+            return data;
+        }
+
+        async function openFinanceCardPreview(type) {
+            const period = requireOverviewPeriod();
+            if (!period) return null;
+            if (typeof ReportViewer === 'undefined') return null;
+
+            if (type === 'expenses') {
+                const data = await fetchExpensesReportDataForPeriod(period);
+                if (data?.error) { Components.showToast(data.error, 'error'); return null; }
+                ReportViewer.showExpenses({ ...data, periodLabel: data.periodLabel || period.label });
+                return data;
+            }
+            if (type === 'money-in') {
+                const data = await fetchFundEntriesReportDataForPeriod(period);
+                if (data?.error) { Components.showToast(data.error, 'error'); return null; }
+                ReportViewer.showFundEntries({ ...data, periodLabel: data.periodLabel || period.label });
+                return data;
+            }
+            if (type === 'collected') {
+                const cache = window._reportsDashboardCache || {};
+                const transactions = cache.transactions || await getTransactions();
+                const data = buildFinanceReportForPeriod(period, transactions, [], []);
+                ReportViewer.showCollectionsSummary(data);
+                return data;
+            }
+            if (type === 'paid' || type === 'unpaid') {
+                const data = await fetchDufcadMemberListsForPeriod(period);
+                if (!hasDufcadMemberReportData(data)) {
+                    Components.showToast('No dufcad payment data for this period.', 'error');
+                    return null;
+                }
+                if (type === 'unpaid' && data.isRange && data.monthSections?.length) {
+                    ReportViewer.showUnpaidAllDufcads(data);
+                } else {
+                    ReportViewer.showDufcadMemberReport({ ...data, focus: type });
+                }
+                return data;
+            }
+            return openFinancePreviewForPeriod();
+        }
+
+        async function buildMeetingsFullReportPayload(period, meetings, students, attendance) {
+            const periodMeetings = (meetings || [])
+                .filter((m) => meetingInReportPeriod(m, period))
+                .slice()
+                .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+
+            const monthSections = (typeof reportPeriodMonths === 'function' ? reportPeriodMonths(period) : (period.months || [])).map((pm) => {
+                const mp = singleMonthPeriod(pm);
+                const monthMeetings = periodMeetings.filter((m) => meetingInReportPeriod(m, mp));
+                return {
+                    periodLabel: `${pm.name} ${pm.year}`,
+                    meeting_count: monthMeetings.length,
+                    meetings: monthMeetings.map((m) => ({
+                        date: m.date,
+                        topic: m.topic,
+                        presenter: m.presenter || '—',
+                        place: m.place || '—',
+                        convocation: m.convocation || 'All',
+                        target_audience: (m.target_audience || 'active').toLowerCase() === 'graduated'
+                            ? 'Graduated members'
+                            : 'Active members',
+                    })),
+                };
+            });
+
+            const meetingDetails = periodMeetings
+                .filter((m) => isMeetingAttendanceFinalized(m))
+                .map((m) => ({
+                    meeting: m,
+                    report: buildSingleMeetingReportData(m, students, attendance),
+                }))
+                .filter((item) => item.report);
+
+            const finalizedMeetings = periodMeetings.filter((m) => isMeetingAttendanceFinalized(m));
+            const missedAttendedMembers = (students || [])
+                .map((s) => {
+                    const stats = typeof getMeetingAttendanceStats === 'function'
+                        ? getMeetingAttendanceStats(s, finalizedMeetings, attendance)
+                        : { attended: 0, missed: 0, total: 0 };
+                    return {
+                        id: s.id,
+                        name: s.name || '—',
+                        phone: s.phone || '—',
+                        convocation: s.convocation || '—',
+                        missed: stats.missed || 0,
+                        attended: stats.attended || 0,
+                        total: stats.total || 0,
+                    };
+                })
+                .filter((row) => row.total > 0);
+
+            return {
+                periodLabel: period.label,
+                isRange: period.mode === 'range' && period.months.length > 1,
+                monthSections,
+                meetingDetails,
+                missedAttendedMembers,
+                totalMeetings: periodMeetings.length,
+                generated: new Date().toLocaleString('en-GB'),
+            };
+        }
+
+        function renderMeetingsPanel(period, periodMeetings, students, attendance) {
+            const overviewEl = document.getElementById('meetings-month-overview');
+            const tbody = document.getElementById('meetings-list-table-body');
+            const listHint = document.getElementById('meetings-list-hint');
+            const periodLabel = period?.label || '';
+
+            if (overviewEl) {
+                if (period?.mode === 'all') {
+                    overviewEl.innerHTML = `
+                    <div class="meetings-month-card">
+                        <h4>All time</h4>
+                        <p>${periodMeetings.length ? `${periodMeetings.length} meeting${periodMeetings.length === 1 ? '' : 's'} total` : 'No meetings yet'}</p>
+                    </div>`;
+                } else {
+                    overviewEl.innerHTML = (period?.months || []).map((pm) => {
+                        const mp = singleMonthPeriod(pm);
+                        const count = (periodMeetings || []).filter((m) => meetingInReportPeriod(m, mp)).length;
+                        return `
+                        <div class="meetings-month-card">
+                            <h4>${pm.name} ${pm.year}</h4>
+                            <p>${count ? `${count} meeting${count === 1 ? '' : 's'} in this month` : 'No meetings this month'}</p>
+                        </div>`;
+                    }).join('') || `<div class="meetings-month-card"><p>No period selected.</p></div>`;
+                }
+            }
+
+            if (listHint) {
+                listHint.textContent = `${periodMeetings.length} meeting(s) in ${periodLabel} — use Export on each row for presenter, place, dufcad, target, and attendance.`;
+            }
+
+            if (!tbody) return;
+
+            const sorted = [...(periodMeetings || [])].sort((a, b) => String(b.date).localeCompare(String(a.date)));
+            const meetingRowHtml = (m) => {
+                const finalized = isMeetingAttendanceFinalized(m);
+                const reportData = finalized ? buildSingleMeetingReportData(m, students, attendance) : null;
+                const presentCount = reportData ? reportData.attended_count : '—';
+                const absentCount = reportData ? (reportData.absent_count ?? reportData.missed_count) : '—';
+                const statusBadge = finalized
+                    ? '<span class="badge badge-paid">Completed</span>'
+                    : '<span class="badge badge-unpaid">Pending</span>';
+                const exportBtn = finalized
+                    ? `<button type="button" class="btn btn-outline btn-sm meeting-report-btn" data-meeting-id="${m.id}" title="Export meeting attendance">
+                            <i class="fa-solid fa-file-export"></i>
+                       </button>`
+                    : '<span style="color:var(--text-muted);font-size:0.8rem;">—</span>';
+                const convLabel = !m.convocation || m.convocation === 'All' ? 'All' : m.convocation;
+                const targetLabel = (m.target_audience || 'active').toLowerCase() === 'graduated' ? 'Graduated' : 'Active';
+
+                return `
+                    <tr>
+                        <td>${m.date || '—'}</td>
+                        <td><strong>${m.topic || '—'}</strong></td>
+                        <td>${m.presenter || '—'}</td>
+                        <td>${m.place || '—'}</td>
+                        <td>${convLabel} · ${targetLabel}</td>
+                        <td class="text-center"><span class="badge badge-paid">${presentCount}</span></td>
+                        <td class="text-center"><span class="badge badge-unpaid">${absentCount}</span></td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td class="text-right">${exportBtn}</td>
+                    </tr>`;
+            };
+
+            if (period.mode === 'range' && period.months.length > 1) {
+                tbody.innerHTML = period.months.map((pm) => {
+                    const mp = singleMonthPeriod(pm);
+                    const monthMeetings = sorted.filter((m) => meetingInReportPeriod(m, mp));
+                    const rows = monthMeetings.length
+                        ? monthMeetings.map(meetingRowHtml).join('')
+                        : `<tr><td colspan="9" style="text-align:center;padding:1rem;color:var(--text-muted);">No meetings this month</td></tr>`;
+                    return `
+                        <tr class="report-month-section-head"><td colspan="9">${pm.name} ${pm.year}</td></tr>
+                        ${rows}`;
+                }).join('');
+            } else {
+                tbody.innerHTML = sorted.length
+                    ? sorted.map(meetingRowHtml).join('')
+                    : `<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">No meetings for this period</td></tr>`;
+            }
+        }
+
+        async function buildMeetingsPeriodDufcadData(meetings, students, attendance, periodLabel) {
+            const finalized = (meetings || []).filter((m) => isMeetingAttendanceFinalized(m));
+            const dufcadMap = {};
+            const meetingSummaries = [];
+
+            finalized.forEach((meet) => {
+                const report = buildSingleMeetingReportData(meet, students, attendance);
+                if (!report) return;
+                meetingSummaries.push({
+                    date: meet.date,
+                    topic: meet.topic,
+                    presenter: meet.presenter || '—',
+                    convocation: report.convocation,
+                    target_audience: report.target_audience,
+                    attended_count: report.attended_count,
+                    missed_count: report.absent_count ?? report.missed_count,
+                });
+                const append = (list, bucket, meetMeta) => {
+                    (list || []).forEach((m) => {
+                        const duf = m.convocation || '—';
+                        if (!dufcadMap[duf]) {
+                            dufcadMap[duf] = { name: duf, attended: [], missed: [] };
+                        }
+                        dufcadMap[duf][bucket].push({
+                            ...m,
+                            meeting_date: meetMeta.date,
+                            meeting_topic: meetMeta.topic,
+                            target_audience: meetMeta.target_audience,
+                        });
+                    });
+                };
+                append(report.attended, 'attended', report);
+                append(report.missed, 'missed', report);
+            });
+
+            const dufcads = Object.values(dufcadMap).sort((a, b) => a.name.localeCompare(b.name));
+            return {
+                periodLabel,
+                meetings: meetingSummaries,
+                dufcads,
+                grand_attended: dufcads.reduce((s, d) => s + (d.attended || []).length, 0),
+                grand_missed: dufcads.reduce((s, d) => s + (d.missed || []).length, 0),
+                meeting_count: finalized.length,
+                generated: new Date().toUTCString(),
+            };
+        }
+
+        async function openMeetingsPreview(kind) {
+            const period = requireOverviewPeriod();
+            if (!period) return null;
+            const cache = window._reportsDashboardCache || {};
+            const students = cache.students || [];
+            const meetings = (cache.periodMeetings || cache.meetings || []).filter((m) => meetingInReportPeriod(m, period));
+            const attendance = cache.attendance || [];
+
+            if (typeof ReportViewer === 'undefined') return null;
+
+            if (kind === 'all') {
+                const payload = await buildMeetingsFullReportPayload(period, meetings, students, attendance);
+                ReportViewer.showMeetingsFullReport(payload);
+                return payload;
+            }
+
+            const dufcadData = await buildMeetingsPeriodDufcadData(meetings, students, attendance, period.label);
+            const data = {
+                periodLabel: period.label,
+                meetings,
+                students,
+                attendance,
+                dufcadData,
+                generated: new Date().toUTCString(),
+            };
+            if (kind === 'attendance') {
+                ReportViewer.showMeetingsDufcadAttendanceReport({ ...dufcadData, focus: 'all' });
+            } else {
+                ReportViewer.showMeetingsPeriodSummary(data);
+            }
+            return data;
+        }
+
+        function financeExportFilename() {
+            const period = getOverviewReportPeriod();
+            const slug = period ? period.label.replace(/\s+/g, '_').replace(/–/g, 'to') : 'period';
+            return `HSF_Finance_Report_${slug}`;
+        }
+
+        function meetingsExportFilename() {
+            const period = getOverviewReportPeriod();
+            const slug = period ? period.label.replace(/\s+/g, '_').replace(/–/g, 'to') : 'period';
+            return `HSF_Meetings_Report_${slug}`;
+        }
+
+        async function runPreviewExport(loader, filenameBase, previewTitle) {
+            try {
+                await runReportPreview(loader);
+            } catch {
+                Components.showToast('Could not load report.', 'error');
+                return;
+            }
+            const el = document.querySelector('#report-preview-body .report-sheet');
+            if (!el) return;
+            return { el, filenameBase, previewTitle };
+        }
+
+        function bindSectionExportMenu(toggleId, menuId, loader, filenameBase, previewTitle) {
+            ReportExport.initDropdown(document.getElementById(toggleId), document.getElementById(menuId));
+            const menu = document.getElementById(menuId);
+            if (!menu || menu.dataset.exportActionsBound) return;
+            menu.dataset.exportActionsBound = '1';
+            menu.querySelectorAll('.export-item').forEach((item) => {
+                item.addEventListener('click', async () => {
+                    menu.classList.remove('active');
+                    const action = item.dataset.exportAction;
+                    const base = typeof filenameBase === 'function' ? filenameBase() : filenameBase;
+                    const title = typeof previewTitle === 'function' ? previewTitle() : previewTitle;
+                    const ctx = await runPreviewExport(loader, base, title);
+                    if (!ctx) return;
+                    if (action === 'print') await ReportExport.printElement(ctx.el);
+                    else if (action === 'image') await ReportExport.downloadImage(ctx.el, ctx.filenameBase);
+                    else if (action === 'pdf') await ReportExport.previewBeforeDownload(ctx.el, ctx.filenameBase, ctx.previewTitle);
+                });
+            });
+        }
+
+        document.getElementById('finance-kpis')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-finance-export]');
+            if (!btn) return;
+            e.preventDefault();
+            runReportPreview(() => openFinanceCardPreview(btn.dataset.financeExport));
+        });
+
+        document.getElementById('report-kpis')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-meeting-export]');
+            if (!btn) return;
+            e.preventDefault();
+            runReportPreview(() => openMeetingsPreview(btn.dataset.meetingExport));
+        });
+
+        function getGraduatedReportQueryParams() {
+            const conv = document.getElementById('grad-report-convocation')?.value || 'all';
+            const status = document.getElementById('grad-report-status')?.value || 'all';
+            const params = { convocation: conv, status };
+            const period = getOverviewReportPeriod();
+            updateGradEmploymentPeriodHint(period?.label || '');
+            if (period?.mode === 'single' && period.singleVal) {
+                params.month_key = period.singleVal;
+            } else if (period?.mode === 'range' && period.fromVal && period.toVal) {
+                params.month_from = period.fromVal;
+                params.month_to = period.toVal;
+            }
+            return params;
+        }
+
+        async function fetchGraduatedEmploymentReportData() {
+            const base = (typeof API_BASE !== 'undefined' ? API_BASE : 'http://127.0.0.1:5000/api');
+            const qs = new URLSearchParams(getGraduatedReportQueryParams());
+            try {
+                const res = await fetch(`${base}/reports/graduated-employment-data?${qs}`);
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    return { error: err.error || 'Could not load graduated employment report.' };
+                }
+                return await res.json();
+            } catch {
+                return { error: 'Could not load graduated employment report.' };
+            }
+        }
+
+        async function refreshGraduatedEmploymentKpis() {
+            const data = await fetchGraduatedEmploymentReportData();
+            if (!window._reportsDashboardCache) window._reportsDashboardCache = {};
+            window._reportsDashboardCache.employment = data?.error ? null : data;
+        }
+
+        document.getElementById('grad-report-convocation')?.addEventListener('change', () => {
+            refreshGraduatedEmploymentKpis();
+            ReportViewer?.refreshPreviewIfOpen?.();
+        });
+        document.getElementById('grad-report-status')?.addEventListener('change', () => {
+            refreshGraduatedEmploymentKpis();
+            ReportViewer?.refreshPreviewIfOpen?.();
+        });
+
+        // ==========================================
+        // TAB SWITCHING & MEMBERS LIST
+        // ==========================================
+        function switchReportTab(tab) {
+            if (typeof ReportExport !== 'undefined' && typeof ReportExport.closeAllDropdowns === 'function') {
+                ReportExport.closeAllDropdowns();
+            }
+            const tabs = ['overview', 'members'];
+            const contents = {
+                overview: document.getElementById('overview-tab-content'),
+                members: document.getElementById('members-tab-content'),
+            };
+            tabs.forEach((t) => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (btn) btn.classList.toggle('active', t === tab);
+                if (contents[t]) contents[t].style.display = t === tab ? 'block' : 'none';
+            });
+            const quranTab = document.getElementById('quran-tab-content');
+            const summerTab = document.getElementById('summer-tab-content');
+            if (quranTab) quranTab.style.display = 'none';
+            if (summerTab) summerTab.style.display = 'none';
+            if (tab === 'overview') {
+                switchOverviewReportType(document.getElementById('overview-report-type')?.value || 'payment');
+            }
+            if (tab === 'members') {
+                loadMembersConvocations();
+            }
+        }
+        async function loadQuranContestTab() {
+            if (window.AppReports?.loadQuranReport) {
+                await window.AppReports.loadQuranReport();
+                return;
+            }
+            if (window.QuranContestAdmin) {
+                window.QuranContestAdmin.bindEvents?.();
+                await window.QuranContestAdmin.refresh?.();
+            }
+        }
+        async function loadSummerCourseTab() {
+            if (window.AppReports?.loadSummerReport) {
+                await window.AppReports.loadSummerReport();
+                return;
+            }
+            if (window.SummerCourseAdmin) {
+                window.SummerCourseAdmin.bindEvents?.();
+                await window.SummerCourseAdmin.refresh?.();
+            }
+        }
+        window.loadQuranContestTab = loadQuranContestTab;
+        window.loadSummerCourseTab = loadSummerCourseTab;
+        window.switchReportTab = switchReportTab;
+
+        let membersConvocationsLoaded = false;
+        async function loadMembersConvocations() {
+            if (membersConvocationsLoaded) return;
+            const select = document.getElementById('members-dufcad-filter');
+            if (!select) return;
+
+            try {
+                const convocationsRaw = await getConvocations();
+                const convocations = convocationsRaw || [];
+                let optionsHtml = '<option value="all">All Dufcads</option>';
+                convocations.forEach((c) => {
+                    optionsHtml += `<option value="${c.name}">${c.name}</option>`;
+                });
+                select.innerHTML = optionsHtml;
+                membersConvocationsLoaded = true;
+            } catch (err) {
+                console.error('Failed to load convocations for members list:', err);
+                select.innerHTML = '<option value="all">Error loading dufcads</option>';
+            }
+        }
+        window.loadMembersConvocations = loadMembersConvocations;
+
+        async function buildMembersListPayload() {
+            const filterEl = document.getElementById('members-dufcad-filter');
+            const statusEl = document.getElementById('members-status-filter');
+            const selectedDufcad = filterEl?.value || 'all';
+            const statusFilter = statusEl?.value || 'active';
+            const [allUsers, convocations] = await Promise.all([getUsers(), getConvocations()]);
+            let members = (allUsers || []).filter((u) => isStudentRole(u.role));
+            members = members.filter((u) => (statusFilter === 'graduated' ? u.isGraduated : !u.isGraduated));
+
+            let cohorts = convocations || [];
+            if (selectedDufcad !== 'all') {
+                cohorts = cohorts.filter((c) => c.name.toLowerCase() === selectedDufcad.toLowerCase());
+            }
+
+            const sections = [];
+            cohorts.forEach((cohort) => {
+                const cohortMembers = members
+                    .filter((s) => s.convocation && s.convocation.toLowerCase() === cohort.name.toLowerCase())
+                    .map((s) => ({
+                        cardNumber: (s.bodyCard === 'Yes' && s.cardNumber) ? s.cardNumber : '',
+                        name: s.name,
+                        university: s.university || '—',
+                        faculty: s.faculty || '—',
+                        phone: s.phone || '—',
+                    }))
+                    .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+
+                if (cohortMembers.length) {
+                    sections.push({
+                        name: cohort.name,
+                        year: cohort.year,
+                        count: cohortMembers.length,
+                        members: cohortMembers,
+                    });
+                }
+            });
+
+            const statusLabel = statusFilter === 'graduated' ? 'Graduated' : 'Active';
+
+            return {
+                dufcadFilter: selectedDufcad === 'all' ? 'All Dufcads' : selectedDufcad,
+                statusFilter: statusLabel,
+                generated: new Date().toLocaleString('en-GB'),
+                totalMembers: sections.reduce((sum, s) => sum + s.count, 0),
+                sections,
+            };
+        }
+
+        async function openMembersListPreview() {
+            const data = await buildMembersListPayload();
+            if (!data.sections.length) {
+                alert(`No ${data.statusFilter?.toLowerCase() || 'active'} members found for the selected filters.`);
+                return;
+            }
+            ReportViewer.showMembersList(data);
+        }
+        window.openMembersListPreview = openMembersListPreview;
+    </script>
+</body>
+</html>

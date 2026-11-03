@@ -1,0 +1,22 @@
+---
+description: Privacy consent, face data retention, and guest rights
+alwaysApply: true
+---
+
+# Privacy (required)
+
+Face data is sensitive. Ship consent before any camera or selfie match.
+
+## Accept / reject
+- Before camera or selfie upload: clear **Accept** / **Reject** (Somali + English).
+- **Reject** = no scan, no face descriptor/selfie stored, no matching.
+- **Accept** = state what is used (match only), how long, and how to delete.
+
+## Prefer
+- Do not keep raw selfie files after matching when possible.
+- Guests see only their matches (private by default), not the full event dump.
+- Organizer can delete downloaded photo **files** to free disk; **Who downloaded** history stays.
+- When admin deletes downloaded files: remove from guests’ saved matches and notify them (email/in-app).
+
+## Copy tone
+- Honest, short, bilingual where users see it. No dark patterns on consent.

@@ -1,0 +1,210 @@
+.books-page .books-hero {
+  background: linear-gradient(135deg, #0f3d5c 0%, #1d8a5e 55%, #145f40 100%);
+}
+
+.book-card .card-image-wrap::after {
+  content: 'PDF';
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(15, 61, 92, 0.85);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* ── Book detail (aligned with article detail page) ── */
+.book-detail-wrap {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: calc(var(--site-header-h, 76px) + 24px) 2rem 48px;
+}
+
+.book-hero-block {
+  position: relative;
+  border-radius: var(--radius, 14px);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(145deg, #e8f5ef, #d4ebe2);
+  width: 100%;
+}
+
+.book-hero-block img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 280px;
+  max-height: 520px;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.book-cover-fallback {
+  aspect-ratio: 16 / 9;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  color: #1d8a5e;
+  font-weight: 700;
+}
+
+.book-category-pill {
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.book-detail-wrap h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  font-weight: 700;
+  margin: 0 0 1rem;
+  line-height: 1.25;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.book-excerpt {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin: 0 0 1.25rem;
+}
+
+.book-meta-bar {
+  margin-bottom: 2rem;
+}
+
+.book-meta-bar i {
+  margin-right: 4px;
+  color: var(--green, #1d8a5e);
+}
+
+.book-pdf-section {
+  background: #fff;
+  border: 1px solid var(--border, #e0e9f0);
+  border-radius: var(--radius, 14px);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.book-pdf-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border, #e0e9f0);
+  background: var(--surface-2, #f6f9fb);
+}
+
+.book-pdf-toolbar h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.book-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.book-pdf-frame {
+  width: 100%;
+  min-height: 72vh;
+  border: 0;
+  background: #1a1a1a;
+  display: block;
+}
+
+.book-pdf-mobile-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 240px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: var(--surface-2, #f6f9fb);
+}
+
+.book-pdf-mobile-fallback p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  max-width: 280px;
+}
+
+.book-pdf-mobile-icon {
+  font-size: 2.5rem;
+  color: var(--green, #1d8a5e);
+}
+
+.book-open-pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.book-no-pdf {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem;
+  background: var(--surface-2, #f6f9fb);
+  border-radius: var(--radius, 14px);
+  border: 1px dashed var(--border, #e0e9f0);
+}
+
+@media (max-width: 768px) {
+  .book-detail-wrap {
+    padding: calc(var(--site-header-h, 76px) + 12px) 0 32px;
+  }
+
+  .book-detail-wrap > :not(.book-hero-block) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .book-hero-block {
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    margin-bottom: 1.25rem;
+    box-shadow: none;
+  }
+
+  .book-hero-block img,
+  .book-cover-fallback {
+    aspect-ratio: 16 / 10;
+    min-height: 200px;
+    max-height: 42vh;
+  }
+
+  .book-pdf-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .book-download-btn {
+    justify-content: center;
+  }
+
+  .book-pdf-frame {
+    min-height: 0;
+  }
+}

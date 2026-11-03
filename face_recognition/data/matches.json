@@ -1,0 +1,112 @@
+{
+  "engg": {
+    "photos": [
+      {
+        "event_id": "ceremony",
+        "name": "8cb26ecf25_nuuur-removebg-preview_1.png",
+        "title": "ceremony",
+        "matched_at": "2026-08-01T07:26:51.150Z",
+        "dist": 0.4837271505323351
+      },
+      {
+        "event_id": "ceremony",
+        "name": "41247fab87_image-removebg-preview_3.png",
+        "title": "ceremony",
+        "matched_at": "2026-08-01T07:26:51.150Z",
+        "dist": 0.45999381878571294
+      }
+    ],
+    "ignored": [
+      "ceremony/65ee5e0818_Impact_Activities_five_3.jpg"
+    ]
+  },
+  "admin": {
+    "photos": [
+      {
+        "event_id": "ceremony",
+        "name": "8cb26ecf25_nuuur-removebg-preview_1.png",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T04:58:01.615Z",
+        "dist": 0
+      },
+      {
+        "event_id": "ceremony",
+        "name": "41247fab87_image-removebg-preview_3.png",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T04:58:01.616Z",
+        "dist": 0.46965988393352287
+      },
+      {
+        "event_id": "ceremony",
+        "name": "c4102e81d3_WhatsApp_Image_2026-07-31_at_15.37.20_1.jpeg",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T04:58:01.616Z",
+        "dist": 0.3964580036226788
+      },
+      {
+        "event_id": "ceremony",
+        "name": "5e4855f35e_WhatsApp_Image_2026-07-31_at_15.37.20_2.jpeg",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T04:45:40.555Z",
+        "dist": 0.5840070755557003
+      },
+      {
+        "event_id": "ceremony",
+        "name": "f3b37ea20b_WhatsApp_Image_2026-07-31_at_15.37.20.jpeg",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T04:58:01.616Z",
+        "dist": 0.47395055577994344
+      }
+    ],
+    "ignored": [
+      "ceremony/f3f3fe6034_Impact_Activities_five.jpg"
+    ]
+  },
+  "abdi": {
+    "photos": [
+      {
+        "event_id": "ceremony",
+        "name": "c4102e81d3_WhatsApp_Image_2026-07-31_at_15.37.20_1.jpeg",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T05:26:52.657Z",
+        "dist": 0.28342373862488635
+      },
+      {
+        "event_id": "ceremony",
+        "name": "f3b37ea20b_WhatsApp_Image_2026-07-31_at_15.37.20.jpeg",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T05:26:52.657Z",
+        "dist": 0
+      },
+      {
+        "event_id": "ceremony",
+        "name": "8cb26ecf25_nuuur-removebg-preview_1.png",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T05:31:13.346Z",
+        "dist": 0.49099173030746135
+      },
+      {
+        "event_id": "ceremony",
+        "name": "41247fab87_image-removebg-preview_3.png",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T05:26:52.657Z",
+        "dist": 0.4546267418655054
+      },
+      {
+        "event_id": "ceremony",
+        "name": "731d6f8086_Impact_Activities_four_3.jpg",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T05:33:55.009Z",
+        "dist": 0
+      },
+      {
+        "event_id": "ceremony",
+        "name": "1df243b737_Feeding_Hearts_in_Ramadan_3.jpg",
+        "title": "ceremony",
+        "matched_at": "2026-08-02T05:31:36.771Z",
+        "dist": 0
+      }
+    ],
+    "ignored": []
+  }
+}

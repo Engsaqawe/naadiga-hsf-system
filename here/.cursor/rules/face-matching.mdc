@@ -1,0 +1,26 @@
+---
+description: Face matching, uploads, and media API conventions from HSF extract
+globs: "**/find*.js,**/find-web.js,**/upload.js,**/media-admin.js,**/face_photos_api.py,**/api.js"
+alwaysApply: false
+---
+
+# Face matching & media API
+
+## Client matching
+- Library: `@vladmandic/face-api` (CDN models).
+- Compare euclidean distance of face descriptors; keep match threshold strict enough to limit false positives (HSF used ~0.5).
+- Support live camera auto-capture and selfie upload; group photos = any face in image can match.
+
+## Uploads (organizer)
+- Compress/resize client-side before upload when large (e.g. max edge ~1920).
+- Upload in small batches; return success before long email fan-out.
+- Member “photos ready” emails must be **background** (do not block upload response).
+- Last batch may notify; intermediate batches `notify=0`.
+
+## Delete downloaded photos (not “clear history”)
+- `DELETE …/downloads` means: delete **files** that anyone downloaded, scrub matches, notify downloaders.
+- **Keep** `downloads.json` / Who-downloaded table unchanged.
+- Erase-all-photos is separate (all files in event).
+
+## Photos list fields for admin UI
+- Include `anyone_downloaded`, `download_count`, `uploaded_at` so blur/filter/sort work.

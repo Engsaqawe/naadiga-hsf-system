@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | HS Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <div style="margin-bottom: 20px;"><img src="portal/img/logo.svg" alt="HS Foundation Logo" style="height: 130px; width: auto; border-radius: 50%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));"></div>
+      <div class="logo-text" style="font-size: 1.5rem; font-weight: 800; color: var(--primary-green);">HS FOUNDATION</div>
+      <h1 style="margin-top: 12px;">Login</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">Public members use username &amp; password. Admin uses the same page.</p>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Your username" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+        <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="show-pass" style="cursor: pointer; width: 16px; height: 16px" onclick="const p = document.getElementById('password'); p.type = this.checked ? 'text' : 'password'">
+          <label for="show-pass" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer; font-weight: 600">Show Password</label>
+        </div>
+      </div>
+      <div style="text-align: right; margin: -8px 0 16px;">
+        <a href="forgot-password.html" style="color: var(--primary-green); font-weight: 700; font-size: 0.88rem; text-decoration: none;">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn-full" id="loginBtn">Login</button>
+      <div id="loginMessage" style="color: #ef4444; font-size: 0.9rem; text-align: center; margin-top: 16px; display: none;">Invalid credentials!</div>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-muted);">
+        Haven't an account? <a href="portal/register.html" style="color: var(--primary-green); font-weight: 700; text-decoration: none;">Register</a>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> Back to Website</a>
+    </div>
+  </div>
+
+  <script src="assets/js/contact-return.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('return') && typeof HSFContactReturn !== 'undefined') {
+        HSFContactReturn.getPostAuthReturn();
+      }
+      const registerLink = document.querySelector('a[href*="register.html"]');
+      if (registerLink && typeof HSFContactReturn !== 'undefined') {
+        registerLink.href = HSFContactReturn.buildRegisterUrl();
+      }
+      if (sessionStorage.getItem('hsf_contact_draft')) {
+        const note = document.createElement('p');
+        note.style.cssText = 'color:var(--primary-green);font-size:0.88rem;text-align:center;margin-top:12px;font-weight:600;';
+        note.textContent = 'Log in to send your message — we\'ll return you to the contact form.';
+        document.querySelector('.auth-card')?.insertBefore(note, document.getElementById('loginForm'));
+      }
+    })();
+  </script>
+</body>
+</html>

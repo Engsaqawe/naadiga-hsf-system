@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Personal Profile - HSF</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="./main_leader_responsive.css" />
+    <style>
+      input[type="month"] {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        color: var(--text-main);
+        height: 38px;
+        outline: none;
+        cursor: pointer;
+      }
+
+      input[type="month"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        filter: grayscale(100%) opacity(0.5);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app-container">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <main class="main-content">
+        <header class="top-navbar" id="top-navbar"></header>
+
+        <div class="dashboard-content">
+          <div class="d-flex align-center gap-3 mb-4">
+            <label style="font-weight: 600; color: var(--text-muted)"
+              ><i class="fa-solid fa-calendar-days"></i> Select Month:</label
+            >
+            <input
+              type="month"
+              id="month-picker"
+              class="search-input"
+              style="width: auto"
+            />
+          </div>
+
+
+          <div class="profile-card">
+            <img
+              id="student-profile-pic"
+              src=""
+              onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent(document.getElementById('student-display-name').innerText) + '&background=1e4a6d&color=fff'"
+              class="profile-img"
+              alt="Profile"
+            />
+
+            <div class="profile-info">
+              <h2 id="student-display-name" class="profile-name"></h2>
+
+              <div class="profile-meta">
+                <span
+                  ><i class="fa-solid fa-hashtag"></i>
+                  <span id="student-display-id"></span
+                ></span>
+                <span
+                  ><i class="fa-solid fa-users"></i>
+                  <span id="student-display-conv"></span
+                ></span>
+              </div>
+
+              <div class="profile-status">
+                <span id="student-payment-badge" class="badge"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon icon-blue">
+                <i class="fa-solid fa-calendar-check"></i>
+              </div>
+              <div class="stat-info">
+                <h4 id="attended-meetings">0</h4>
+                <p>Meetings Attended</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon icon-red">
+                <i class="fa-solid fa-calendar-xmark"></i>
+              </div>
+              <div class="stat-info">
+                <h4 id="missed-meetings">0</h4>
+                <p>Meetings Missed</p>
+              </div>
+            </div>
+            <div id="unpaid-months-container"></div>
+          </div>
+
+          <div class="card-table" style="margin-top: 2rem">
+            <div class="table-header">
+              <h3 id="table-month-title">My Personal Records</h3>
+<style>
+  /* ========================= */
+/* ENABLE SCROLL FOR PROFILE TABLE */
+/* ========================= */
+
+.table-wrapper1 {
+  width: 100%;
+  overflow-x: auto;   /* 🔥 enable scroll */
+}
+  @media (max-width: 768px) {
+
+  .table-wrapper1 .data-table {
+    min-width: 500px;   /* enough for 3 columns */
+    width: max-content; /* 🔥 allows scrolling */
+    overflow-x: scroll;
+  }
+
+}
+</style>
+
+
+    <div class="table-wrapper1">
+        <table class="data-table">
+            <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+            </thead>
+            <tbody id="payment-history-body">
+                <!-- Injected via JS -->
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/data.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const currentUser = getCurrentUser();
+        if (!currentUser.id) {
+          window.location.href = "../../login.html";
+          return;
+        }
+
+        const user = await getUserById(currentUser.id);
+        if (!isValidUserRecord(user)) {
+          localStorage.removeItem("hsf_current_user");
+          window.location.href = "../../login.html";
+          return;
+        }
+
+        Components.init({
+          role: currentUser.role,
+          activePage: "profile",
+          title: "My Profile",
+          userName: user.name,
+          userRoleLabel: user.role,
+        });
+
+        const timestamp = new Date().getTime();
+        document.getElementById("student-profile-pic").src = getProfilePicUrl(user);
+        document.getElementById("student-display-name").innerText = user.name;
+        document.getElementById("student-display-id").innerText = user.id;
+        document.getElementById("student-display-conv").innerText =
+          user.convocation;
+
+        const monthPicker = document.getElementById("month-picker");
+
+        async function updateDashboard() {
+          const dateVal = monthPicker.value;
+          let year, monthNum, selectedMonth;
+          
+          if (dateVal) {
+            [year, monthNum] = dateVal.split("-");
+            const monthsNames = [
+              "January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December",
+            ];
+            selectedMonth = monthsNames[parseInt(monthNum) - 1];
+          }
+
+          const [meetings, allTransactions, attendance] = await Promise.all([
+            getMeetings(),
+            getTransactions({ student_id: user.id }),
+            getAttendance({ student_id: user.id }),
+          ]);
+
+          let transactions = allTransactions;
+          if (dateVal) {
+            transactions = allTransactions.filter(t => t.month === selectedMonth && String(t.year) === year);
+          }
+
+          const isPaid = transactions && transactions.length > 0;
+          const pBadge = document.getElementById("student-payment-badge");
+          
+          if (dateVal) {
+            pBadge.innerText = isPaid ? `${selectedMonth} Paid` : `${selectedMonth} Unpaid`;
+            pBadge.className = "badge " + (isPaid ? "badge-paid" : "badge-unpaid");
+          } else {
+            pBadge.innerText = "Showing All Personal Records";
+            pBadge.className = "badge badge-leader";
+          }
+
+          const dashboardMeetings = meetings.filter((m) => {
+            if (dateVal && !m.date.startsWith(dateVal)) return false;
+            return typeof meetingDashboardAppliesToStudent === 'function'
+              && meetingDashboardAppliesToStudent(m, user, attendance);
+          });
+
+          const statsMeetings = meetings.filter((m) => {
+            if (dateVal && !m.date.startsWith(dateVal)) return false;
+            return typeof meetingAppliesToStudent === 'function'
+              && meetingAppliesToStudent(m, user, attendance);
+          });
+
+          let attendedCount = 0;
+          let missedCount = 0;
+          let meetingRows = "";
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          statsMeetings.forEach((m) => {
+            const meetingDate = new Date(m.date);
+            meetingDate.setHours(0, 0, 0, 0);
+            const record = attendance.find((a) => a.meeting_id === m.id);
+            const isPresent = record && record.status === "Present";
+
+            if (isPresent) attendedCount++;
+            else if (meetingDate <= today) missedCount++;
+          });
+
+          dashboardMeetings.forEach((m) => {
+            const record = attendance.find((a) => a.meeting_id === m.id);
+            const isPresent = record && (record.status === "Present" || record.status === "Late");
+            const isExcused = record && record.is_excused && !isPresent;
+            const isFuture = new Date(m.date) > new Date();
+
+            meetingRows += `
+                        <tr>
+                            <td><strong>Meeting:</strong> ${m.topic}</td>
+                            <td>${m.date}</td>
+                            <td><span class="badge ${isFuture ? "badge-student" : (isPresent ? "badge-paid" : (isExcused ? "badge-student" : "badge-unpaid"))}">${isFuture ? "Scheduled" : (isPresent ? "Present" : (isExcused ? "Absent (excused)" : "Absent"))}</span></td>
+                        </tr>
+                    `;
+          });
+
+          document.getElementById("attended-meetings").innerText = attendedCount;
+          document.getElementById("missed-meetings").innerText = missedCount;
+          document.getElementById("table-month-title").innerText = dateVal 
+            ? `${selectedMonth} ${year} Status` 
+            : "All-Time Meeting History";
+
+          const historyBody = document.getElementById("payment-history-body");
+          let summaryRow = "";
+          
+          if (dateVal) {
+            summaryRow = `
+                <tr>
+                    <td><strong>Monthly Fee (${selectedMonth})</strong></td>
+                    <td>-</td>
+                    <td><span class="badge ${isPaid ? "badge-paid" : "badge-unpaid"}">${isPaid ? "Paid" : "Unpaid"}</span></td>
+                </tr>`;
+          }
+
+          historyBody.innerHTML = summaryRow + meetingRows;
+
+          // Render Unpaid Months stat card
+          const unpaidContainer = document.getElementById("unpaid-months-container");
+          if (unpaidContainer) {
+            if (user.unpaidMonths && user.unpaidMonths.length > 0) {
+              unpaidContainer.innerHTML = `
+                <div class="stat-card" style="overflow: visible;">
+                    <div class="stat-icon icon-orange">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info" style="overflow: visible;">
+                        <div class="hsf-tooltip">
+                            <h4 style="margin: 0; display: inline-flex; align-items: center; gap: 6px;">
+                                ${user.unpaidMonths.length}
+                                <i class="fa-solid fa-eye" style="font-size: 0.95rem; color: var(--text-muted); cursor: pointer;"></i>
+                            </h4>
+                            <span class="tooltip-text">${user.unpaidMonths.join('<br>')}</span>
+                        </div>
+                        <p>Unpaid Months</p>
+                    </div>
+                </div>
+              `;
+            } else {
+              unpaidContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon icon-green">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>0</h4>
+                        <p>Unpaid Months</p>
+                    </div>
+                </div>
+              `;
+            }
+          }
+        }
+
+        const now = new Date();
+        // Default to showing all time (empty) or current month? 
+        // User said "when default must see all". So I'll default to empty.
+        monthPicker.value = ""; 
+        monthPicker.onchange = updateDashboard;
+        await updateDashboard();
+      }); 
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Management - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+     <link rel="stylesheet" href="./main_leader_responsive.css">
+    <style>
+        .attendance-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            padding: 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-card);
+        }
+        .conv-group-header {
+            background: var(--bg-hover);
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .conv-group-header:hover { background: var(--border); }
+        .conv-group-content {
+            display: none;
+            padding: 8px 16px;
+        }
+        .conv-group-content.active {
+            display: block;
+        }
+        .attendance-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .attendance-row:last-child { border-bottom: none; }
+        .attendance-row input[type="checkbox"]:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .attendance-row.is-excused {
+            opacity: 0.92;
+            background: rgba(148, 163, 184, 0.08);
+        }
+        .attendance-excused-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-left: 6px;
+        }
+        .attendance-pending-hint {
+            font-size: 0.72rem;
+            color: #d97706;
+            margin-left: 6px;
+        }
+        .attendance-row.has-pending-excuse {
+            background: rgba(217, 119, 6, 0.06);
+        }
+        .attendance-pending-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 14px;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(217, 119, 6, 0.35);
+            background: rgba(217, 119, 6, 0.08);
+            font-size: 0.82rem;
+            color: var(--text-main);
+            line-height: 1.45;
+        }
+        .attendance-pending-banner i {
+            color: #d97706;
+            margin-top: 2px;
+        }
+        .attendance-pending-banner a {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Modern Date Picker Styling - Matching requested "html dates" look */
+        input[type="date"] {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            width: 100%;
+            height: 48px;
+            outline: none;
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: grayscale(100%) opacity(0.5);
+            font-size: 1.1rem;
+            padding-left: 5px;
+        }
+        
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+            padding: 0;
+        }
+
+        /* Modern Month Picker Style - Matching the date picker */
+        input[type="month"] {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            height: 38px;
+            outline: none;
+            cursor: pointer;
+        }
+        input[type="month"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: grayscale(100%) opacity(0.5);
+        }
+        .table-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .meetings-data-table {
+            width: 100%;
+            min-width: 720px;
+            table-layout: auto;
+        }
+
+        .meetings-data-table .col-date { width: 108px; white-space: nowrap; }
+        .meetings-data-table .col-topic {
+            min-width: 180px;
+            max-width: 320px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .meetings-data-table .col-conv { width: 100px; }
+        .meetings-data-table .col-status { width: 108px; text-align: center; }
+        .meetings-data-table .col-action {
+            width: 200px;
+            text-align: right;
+            white-space: nowrap;
+        }
+        .meetings-data-table th,
+        .meetings-data-table td {
+            background: var(--bg-card);
+        }
+        .meetings-data-table thead th {
+            background: #f8fafc !important;
+        }
+        .meetings-action-btns {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            flex-wrap: nowrap;
+        }
+        .meetings-action-btns .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        /* Scroll Indicator Arrow */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        .scroll-indicator:hover { opacity: 1; transform: scale(1.1); }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        .meetings-toolbar {
+            margin-bottom: 1.25rem;
+        }
+
+        .meetings-toolbar .btn-primary {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 769px) {
+            .meetings-toolbar {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1.25rem;
+            }
+
+            .meetings-toolbar .month-field-group {
+                flex: 0 0 auto;
+            }
+
+            .meetings-toolbar .btn-primary {
+                margin-left: auto;
+            }
+        }
+
+        .meetings-card-title h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .meetings-card-title .subtitle-muted {
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .target-audience-hint {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .meetings-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .meetings-toolbar .month-field-group {
+                width: 100%;
+            }
+
+            .meetings-toolbar .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .meetings-card-title h3 {
+                font-size: 0.92rem;
+            }
+
+            .card-table:has(.meetings-desktop-table) {
+                overflow: visible;
+            }
+
+            .table-wrapper.meetings-desktop-table {
+                margin: 0;
+                border-top: 1px solid var(--border);
+                overflow-x: auto;
+                overflow-y: visible;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+            }
+
+            .table-wrapper.meetings-desktop-table::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .table-wrapper.meetings-desktop-table::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 3px;
+            }
+
+            .meetings-data-table {
+                min-width: 640px;
+                font-size: 0.8rem;
+            }
+
+            .meetings-data-table th,
+            .meetings-data-table td {
+                padding: 10px 8px;
+            }
+
+            .meetings-data-table .col-topic {
+                min-width: 120px;
+                max-width: 160px;
+            }
+
+            .meetings-action-btns .btn-sm {
+                padding: 5px 8px;
+                font-size: 0.7rem;
+            }
+
+            #load-more-container {
+                padding: 1rem !important;
+            }
+
+            .scroll-indicator {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+
+            <div class="dashboard-content">
+                <div class="month-selector meetings-toolbar">
+                    <div class="month-field-group">
+                        <label class="toolbar-month-label" for="meeting-month-picker">
+                            <i class="fa-solid fa-calendar-days"></i> Filter month:
+                        </label>
+                        <input type="month" id="meeting-month-picker" class="month-picker-input" aria-label="Filter meetings by month">
+                    </div>
+                    <button class="btn btn-primary" id="open-modal-btn" style="box-shadow: var(--shadow-lg);">
+                        <i class="fa-solid fa-plus"></i> New Meeting
+                    </button>
+                </div>
+
+                <!-- <div class="card-table">
+                    <div class="table-header">
+                        <h4>Meeting Historical Summary | Taariikhda Kulammada</h4>
+                        <div class="d-flex gap-2">
+                            <input type="month" id="meeting-month-picker" class="search-input" onchange="renderMeetings()">
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Topic</th>
+                                <th>Presenter</th>
+                                <th>Place</th>
+                                <th>Convocation</th>
+                                <th style="text-align: center;">Status</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meetings-table-body">
+                           
+                        </tbody>
+                    </table>
+                </div> -->
+
+                <div class="card-table" style="overflow: visible;">
+                    <div class="table-header meetings-card-title">
+                        <h3>
+                            Meeting Historical Summary |
+                            <span class="subtitle-muted">Taariikhda Kulammada</span>
+                        </h3>
+                    </div>
+
+                    <div class="table-wrapper meetings-desktop-table">
+                        <table class="data-table meetings-data-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-date">Date</th>
+                                    <th class="col-topic">Topic</th>
+                                    <th class="col-conv">Convocation</th>
+                                    <th>Target</th>
+                                    <th class="col-status">Status</th>
+                                    <th class="col-action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="meetings-table-body">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                        
+                        <!-- Scroll Arrow Indicator -->
+                        <div class="scroll-indicator" id="table-scroll-arrow" title="Scroll to bottom">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    
+                    <div id="load-more-container" class="text-center p-4">
+                        <button class="btn btn-outline" id="toggle-meetings-btn" style="min-width: 200px;">
+                            <span id="toggle-btn-text">View All Meetings</span>
+                            <i class="fa-solid fa-chevron-down" style="margin-left: 8px;"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Modal -->
+    <div class="modal" id="meeting-modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <i class="fa-solid fa-xmark modal-close" id="close-modal-btn"></i>
+            <div class="modal-header">
+                <h3>Create New Meeting</h3>
+                <p>Scheduled Meeting #<span id="next-meeting-id">3</span></p>
+            </div>
+            
+            <form id="meeting-form" style="margin-top: 1.5rem;">
+                <div id="step-1-fields">
+                    <div class="d-flex gap-3 mb-4">
+                        <div style="flex:1">
+                            <label class="text-muted" style="font-size: 0.8rem; display:block; margin-bottom:4px;">Date</label>
+                            <input type="date" class="search-input" id="m-date">
+                        </div>
+                        <div style="flex:1">
+                            <label class="text-muted" style="font-size: 0.8rem; display:block; margin-bottom:4px;">Presenter</label>
+                            <input type="text" class="search-input" id="m-presenter" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-muted" style="font-size: 0.8rem; display:block; margin-bottom:4px;">Topic</label>
+                        <input type="text" class="search-input" id="m-topic" placeholder="e.g. Leadership Skills">
+                    </div>
+                    <div class="d-flex gap-3 mb-4">
+                        <div style="flex:1">
+                            <label class="text-muted" style="font-size: 0.8rem; display:block; margin-bottom:4px;">Place</label>
+                            <input type="text" class="search-input" id="m-place" placeholder="Hall/Room">
+                        </div>
+                    <div style="flex:1">
+                        <label class="text-muted" style="font-size: 0.8rem; display:block; margin-bottom:4px;">Target Convocation</label>
+                        <select class="search-input" id="m-convocation" style="padding-left: 12px;">
+                            <option value="All">All Convocations</option>
+                            <option value="Dufcadda 1">Dufcadda 1</option>
+                            <option value="Dufcadda 2">Dufcadda 2</option>
+                            <option value="Dufcadda 3">Dufcadda 3</option>
+                        </select>
+                    </div>
+                </div>
+                    <div class="mb-4">
+                        <label class="text-muted" style="font-size: 0.8rem; display:block; margin-bottom:4px;">Target Members | Bartilmaameedka</label>
+                        <select class="search-input" id="m-target-audience" style="padding-left: 12px;">
+                            <option value="active">Active Members — Monthly meetings</option>
+                            <option value="graduated">Graduated Members — Quarterly (4×/year)</option>
+                        </select>
+                        <p class="target-audience-hint">Meeting emails go only to the selected group. Payment reminders still reach everyone with unpaid dues.</p>
+                    </div>
+                </div>
+
+                <div id="attendance-section" style="display:none;">
+                    <h4 style="margin: 1rem 0 0.5rem;">Mark Attendance</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Expand each convocation to mark attendance.</p>
+                    <div id="attendance-pending-banner" class="attendance-pending-banner" style="display:none;" aria-live="polite"></div>
+                    <div class="attendance-list" id="attendance-list">
+                        <!-- Grouped Convocations -->
+                    </div>
+                </div>
+
+                <div class="d-flex justify-between mt-4" style="border-top: 1px solid #eee; padding-top: 1.5rem;">
+                    <button type="button" class="btn btn-primary" id="next-step-btn" style="width: 100%; justify-content: center;">Create Meeting</button>
+                    <button type="submit" class="btn btn-primary" id="save-meeting-btn" style="display:none;">Save Meeting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Attendance Modal -->
+    <div class="modal" id="view-attendance-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <i class="fa-solid fa-xmark modal-close" id="close-view-modal"></i>
+            <div class="modal-header">
+                <h3 id="view-meeting-topic">Meeting Topic</h3>
+                <p id="view-meeting-date">Date</p>
+            </div>
+            <div id="view-meeting-summary" style="margin-top: 1.5rem;">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/data.js?v=20260624c"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const cu = getCurrentUser();
+            if (!cu.id) { window.location.href = "../../login.html"; return; }
+
+            Components.init({
+                role: 'main-leader',
+                activePage: 'meetings',
+                title: 'Meeting Management',
+                userName: cu.name || 'Admin',
+                userRoleLabel: 'Main Leader'
+            });
+
+            const tableBody = document.getElementById('meetings-table-body');
+            const modal = document.getElementById('meeting-modal');
+            const viewModal = document.getElementById('view-attendance-modal');
+            const openModalBtn = document.getElementById('open-modal-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const closeViewModalBtn = document.getElementById('close-view-modal');
+            const nextStepBtn = document.getElementById('next-step-btn');
+            const saveBtn = document.getElementById('save-meeting-btn');
+            const attendanceSection = document.getElementById('attendance-section');
+            const attendanceList = document.getElementById('attendance-list');
+            const mConvocation = document.getElementById('m-convocation');
+            const mTargetAudience = document.getElementById('m-target-audience');
+            const monthPicker = document.getElementById('meeting-month-picker');
+
+            function audienceLabel(target) {
+                return (target || 'active') === 'graduated' ? 'Graduated' : 'Active';
+            }
+
+            const APPLICATIONS_API = API_BASE.replace(/\/api$/, '') + '/api/applications';
+
+            async function fetchMemberHelpRequests() {
+                try {
+                    const res = await fetch(`${APPLICATIONS_API}/help`);
+                    if (!res.ok) return [];
+                    return await res.json();
+                } catch {
+                    return [];
+                }
+            }
+
+            function helpRequestMatchesMeeting(h, meetingId, meetingDate) {
+                if ((h.response_status || 'pending').toLowerCase() !== 'pending') return false;
+                const mid = h.meeting_id;
+                if (mid != null && String(mid) === String(meetingId)) return true;
+                const mdate = (meetingDate || '').slice(0, 10);
+                const hdate = (h.meeting_date || '').slice(0, 10);
+                return !mid && mdate && hdate && hdate === mdate;
+            }
+
+            function buildPendingExcusesMap(helpRows, meetingId, meetingDate) {
+                const map = {};
+                (helpRows || []).forEach((h) => {
+                    if (!helpRequestMatchesMeeting(h, meetingId, meetingDate)) return;
+                    if (h.user_id) map[h.user_id] = h;
+                });
+                return map;
+            }
+
+            function renderPendingExcuseHint(pendingHelp, isExcused) {
+                if (!pendingHelp || isExcused) return '';
+                return '<span class="attendance-pending-hint" title="Member submitted an apology — review in Messages">Pending excuse</span>';
+            }
+
+            function isMeetingCompleted(m) {
+                return !!(m.attendanceTaken || (m.participantsCount && m.participantsCount > 0));
+            }
+
+            function meetingEligibleMemberIds(m) {
+                const ids = m?.eligibleMemberIds || m?.eligible_member_ids;
+                return Array.isArray(ids) ? ids : [];
+            }
+
+            function matchMeetingStudent(s, m, convName) {
+                const match = typeof convocationsMatch === 'function'
+                    ? convocationsMatch(convName, s.convocation)
+                    : s.convocation && s.convocation.toLowerCase() === convName.toLowerCase();
+                if (!match) return false;
+
+                const studentCreated = s.created_at ? new Date(s.created_at) : new Date(0);
+                studentCreated.setHours(0, 0, 0, 0);
+                const meetingDate = new Date(m.date);
+                meetingDate.setHours(0, 0, 0, 0);
+                if (studentCreated > meetingDate) return false;
+
+                const snapshot = meetingEligibleMemberIds(m);
+                if (snapshot.length > 0 && !isMeetingCompleted(m)) {
+                    return snapshot.includes(s.id);
+                }
+
+                const target = m.target_audience || 'active';
+                if (target === 'graduated' && !s.isGraduated) return false;
+                if (target === 'active' && s.isGraduated) return false;
+                return true;
+            }
+
+            /** Finalized meetings: group saved attendance rows (historical snapshot). */
+            function buildViewAttendanceGroups(meeting, attendanceData, students, convNames) {
+                const studentMap = new Map((students || []).map((s) => [s.id, s]));
+                const finalized = isMeetingCompleted(meeting);
+                const groups = new Map();
+
+                const addMember = (convName, rec, student) => {
+                    const key = convName || '—';
+                    if (!groups.has(key)) groups.set(key, []);
+                    groups.get(key).push({ rec, student });
+                };
+
+                if (finalized && attendanceData.length > 0) {
+                    attendanceData.forEach((rec) => {
+                        const student = studentMap.get(rec.student_id);
+                        addMember(student?.convocation || '—', rec, student);
+                    });
+                } else {
+                    convNames.forEach((convName) => {
+                        students
+                            .filter((s) => matchMeetingStudent(s, meeting, convName))
+                            .forEach((s) => {
+                                const rec = attendanceData.find((a) => a.student_id === s.id) || null;
+                                addMember(convName, rec, s);
+                            });
+                    });
+                }
+
+                groups.forEach((members) => {
+                    members.sort((a, b) => {
+                        const nameA = a.student?.name || a.rec?.student_id || '';
+                        const nameB = b.student?.name || b.rec?.student_id || '';
+                        return nameA.localeCompare(nameB);
+                    });
+                });
+
+                const orderedNames = finalized && attendanceData.length > 0
+                    ? [
+                        ...convNames.filter((c) => groups.has(c)),
+                        ...[...groups.keys()].filter((c) => !convNames.includes(c)).sort(),
+                    ]
+                    : convNames.filter((c) => groups.has(c) && groups.get(c).length > 0);
+
+                return { groups, orderedNames };
+            }
+
+            function renderViewAttendanceRow(rec, student, pendingHelp) {
+                const isPresent = !!(rec && (rec.status === 'Present' || rec.status === 'Late'));
+                const isExcused = !!(rec && rec.is_excused && !isPresent);
+                const hasPendingExcuse = !!(pendingHelp && !isExcused);
+                const statusLabel = isPresent
+                    ? (rec.status || 'Present')
+                    : (isExcused ? 'Absent (excused)' : (hasPendingExcuse ? 'Absent (excuse pending)' : 'Absent'));
+                const displayName = student?.name || rec?.student_id || 'Unknown member';
+                const rowClass = [
+                    isExcused ? 'is-excused' : '',
+                    hasPendingExcuse ? 'has-pending-excuse' : '',
+                ].filter(Boolean).join(' ');
+                return `
+                    <div class="attendance-row${rowClass ? ' ' + rowClass : ''}">
+                        <div class="d-flex align-center gap-2">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: ${isPresent ? 'var(--success)' : 'var(--danger)'}"></div>
+                            <span style="color: var(--text-main); font-weight: 500;">${displayName}${renderPendingExcuseHint(pendingHelp, isExcused)}</span>
+                        </div>
+                        <span class="badge ${isPresent ? 'badge-paid' : 'badge-unpaid'}">${statusLabel}</span>
+                    </div>
+                `;
+            }
+
+            async function loadConvocations() {
+                const convs = await getConvocations();
+                mConvocation.innerHTML = '<option value="All">All Convocations</option>' + 
+                    convs.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            }
+
+            function populateFilters() {
+                // Not used for meetings anymore, but keep for other future filters if needed
+            }
+
+            let showAllMeetings = false;
+
+            async function renderMeetings() {
+                const mPicker = document.getElementById('meeting-month-picker');
+                if (!mPicker) return;
+                
+                let meetings = await getMeetings();
+                const selectedVal = mPicker.value; // YYYY-MM
+
+                // Sort by date desc (newest first)
+                meetings.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                const loadMoreContainer = document.getElementById('load-more-container');
+                const btnText = document.getElementById('toggle-btn-text');
+                const btnIcon = document.querySelector('#toggle-meetings-btn i');
+
+                let allFilteredMeetings = meetings;
+
+                // Robust filtering logic
+                if (selectedVal && selectedVal.includes('-')) {
+                    const [targetYear, targetMonth] = selectedVal.split('-');
+                    allFilteredMeetings = meetings.filter(m => {
+                        if (!m.date) return false;
+                        const parts = m.date.split('-'); // Assumes YYYY-MM-DD
+                        if (parts.length < 2) return false;
+                        // Compare year and month strings, ensuring leading zeros match
+                        return parts[0] === targetYear && parts[1] === targetMonth;
+                    });
+                }
+
+                const limit = 5;
+                const hasMore = allFilteredMeetings.length > limit;
+                
+                // Show all if filtered by month, OR if toggle is on
+                const shouldShowAll = (selectedVal !== '') || showAllMeetings;
+                
+                let displayMeetings = shouldShowAll ? allFilteredMeetings : allFilteredMeetings.slice(0, limit);
+                
+                if (hasMore && !selectedVal) {
+                    loadMoreContainer.style.display = 'block';
+                    if (showAllMeetings) {
+                        btnText.innerText = "Show Less";
+                        btnIcon.className = "fa-solid fa-chevron-up";
+                    } else {
+                        btnText.innerText = "View All Meetings";
+                        btnIcon.className = "fa-solid fa-chevron-down";
+                    }
+                } else {
+                    loadMoreContainer.style.display = 'none';
+                }
+
+                if (displayMeetings.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:2rem;color:var(--text-muted);">No meetings found for this selection.</td></tr>';
+                    return;
+                }
+
+                const buildActionButtons = (m, attendanceLocked) => {
+                    const attendBtn = attendanceLocked
+                        ? `<button type="button" class="btn btn-sm" disabled title="Attendance recorded — edit window closed (24 hours after meeting date)" style="opacity:0.45;cursor:not-allowed;background:var(--border);color:var(--text-muted);">
+                            <i class="fa-solid fa-lock"></i> Attend
+                           </button>`
+                        : `<button type="button" class="btn btn-primary btn-sm" onclick="markAttendanceFlow(${m.id})">
+                            <i class="fa-solid fa-clipboard-check"></i> Attend
+                           </button>`;
+                    return `${attendBtn}
+                        <button type="button" class="btn btn-outline btn-sm" onclick="viewAttendance(${m.id})">
+                            <i class="fa-solid fa-eye"></i> View
+                        </button>`;
+                };
+
+                tableBody.innerHTML = displayMeetings.map(m => {
+                    const attendanceLocked = isAttendButtonLocked(m);
+                    const topicEsc = (m.topic || '').replace(/</g, '&lt;');
+                    return `
+                    <tr>
+                        <td class="col-date"><strong>${m.date}</strong></td>
+                        <td class="col-topic" title="${topicEsc}">${topicEsc}</td>
+                        <td class="col-conv"><span class="badge ${m.convocation === 'All' ? 'badge-leader' : 'badge-student'}">${m.convocation}</span></td>
+                        <td><span class="badge ${(m.target_audience || 'active') === 'graduated' ? 'badge-paid' : 'badge-leader'}">${audienceLabel(m.target_audience)}</span></td>
+                        <td class="col-status"><span class="badge ${isMeetingCompleted(m) ? 'badge-paid' : 'badge-unpaid'}">${isMeetingCompleted(m) ? 'Completed' : 'Scheduled'}</span></td>
+                        <td class="col-action">
+                            <div class="meetings-action-btns">
+                                ${buildActionButtons(m, attendanceLocked)}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+
+            }
+
+            document.getElementById('toggle-meetings-btn').onclick = () => {
+                showAllMeetings = !showAllMeetings;
+                renderMeetings();
+            };
+
+            window.viewAttendance = async (id) => {
+                const meetings = await getMeetings();
+                const m = meetings.find(meeting => meeting.id == id);
+                if (!m) return;
+
+                document.getElementById('view-meeting-topic').innerText = m.topic;
+                document.getElementById('view-meeting-date').innerHTML = `
+                    <i class="fa-solid fa-calendar-days"></i> ${m.date}
+                    &nbsp;·&nbsp; <i class="fa-solid fa-user"></i> ${m.presenter || '—'}
+                    &nbsp;·&nbsp; <i class="fa-solid fa-location-dot"></i> ${m.place || '—'}`;
+                
+                const attendanceData = await getAttendance({ meeting_id: m.id });
+                const students = await getUsers();
+                const convs = await getConvocations();
+                const helpRows = await fetchMemberHelpRequests();
+                const pendingByUser = buildPendingExcusesMap(helpRows, m.id, m.date);
+                const targetConvs = m.convocation === 'All' ? convs.map(c => c.name) : [m.convocation];
+                const { groups, orderedNames } = buildViewAttendanceGroups(
+                    m, attendanceData, students, targetConvs
+                );
+                const presentTotal = attendanceData.filter(
+                    (a) => a.status === 'Present' || a.status === 'Late'
+                ).length;
+                const participantCount = isMeetingCompleted(m) && attendanceData.length > 0
+                    ? presentTotal
+                    : (m.participantsCount || 0);
+
+                const attendeeGroupsHtml = orderedNames.map((convName) => {
+                    const members = groups.get(convName) || [];
+                    if (members.length === 0) return '';
+
+                    const presentCount = members.filter(
+                        ({ rec }) => rec && (rec.status === 'Present' || rec.status === 'Late')
+                    ).length;
+
+                    return `
+                        <div class="conv-group">
+                            <div class="conv-group-header" onclick="toggleConvGroup(this)">
+                                <span>${convName} (${presentCount} / ${members.length} Present)</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="conv-group-content">
+                                ${members.map(({ rec, student }) => renderViewAttendanceRow(rec, student, pendingByUser[student?.id || rec?.student_id])).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No attendance recorded for this meeting yet.</p>';
+
+                const rosterIds = new Set();
+                targetConvs.forEach((convName) => {
+                    students
+                        .filter((s) => matchMeetingStudent(s, m, convName))
+                        .forEach((s) => rosterIds.add(s.id));
+                });
+                const pendingRosterCount = [...rosterIds].filter((id) => pendingByUser[id]).length;
+                const viewPendingBanner = pendingRosterCount > 0
+                    ? `<div class="attendance-pending-banner" style="margin-bottom: 1rem;">
+                        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                        <span><strong>${pendingRosterCount}</strong> member${pendingRosterCount === 1 ? '' : 's'} ha${pendingRosterCount === 1 ? 's' : 've'} a pending excuse for this meeting — review in <a href="member-help.html">Messages</a>.</span>
+                       </div>`
+                    : '';
+
+                const list = document.getElementById('view-meeting-summary');
+                list.innerHTML = `
+                    <div class="mb-4 p-4 rounded" style="background: var(--bg-hover); border: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding-left: 1.5rem;">
+                        <div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">Presenter | Soo Jeediye</p>
+                            <p><strong style="color: var(--text-main);">${m.presenter || '—'}</strong></p>
+                        </div>
+                        <div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">Place | Goobta</p>
+                            <p><strong style="color: var(--text-main);">${m.place || '—'}</strong></p>
+                        </div>
+                        <div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">Convocation | Dufcada</p>
+                            <p><strong style="color: var(--text-main);">${m.convocation}</strong></p>
+                        </div>
+                        <div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">Target Members</p>
+                            <p><strong style="color: var(--text-main);">${audienceLabel(m.target_audience)}</strong></p>
+                        </div>
+                        <div style="grid-column: span 2;">
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">Total Participants | Tirada Xaadirka</p>
+                            <span class="badge" style="background: var(--success); color: white; font-size: 0.9rem; padding: 4px 12px;">${participantCount} arday xaadiray</span>
+                        </div>
+                    </div>
+                    
+                    <h5 style="margin-bottom: 1rem; color: var(--text-main);">Full Attendee List | Liiska Xaadirinta</h5>
+                    ${viewPendingBanner}
+                    <div class="attendance-list" style="max-height: 250px;">
+                        ${attendeeGroupsHtml}
+                    </div>
+                `;
+
+                viewModal.classList.add('active');
+            };
+
+            window.markAttendanceFlow = async (meetingId) => {
+                const meetings = await getMeetings();
+                const m = meetings.find(x => x.id == meetingId);
+                if (!m) return;
+
+                if (isAttendButtonLocked(m)) {
+                    alert('Attendance window closed. You can only edit attendance within 24 hours of the meeting date.');
+                    return;
+                }
+
+                const students = await getUsers();
+                const convs = await getConvocations();
+                
+                const targetConvs = m.convocation === 'All' ? convs.map(c => c.name) : [m.convocation];
+                
+                // Get current attendance if it exists
+                const currentAttendance = await getAttendance({ meeting_id: meetingId });
+                const attByStudent = {};
+                currentAttendance.forEach((a) => { attByStudent[a.student_id] = a; });
+
+                const helpRows = await fetchMemberHelpRequests();
+                const pendingByUser = buildPendingExcusesMap(helpRows, meetingId, m.date);
+
+                const rosterStudentIds = [];
+                attendanceList.innerHTML = targetConvs.map(convName => {
+                    const convStudents = students.filter(s => matchMeetingStudent(s, m, convName));
+                    convStudents.forEach((s) => rosterStudentIds.push(s.id));
+                    if (convStudents.length === 0) return '';
+
+                    return `
+                        <div class="conv-group">
+                            <div class="conv-group-header" onclick="toggleConvGroup(this)">
+                                <span>${convName} (${convStudents.length})</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="conv-group-content">
+                                ${convStudents.map(s => {
+                                    const rec = attByStudent[s.id];
+                                    const isExcused = !!(rec && rec.is_excused);
+                                    const isPresent = rec && rec.status === 'Present';
+                                    const pendingHelp = pendingByUser[s.id];
+                                    const hasPendingExcuse = !!(pendingHelp && !isExcused);
+                                    const disabledAttr = isExcused ? 'disabled' : '';
+                                    const titleAttr = isExcused
+                                        ? 'title="Excused absence — approved apology"'
+                                        : (hasPendingExcuse ? 'title="Member submitted an apology — review in Messages before finalizing if needed"' : '');
+                                    const rowClass = [
+                                        isExcused ? 'is-excused' : '',
+                                        hasPendingExcuse ? 'has-pending-excuse' : '',
+                                    ].filter(Boolean).join(' ');
+                                    return `
+                                    <div class="attendance-row${rowClass ? ' ' + rowClass : ''}">
+                                        <span>${s.name} <small class="text-muted">(${s.id})</small>${isExcused ? '<span class="attendance-excused-hint">Excused</span>' : ''}${renderPendingExcuseHint(pendingHelp, isExcused)}</span>
+                                        <input type="checkbox" ${isPresent ? 'checked' : ''} ${disabledAttr} ${titleAttr} data-id="${s.id}" data-excused="${isExcused ? '1' : '0'}" style="width: 20px; height: 20px;">
+                                    </div>
+                                `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const pendingBanner = document.getElementById('attendance-pending-banner');
+                const pendingRosterCount = [...new Set(rosterStudentIds)].filter((id) => pendingByUser[id]).length;
+                if (pendingBanner) {
+                    if (pendingRosterCount > 0) {
+                        pendingBanner.style.display = 'flex';
+                        pendingBanner.innerHTML = `
+                            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                            <span><strong>${pendingRosterCount}</strong> member${pendingRosterCount === 1 ? '' : 's'} ha${pendingRosterCount === 1 ? 's' : 've'} a pending excuse for this meeting — review in <a href="member-help.html">Messages</a> before saving if needed.</span>
+                        `;
+                    } else {
+                        pendingBanner.style.display = 'none';
+                        pendingBanner.innerHTML = '';
+                    }
+                }
+
+                document.getElementById('m-topic').value = m.topic;
+                document.getElementById('m-date').value = m.date;
+                document.getElementById('m-presenter').value = m.presenter;
+                document.getElementById('m-place').value = m.place;
+                mConvocation.value = m.convocation;
+
+                modal.setAttribute('data-current-meeting-id', meetingId);
+                modal.classList.add('active');
+                document.getElementById('step-1-fields').style.display = 'none';
+                attendanceSection.style.display = 'block';
+                saveBtn.style.display = 'block';
+                nextStepBtn.style.display = 'none';
+                document.querySelector('.modal-header h3').innerText = 'Mark Attendance';
+                document.querySelector('.modal-header p').innerText = m.topic;
+            };
+
+            window.toggleConvGroup = (header) => {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('i');
+                content.classList.toggle('active');
+                icon.classList.toggle('fa-chevron-up');
+                icon.classList.toggle('fa-chevron-down');
+            };
+
+            openModalBtn.onclick = () => {
+                modal.classList.add('active');
+                modal.setAttribute('data-current-meeting-id', '');
+                attendanceSection.style.display = 'none';
+                const pendingBanner = document.getElementById('attendance-pending-banner');
+                if (pendingBanner) {
+                    pendingBanner.style.display = 'none';
+                    pendingBanner.innerHTML = '';
+                }
+                saveBtn.style.display = 'none';
+                nextStepBtn.style.display = 'block';
+                document.getElementById('step-1-fields').style.display = 'block';
+                document.querySelector('.modal-header h3').innerText = 'Create New Meeting';
+                document.getElementById('m-date').value = new Date().toISOString().split('T')[0];
+            };
+            
+            closeModalBtn.onclick = () => modal.classList.remove('active');
+            closeViewModalBtn.onclick = () => viewModal.classList.remove('active');
+
+            nextStepBtn.onclick = async () => {
+                const topic = document.getElementById('m-topic').value;
+                const date = document.getElementById('m-date').value;
+                const presenter = document.getElementById('m-presenter').value;
+                const place = document.getElementById('m-place').value;
+                const convocation = mConvocation.value;
+                const target_audience = mTargetAudience.value;
+                
+                if(!topic || !date || !presenter || !place) { 
+                    alert('Please fill all required fields | Fadlan buuxi bannaannada'); 
+                    return; 
+                }
+
+                const students = await getUsers();
+                const targetCount = countMeetingTargetMembers(students, convocation, target_audience);
+                if (targetCount === 0) {
+                    const label = (target_audience || 'active') === 'graduated' ? 'graduated' : 'active';
+                    const scope = convocation === 'All' ? 'the system' : convocation;
+                    alert(`No ${label} members in ${scope}. Cannot create this meeting — no target audience.`);
+                    return;
+                }
+
+                const res = await addMeeting({ topic, date, presenter, place, convocation, target_audience });
+                if (res && res.id) {
+                    modal.classList.remove('active');
+                    renderMeetings();
+                    alert('Meeting Announcement Saved! You can now mark attendance.');
+                } else if (res && res.error) {
+                    alert(res.error);
+                }
+            };
+
+            document.getElementById('meeting-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const mId = modal.getAttribute('data-current-meeting-id');
+                if (!mId) return;
+
+                const checkboxList = attendanceList.querySelectorAll('input[type="checkbox"]');
+                const presentCount = Array.from(checkboxList).filter(c => c.checked).length;
+                
+                const attendanceRecords = [];
+                for (let cb of checkboxList) {
+                    if (cb.getAttribute('data-excused') === '1' || cb.disabled) continue;
+                    attendanceRecords.push({
+                        meeting_id: mId,
+                        student_id: cb.getAttribute('data-id'),
+                        status: cb.checked ? 'Present' : 'Absent',
+                        date: document.getElementById('m-date').value
+                    });
+                }
+                
+                if (attendanceRecords.length > 0) {
+                    await recordAttendance(attendanceRecords);
+                }
+
+                await updateMeeting(mId, {
+                    participantsCount: presentCount,
+                    attendanceTaken: true,
+                });
+                
+                modal.classList.remove('active');
+                renderMeetings();
+                alert('Attendance Saved Successfully!');
+            };
+
+            populateFilters();
+            await loadConvocations();
+            
+            // Scroll Arrow Functionality
+            const scrollArrow = document.getElementById('table-scroll-arrow');
+            
+            if (scrollArrow) {
+                scrollArrow.onclick = () => {
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                };
+                
+                window.onscroll = () => {
+                    // Show arrow if not at bottom and content is long
+                    const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+                    const isLong = document.body.offsetHeight > window.innerHeight + 200;
+                    scrollArrow.style.display = (!isBottom && isLong) ? 'flex' : 'none';
+                };
+            }
+
+            // Bind month picker change event correctly
+            if (monthPicker) {
+                monthPicker.addEventListener('change', () => {
+                    showAllMeetings = false; // Reset toggle on new filter
+                    renderMeetings();
+                });
+            }
+
+            await renderMeetings();
+        });
+    </script>
+</body>
+</html>

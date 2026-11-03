@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summer Course Registration | HSF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/member-forms.css">
+</head>
+<body class="member-form-page">
+  <div class="member-form-shell">
+    <a href="index.html" class="member-form-back"><i class="fas fa-arrow-left"></i> Back to homepage</a>
+    <div class="member-form-card">
+      <div class="member-form-top">
+        <img src="portal/img/logo.svg" alt="Naadiga Ardayda Deeqda Waxbarasho HSF" class="member-form-logo">
+        <h1 id="formHeadline">Summer Course 2025</h1>
+        <p id="formSubtitle" class="member-form-org">Naadiga Ardayda Deeqda Waxbarasho HSF</p>
+      </div>
+      <div class="member-form-body">
+        <p id="formDeadlineNotice" class="member-form-deadline" hidden></p>
+
+        <div id="formClosedNotice" class="member-form-closed" hidden></div>
+
+        <div id="formInteractive" class="member-form-body--interactive">
+          <div id="memberGate" class="member-gate">
+            <div class="member-gate-icon"><i class="fas fa-user-lock"></i></div>
+            <h2>Member access</h2>
+            <p>Registration is for HSF members only.</p>
+            <div id="memberGateError" class="member-error" hidden></div>
+            <form id="memberGateForm">
+              <div class="member-field">
+                <label>Username <span class="req">*</span></label>
+                <input type="text" id="gateUsername" required autocomplete="username">
+              </div>
+              <div class="member-field">
+                <label>Password <span class="req">*</span></label>
+                <div class="member-password-wrap">
+                  <input type="password" id="gatePassword" required autocomplete="current-password">
+                  <button type="button" class="member-password-toggle" aria-label="Show password"><i class="fas fa-eye"></i></button>
+                </div>
+              </div>
+              <button type="submit" class="member-btn"><i class="fas fa-sign-in-alt"></i> Continue</button>
+            </form>
+          </div>
+
+          <div id="memberOtpGate" class="member-otp-gate" hidden>
+            <div class="member-gate-icon"><i class="fas fa-envelope"></i></div>
+            <h2>Verification</h2>
+            <p id="otpEmailHint">Enter the verification code sent to your registered address.</p>
+            <div id="memberOtpError" class="member-error" hidden></div>
+            <form id="memberOtpForm">
+              <div class="member-field">
+                <label>Verification code <span class="req">*</span></label>
+                <input type="text" id="gateOtp" class="member-otp-code" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" required placeholder="000000">
+              </div>
+              <button type="submit" class="member-btn"><i class="fas fa-check"></i> Continue</button>
+              <button type="button" class="member-link-btn" id="resendOtpBtn">Resend code</button>
+            </form>
+          </div>
+
+          <div id="memberFormWrap" hidden>
+            <div id="memberBar" class="member-bar" hidden>
+              <span>Logged in as <strong id="memberBarName"></strong></span>
+              <button type="button" class="member-btn member-btn-secondary" id="memberLogoutBtn">Switch account</button>
+            </div>
+            <div id="formSuccess" class="member-success" hidden></div>
+            <div id="formError" class="member-error" hidden></div>
+            <div id="summerFormBlock">
+              <form id="summerCourseForm">
+                <div class="member-field">
+                  <label for="scName">Name <span class="req">*</span></label>
+                  <input type="text" id="scName" required maxlength="200">
+                </div>
+                <div class="member-field">
+                  <label for="scConvocation">Dufcadda <span class="req">*</span></label>
+                  <select id="scConvocation" required></select>
+                </div>
+                <div class="member-field">
+                  <label for="scFaculty">Faculty <span class="req">*</span></label>
+                  <input type="text" id="scFaculty" required maxlength="120">
+                </div>
+                <div class="member-field">
+                  <label for="scUniversity">University <span class="req">*</span></label>
+                  <input type="text" id="scUniversity" required maxlength="120">
+                </div>
+                <div class="member-field">
+                  <label for="scSemester">Semester</label>
+                  <input type="text" id="scSemester" readonly tabindex="-1" placeholder="—">
+                </div>
+                <button type="submit" class="member-btn" id="scSubmitBtn"><i class="fas fa-paper-plane"></i> Submit registration</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="assets/js/config.js?v=20260714"></script>
+  <script src="assets/js/member-form-gate.js?v=20260616d"></script>
+  <script>
+    function hideSummerForm() {
+      const block = document.getElementById('summerFormBlock');
+      if (block) block.hidden = true;
+    }
+
+    function lockSummerRegisteredForm() {
+      hideSummerForm();
+      const okEl = document.getElementById('formSuccess');
+      okEl.textContent = 'You have already registered for the summer course this year. Contact HSF admin if this is a mistake.';
+      okEl.hidden = false;
+    }
+
+    let summerVerifiedUser = null;
+
+    HSFMemberGate.initGate({
+      formType: 'summer-course',
+      async onAuthenticated(user) {
+        summerVerifiedUser = user;
+        document.getElementById('scName').value = user.name || '';
+        document.getElementById('scFaculty').value = user.faculty || '';
+        document.getElementById('scUniversity').value = user.university || '';
+        document.getElementById('scSemester').value = user.isGraduated
+          ? 'Graduated'
+          : (user.semester || '');
+        await HSFMemberGate.loadConvocationOptions(document.getElementById('scConvocation'));
+        const convSel = document.getElementById('scConvocation');
+        const d = HSFMemberGate.dufcadFromUser(user);
+        const display = HSFMemberGate.dufcadDisplayFromUser(user);
+        if (d && convSel && user.convocation) {
+          convSel.innerHTML = `<option value="${d}">${display || d}</option>`;
+          convSel.value = d;
+        } else if (d) {
+          convSel.value = d;
+        }
+        try {
+          const res = await fetch(`${HSFMemberGate.API_BASE}/api/public/applications/summer-course/mine`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: user.id,
+              username: user.username,
+              access_token: HSFMemberGate.getAccessToken(),
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.already_registered) lockSummerRegisteredForm();
+          }
+        } catch (e) { /* ignore */ }
+      },
+    });
+
+    document.getElementById('scConvocation')?.addEventListener('change', () => {
+      const errEl = document.getElementById('formError');
+      if (!errEl || !summerVerifiedUser) return;
+      const msg = HSFMemberGate.validateMemberDufcad(
+        summerVerifiedUser,
+        document.getElementById('scConvocation').value,
+      );
+      if (msg) {
+        errEl.textContent = msg;
+        errEl.hidden = false;
+      } else {
+        errEl.hidden = true;
+        errEl.textContent = '';
+      }
+    });
+
+    document.getElementById('summerCourseForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('formError');
+      const okEl = document.getElementById('formSuccess');
+      const btn = document.getElementById('scSubmitBtn');
+      errEl.hidden = true;
+      okEl.hidden = true;
+      const dufcadErr = summerVerifiedUser
+        ? HSFMemberGate.validateMemberDufcad(
+          summerVerifiedUser,
+          document.getElementById('scConvocation').value,
+        )
+        : '';
+      if (dufcadErr) {
+        errEl.textContent = dufcadErr;
+        errEl.hidden = false;
+        return;
+      }
+      btn.disabled = true;
+      try {
+        await HSFMemberGate.submitApplication('summer-course', {
+          name: document.getElementById('scName').value.trim(),
+          convocation: document.getElementById('scConvocation').value,
+          faculty: document.getElementById('scFaculty').value.trim(),
+          university: document.getElementById('scUniversity').value.trim(),
+        });
+        okEl.textContent = 'Thank you! Your summer course registration has been saved.';
+        okEl.hidden = false;
+        hideSummerForm();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.hidden = false;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

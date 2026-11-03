@@ -1,0 +1,16 @@
+---
+description: Repo layout and what still depends on HSF scaffolding
+globs: "**/README.md,**/PRODUCT.md,**/AGENTS.md"
+alwaysApply: false
+---
+
+# Kit layout
+
+```
+face_recognition/   Public find + upload UI, data/, uploads/
+portal/pages/media-admin/   Gallery admin UI
+portal/pages/student/       find-my-photos + my-photos (portal-shaped)
+backend/routes/face_photos_api.py
+```
+
+Still missing for a real standalone ship: own `app.py`, auth/DB (or lightweight organizer accounts), guest QR without HSF login, billing optional later.

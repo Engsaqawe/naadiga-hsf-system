@@ -1,0 +1,279 @@
+/* Shared export dropdown for report pages */
+.export-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.export-dropdown .export-btn {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.export-options {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+  min-width: 210px;
+  z-index: 1100;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.export-options.active {
+  display: block;
+}
+
+.export-item {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-main, #0f172a);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.export-item:hover {
+  background: var(--bg-main, #f8fafc);
+  color: var(--primary, #1e4a6d);
+}
+
+.export-item i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Side-by-side action row (Refresh left, Export right) */
+.report-actions-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.report-actions-row .report-action-btn,
+.report-actions-row .report-action-export {
+  flex: 1 1 50%;
+  min-width: 0;
+}
+
+.report-actions-row .report-action-export .export-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Mobile — keep action buttons on one row; menu opens full-width below */
+@media (max-width: 768px) {
+  .report-preview-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .report-preview-toolbar h3 {
+    width: 100%;
+  }
+
+  .report-preview-toolbar .export-dropdown {
+    align-self: flex-end;
+    width: auto;
+  }
+
+  .report-actions-row {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .report-actions-row .report-action-export .export-options {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    right: auto;
+    left: auto;
+    margin-top: 8px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+  }
+
+  .filter-row .report-actions-row {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+}
+
+/* Content-sized print — no forced A4 blank space */
+@media print {
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+
+  html, body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+}
+
+/* Export preview modal (used on payment-leader + main-leader report pages) */
+.portal-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 3010;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.portal-modal-overlay.is-open {
+  display: flex;
+}
+
+.portal-modal-overlay .portal-modal-card {
+  background: var(--bg-card, #fff);
+  border-radius: 20px;
+  width: 100%;
+  padding: 1.5rem 1.65rem 1.65rem;
+  max-height: 92vh;
+  overflow: hidden;
+  border: 1px solid var(--border, #e2e8f0);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14);
+  box-sizing: border-box;
+}
+
+.portal-modal-overlay .portal-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.portal-modal-overlay .portal-modal-head h3 {
+  margin: 0;
+  color: var(--primary, #1e4a6d);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.portal-modal-close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  background: var(--bg-main, #f8fafc);
+  color: var(--text-muted, #64748b);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.portal-modal-close:hover {
+  color: var(--primary, #1e4a6d);
+  border-color: var(--primary, #1e4a6d);
+}
+
+#exportPreviewBody {
+  overflow: auto;
+  flex: 1;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+#exportPreviewBody .report-sheet {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: #fff !important;
+  color: #1e293b !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#exportPreviewBody .report-sheet.report-export-ready {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+/* Export / preview — light paper styling (ignore portal dark theme) */
+#exportPreviewBody .report-meta-grid,
+#report-preview-body .report-meta-grid,
+.report-export-ready .report-meta-grid {
+  background: linear-gradient(180deg, #f8fafc, #ffffff) !important;
+  border-bottom: 3px solid #2E946A !important;
+  color: #1e293b !important;
+}
+
+#exportPreviewBody .report-meta-grid .lbl,
+#report-preview-body .report-meta-grid .lbl,
+.report-export-ready .report-meta-grid .lbl {
+  color: #64748b !important;
+}
+
+#exportPreviewBody .report-meta-grid .val,
+#report-preview-body .report-meta-grid .val,
+.report-export-ready .report-meta-grid .val {
+  color: #0f172a !important;
+}
+
+#exportPreviewBody .report-sheet,
+#report-preview-body .report-sheet,
+#exportPreviewBody .report-paper,
+#report-preview-body .report-paper {
+  background: #fff !important;
+  color: #1e293b !important;
+}
+
+#exportPreviewBody .report-block-head h4,
+#report-preview-body .report-block-head h4,
+.report-export-ready .report-block-head h4 {
+  color: #1e4a6d !important;
+}
+
+#exportPreviewBody .report-block-head,
+#report-preview-body .report-block-head,
+.report-export-ready .report-block-head {
+  border-bottom-color: #e2e8f0 !important;
+}
+
+#exportPreviewBody .report-table td,
+#report-preview-body .report-table td,
+.report-export-ready .report-table td {
+  color: #1e293b !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+#exportPreviewBody .report-badge--paid,
+#report-preview-body .report-badge--paid,
+.report-export-ready .report-badge--paid {
+  background: #d1fae5 !important;
+  color: #145f40 !important;
+}
+
+#exportPreviewBody .report-badge--unpaid,
+#report-preview-body .report-badge--unpaid,
+.report-export-ready .report-badge--unpaid {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+}

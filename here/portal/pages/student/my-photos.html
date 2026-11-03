@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Photos - HSF</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20260713">
+  <link rel="stylesheet" href="../main-leader/main_leader_responsive.css">
+  <link rel="stylesheet" href="find-my-photos.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="top-navbar" id="top-navbar"></header>
+      <div class="dashboard-content fade-in">
+        <div class="card find-card">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fa-solid fa-images"></i> My Photos</h3>
+            <a href="find-my-photos.html" class="btn-modern secondary btn-sm-find">
+              <i class="fa-solid fa-camera"></i> Find more
+            </a>
+          </div>
+          <p class="find-lead">Photos matched to your face (kept even if you have not downloaded them). Use Ignore for wrong matches.</p>
+          <span id="photoCount" class="media-meta-chip">0 photos</span>
+          <div class="match-grid" id="results" style="margin-top:12px;"></div>
+          <p id="status" class="find-status"></p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="find-modal hidden" id="previewModal" role="dialog" aria-modal="true">
+    <div class="find-modal-backdrop" id="previewBackdrop"></div>
+    <div class="find-modal-sheet">
+      <img id="previewImg" alt="Preview">
+      <div class="find-modal-actions">
+        <button type="button" class="btn-modern primary find-modal-dl" id="previewDownload">
+          <i class="fa-solid fa-download"></i> <span id="previewDlLabel">Download</span>
+        </button>
+      </div>
+      <p class="find-modal-hint">Tap outside to close</p>
+    </div>
+  </div>
+
+  <script src="../../assets/js/data.js?v=20260629"></script>
+  <script src="../../assets/js/components.js"></script>
+  <script src="my-photos.js"></script>
+</body>
+</html>

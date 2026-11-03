@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Gallery - HSF</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20260713">
+  <link rel="stylesheet" href="../main-leader/main_leader_responsive.css">
+  <link rel="stylesheet" href="media-admin.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <header class="top-navbar" id="top-navbar"></header>
+
+      <div class="dashboard-content fade-in">
+        <!-- Manage -->
+        <div class="card media-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="fa-solid fa-images"></i> Manage event photos
+            </h3>
+            <a href="../student/find-my-photos.html" class="btn-modern secondary btn-sm-media">
+              <i class="fa-solid fa-camera"></i> Find My Photos
+            </a>
+          </div>
+          <p class="media-lead">
+            Create events, upload all photos once, delete unwanted ones, and see who downloaded matches.
+          </p>
+
+          <div class="media-manage-grid">
+            <div class="media-field">
+              <label for="eventTitle">New event title</label>
+              <input type="text" id="eventTitle" class="search-input" placeholder="e.g. Graduation 2026">
+              <button type="button" class="btn-modern secondary" id="btnCreate">
+                <i class="fa-solid fa-plus"></i> Create event
+              </button>
+            </div>
+            <div class="media-field">
+              <label for="eventSelect">Select event</label>
+              <select id="eventSelect" class="search-input"></select>
+              <button type="button" class="btn-modern media-btn-danger" id="btnDeleteEvent">
+                <i class="fa-solid fa-trash"></i> Delete event
+              </button>
+            </div>
+          </div>
+
+          <div class="media-upload-zone" id="uploadZone">
+            <div class="media-upload-hero">
+              <div class="media-upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+              <h4>Upload photos</h4>
+              <p>Tap Upload to pick photos — they upload in one step. Or drag &amp; drop here.</p>
+              <input type="file" id="photos" accept="image/*" multiple hidden>
+              <div class="media-upload-actions">
+                <button type="button" class="btn-modern primary media-upload-main" id="btnUpload">
+                  <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                </button>
+                <button type="button" class="btn-modern secondary" id="btnRefresh">
+                  <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+              </div>
+              <p id="fileLabel" class="media-file-label">Ready to upload</p>
+            </div>
+          </div>
+          <p id="status" class="media-status"></p>
+        </div>
+
+        <!-- Gallery -->
+        <div class="card media-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="fa-solid fa-photo-film"></i> Photos in this event
+            </h3>
+            <span id="photoCount" class="media-meta-chip">0 photos</span>
+          </div>
+          <div class="media-gallery-toolbar">
+            <div class="media-field media-toolbar-field">
+              <label for="photoFilter">Filter</label>
+              <select id="photoFilter" class="search-input">
+                <option value="all">All photos</option>
+                <option value="downloaded">Downloaded</option>
+                <option value="undownloaded">Not downloaded</option>
+              </select>
+            </div>
+            <div class="media-field media-toolbar-field">
+              <label for="photoSort">Sort</label>
+              <select id="photoSort" class="search-input">
+                <option value="newest">Newest upload</option>
+                <option value="oldest">Oldest upload</option>
+                <option value="most_downloaded">Most downloaded</option>
+                <option value="name">Name A–Z</option>
+              </select>
+            </div>
+            <div class="media-toolbar-actions">
+              <button type="button" class="btn-modern secondary btn-sm-media" id="btnClearDownloads" title="Delete photos that members already downloaded (history stays)">
+                <i class="fa-solid fa-cloud-minus"></i> Delete downloaded photos
+              </button>
+              <button type="button" class="btn-modern media-btn-danger btn-sm-media" id="btnEraseAll" title="Delete all photos in this event">
+                <i class="fa-solid fa-trash-can"></i> Erase all photos
+              </button>
+            </div>
+          </div>
+          <div class="media-photo-grid" id="photoGrid">
+            <p class="media-empty">Select an event to view photos.</p>
+          </div>
+        </div>
+
+        <!-- Downloaders -->
+        <div class="card media-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="fa-solid fa-download"></i> Who downloaded
+            </h3>
+            <span id="downloaderCount" class="media-meta-chip">0 members</span>
+          </div>
+          <div class="table-wrapper1 media-table-scroll">
+            <table class="data-table" id="downloadTable">
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Username</th>
+                  <th>Photos</th>
+                  <th>Last download</th>
+                </tr>
+              </thead>
+              <tbody id="downloadBody">
+                <tr><td colspan="4" class="media-empty-cell">Nobody has downloaded from this event yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/js/data.js?v=20260629"></script>
+  <script src="../../assets/js/components.js"></script>
+  <script src="media-admin.js"></script>
+
+  <div class="media-modal hidden" id="mediaPreviewModal" role="dialog" aria-modal="true">
+    <div class="media-modal-backdrop" id="mediaPreviewBackdrop"></div>
+    <div class="media-modal-sheet">
+      <img id="mediaPreviewImg" alt="Preview">
+      <div style="display:flex;justify-content:center;margin-top:12px;">
+        <button type="button" class="btn-modern secondary" id="mediaPreviewCloseBtn">Close</button>
+      </div>
+      <p style="text-align:center;margin:8px 0 0;font-size:0.78rem;color:var(--text-muted);">Tap outside to close</p>
+    </div>
+  </div>
+</body>
+</html>

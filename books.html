@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graduation Books | NAHS Foundation</title>
+  <meta name="description" content="Browse graduation books and PDF publications from NAHS Foundation scholarship alumni.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/site-header.css">
+  <link rel="stylesheet" href="assets/css/floating-actions.css">
+  <link rel="stylesheet" href="assets/css/articles.css">
+  <link rel="stylesheet" href="assets/css/books.css">
+</head>
+<body class="articles-page books-page">
+
+  <div class="navbar" id="mainNavbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-container">
+      <a href="index.html" class="logo" aria-label="NAHS Foundation home">
+        <img src="portal/img/logo.svg" alt="HS Foundation Logo">
+        <div class="logo-text-wrapper">
+          <h1>Naadiga Ardayda Hormuud Salaam Foundation</h1>
+          <p>Scholarship students • Giving back</p>
+        </div>
+      </a>
+      <div class="menu-icon" id="menuToggle" aria-label="Toggle menu" role="button" tabindex="0"><i class="fas fa-bars"></i></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#mission-vision">Mission</a></li>
+        <li><a href="articles.html">Articles</a></li>
+        <li><a href="books.html" class="active-nav">Books</a></li>
+        <li><a href="team.html">Our Team</a></li>
+        <li><a href="index.html#activities">Activities</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="admin_login.html" class="btn-outline">Login</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <header class="articles-hero books-hero" id="booksHero" aria-labelledby="heroTitle">
+    <div class="articles-hero-bg" id="booksHeroBg" aria-hidden="true">
+      <img id="booksHeroImg" alt="" decoding="async" hidden>
+    </div>
+    <div class="articles-hero-overlay" aria-hidden="true"></div>
+    <div class="articles-hero-content">
+      <h1 id="heroTitle">Graduation Books &amp; Publications</h1>
+      <p id="heroSubtitle">PDF publications and graduation books from our scholarship alumni</p>
+      <div class="search-wrap" role="search">
+        <input type="search" id="searchInput" placeholder="Search books, authors, topics…" aria-label="Search books">
+        <i class="fas fa-search" aria-hidden="true"></i>
+      </div>
+    </div>
+  </header>
+
+  <div class="filter-bar" role="toolbar" aria-label="Book category filters">
+    <div class="filter-inner">
+      <div class="filter-pills" id="filterPills" aria-label="Categories">
+        <button type="button" class="filter-pill active" data-category="all">All</button>
+        <button type="button" class="filter-pill" data-category="Graduation">Graduation</button>
+        <button type="button" class="filter-pill" data-category="Research">Research</button>
+        <button type="button" class="filter-pill" data-category="Memoir">Memoir</button>
+        <button type="button" class="filter-pill" data-category="Guide">Guide</button>
+        <button type="button" class="filter-pill" data-category="Other">Other</button>
+      </div>
+      <span class="articles-count" id="booksCount" aria-live="polite">Loading…</span>
+    </div>
+  </div>
+
+  <main>
+    <div class="articles-grid" id="booksGrid" aria-label="Books" role="list"></div>
+    <div class="load-more-wrap">
+      <p class="showing-text" id="showingText"></p>
+      <button type="button" class="btn-primary" id="loadMoreBtn" style="display:none">
+        <i class="fas fa-plus" style="margin-right:8px"></i>Load More Books
+      </button>
+    </div>
+  </main>
+
+  <footer style="text-align:center;padding:2.5rem 1rem;color:#7a9ab2;font-size:.85rem;border-top:1px solid #dde8f0;margin-top:2rem;background:#fff;">
+    <p>&copy; <span id="year"></span> Naadiga Ardayda Deeqda Waxbarasho HSF. All rights reserved</p>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/site-header.js"></script>
+  <script src="assets/js/floating-actions.js"></script>
+  <script src="assets/js/books.js"></script>
+</body>
+</html>

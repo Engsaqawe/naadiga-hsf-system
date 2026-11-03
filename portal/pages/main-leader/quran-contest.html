@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quran Contest - HSF</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="./main_leader_responsive.css?v=20260631" />
+</head>
+<body class="applications-admin">
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="top-navbar" id="top-navbar"></header>
+      <div class="dashboard-content">
+        <div class="applications-top-row">
+        <div class="month-selector quran-contest-toolbar applications-date-toolbar">
+          <div class="month-field-group applications-date-row">
+            <label class="toolbar-month-label" for="globalMonthPicker">Filter by month (optional)</label>
+            <input type="month" id="globalMonthPicker" class="month-picker-input" aria-label="Filter by month" autocomplete="off">
+          </div>
+        </div>
+        <div class="stats-grid applications-stats-panel" id="quran-stats"></div>
+        </div>
+
+        <div class="card-table" style="padding:1.5rem;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+              <strong style="color:var(--primary);">Public form status</strong>
+              <p style="font-size:.82rem;color:var(--text-muted);margin:4px 0 0;">Open during Ramadan; close when registration ends.</p>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+              <input type="checkbox" id="toggleQuranOpen" onchange="saveFormSettings()"> Open registration
+            </label>
+          </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+            <label style="display:flex;align-items:flex-start;gap:10px;font-weight:600;cursor:pointer;">
+              <input type="checkbox" id="toggleQuranSameSectionRetry" onchange="saveFormSettings()" style="margin-top:3px;">
+              <span>
+                Allow re-competing same section for 10 &amp; 20 Juz
+                <small style="display:block;font-weight:500;color:var(--text-muted);margin-top:4px;line-height:1.35;">
+                  Off (default): once competed in 10 or 20, they must move up. On: they may retry the same section unless they won 1st place (like 30 Juz). Higher→lower stays blocked.
+                </small>
+              </span>
+            </label>
+          </div>
+          <div id="quranFormOpenFields" class="quran-form-fields" hidden>
+            <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:12px 0 6px;">Form title</label>
+            <input type="text" id="quranHeadline" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Quran Contest Registration">
+            <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:10px 0 6px;">Subtitle</label>
+            <input type="text" id="quranSubtitle" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Naadiga Ardayda Deeqda Waxbarasho HSF">
+            <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:10px 0 6px;">F.G. deadline note (when open)</label>
+            <textarea id="quranDeadlineMessage" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Waqtiga uu dhammaanayo ee diiwaangelinta waa 15 January 2026."></textarea>
+          </div>
+          <div id="quranFormClosedFields" class="quran-form-fields" hidden>
+            <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:12px 0 6px;">Closed message (shown on public form)</label>
+            <textarea id="quranClosedMessage" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Quran contest registration is closed now. Please check back when registration opens."></textarea>
+          </div>
+          <p id="quranRegClosedBanner" style="display:none;margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#fef3c7;color:#92400e;font-size:.85rem;"><i class="fa-solid fa-lock"></i> <span id="quranRegClosedBannerText"></span></p>
+          <p id="formSettingsMsg" style="font-size:.82rem;color:var(--secondary);margin:8px 0 0;"></p>
+        </div>
+
+        <div class="card-table" style="padding:1.5rem;margin-bottom:1rem;">
+          <div class="portal-section-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <h3 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Contest History</h3>
+            <button type="button" class="btn btn-outline btn-sm" onclick="QuranContestAdmin.promptAddContestYear()"><i class="fa-solid fa-plus"></i> Add contest</button>
+          </div>
+          <div class="table-wrapper applications-table-scroll applications-table-scroll--history">
+            <table class="data-table applications-history-table">
+              <thead>
+                <tr style="text-align:left;border-bottom:2px solid var(--border);">
+                  <th style="padding:10px;">Contest</th>
+                  <th style="padding:10px;">Date</th>
+                  <th style="padding:10px;">Competitors</th>
+                  <th style="padding:10px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody">
+                <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-muted);">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card-table" style="padding:1.5rem;">
+          <div class="portal-section-head applications-reg-section-head">
+            <h3 class="section-title">
+              <i class="fa-solid fa-book-quran"></i>
+              <button type="button" id="regYearTitleBtn" class="hsf-reg-title-btn" onclick="QuranContestAdmin.openSelectedContest()">
+                <span id="reg-year-title">Registrations</span>
+              </button>
+            </h3>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="QuranContestAdmin.openAddCompetitor()"><i class="fa-solid fa-user-plus"></i> Add competitor</button>
+            </div>
+          </div>
+          <div class="registrations-filter-bar applications-reg-filter">
+            <input type="search" id="filterSearch" class="reg-filter-input reg-filter-search" placeholder="Search name…" aria-label="Search by name">
+            <div class="applications-filter-pair">
+              <select id="filterSection" class="reg-filter-select reg-filter-section" aria-label="Filter by section">
+                <option value="">All sections</option>
+                <option value="Qeybta 10-ka Jus">10 Juz</option>
+                <option value="Qeybta 20-ka Jus">20 Juz</option>
+                <option value="Qeybta 30-ka Jus">30 Juz</option>
+              </select>
+              <select id="filterDufcad" class="reg-filter-select reg-filter-dufcad" aria-label="Filter by dufcad">
+                <option value="">All dufcad</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrapper applications-table-scroll applications-table-scroll--registrations">
+            <table class="data-table applications-registrations-table">
+              <thead>
+                <tr style="text-align:left;border-bottom:2px solid var(--border);">
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Dufcad</th>
+                  <th>Section</th>
+                  <th>Faculty</th>
+                  <th>Semester</th>
+                  <th>Status</th>
+                  <th class="reg-action-col">Action</th>
+                </tr>
+              </thead>
+              <tbody id="appsBody">
+                <tr><td colspan="8" style="padding:20px;text-align:center;color:var(--text-muted);">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="contestModal" class="portal-modal-overlay">
+    <div class="portal-modal-card portal-modal-card--lg portal-modal-card--program">
+      <div class="portal-modal-head" id="contestModalHead">
+        <h3 id="contestModalTitle">Contest</h3>
+        <button type="button" class="portal-modal-close" onclick="closeContestModal()" aria-label="Close">&times;</button>
+      </div>
+      <div id="contestViewPanel" class="hsf-program-modal-panel"></div>
+      <form id="contestEditForm" style="display:none;">
+        <input type="hidden" id="editYear">
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">Contest title</label><input type="text" id="editTitle" class="search-input" style="width:100%;margin-top:4px;" placeholder="e.g. Tartanka Quranka Kareemka ee 2026" maxlength="200"></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">Contest date</label><input type="date" id="editDate" class="search-input" style="width:100%;margin-top:4px;"></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">Place</label><input type="text" id="editPlace" class="search-input" style="width:100%;margin-top:4px;"></div>
+        <p style="font-size:.78rem;font-weight:700;color:var(--primary);margin:12px 0 6px;">10 Juz — winners</p>
+        <div style="margin-bottom:8px;"><label style="font-size:.8rem;font-weight:600;">1st place</label><select id="editW10_1" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <div style="margin-bottom:8px;"><label style="font-size:.8rem;font-weight:600;">2nd place</label><select id="editW10_2" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">3rd place</label><select id="editW10_3" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <p style="font-size:.78rem;font-weight:700;color:var(--primary);margin:12px 0 6px;">20 Juz — winners</p>
+        <div style="margin-bottom:8px;"><label style="font-size:.8rem;font-weight:600;">1st place</label><select id="editW20_1" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <div style="margin-bottom:8px;"><label style="font-size:.8rem;font-weight:600;">2nd place</label><select id="editW20_2" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">3rd place</label><select id="editW20_3" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <p style="font-size:.78rem;font-weight:700;color:var(--primary);margin:12px 0 6px;">30 Juz — winners</p>
+        <div style="margin-bottom:8px;"><label style="font-size:.8rem;font-weight:600;">1st place</label><select id="editW30_1" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <div style="margin-bottom:8px;"><label style="font-size:.8rem;font-weight:600;">2nd place</label><select id="editW30_2" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">3rd place</label><select id="editW30_3" class="search-input" style="width:100%;margin-top:4px;"></select></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Save contest info</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="detailModal" class="portal-modal-overlay">
+    <div class="portal-modal-card portal-modal-card--lg">
+      <div class="portal-modal-head">
+        <h3>Registration details</h3>
+        <button type="button" class="portal-modal-close" onclick="closeDetail()" aria-label="Close">&times;</button>
+      </div>
+      <div id="detailContent" style="font-size:.9rem;line-height:1.6;"></div>
+    </div>
+  </div>
+
+  <div id="regEditModal" class="portal-modal-overlay">
+    <div class="portal-modal-card portal-modal-card--md">
+      <div class="portal-modal-head">
+        <h3 id="regEditTitle">Edit registration</h3>
+        <button type="button" class="portal-modal-close" onclick="closeRegEdit()" aria-label="Close">&times;</button>
+      </div>
+      <form id="regEditForm">
+        <input type="hidden" id="regEditId">
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">Full name</label><input type="text" id="regEditName" class="search-input" style="width:100%;margin-top:4px;" required></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">WhatsApp</label><input type="tel" id="regEditWhatsapp" class="search-input" style="width:100%;margin-top:4px;" required></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">Telephone</label><input type="tel" id="regEditTelephone" class="search-input" style="width:100%;margin-top:4px;" required></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">Dufcad</label><input type="text" id="regEditDufcad" class="search-input" style="width:100%;margin-top:4px;" required></div>
+        <div style="margin-bottom:10px;"><label style="font-size:.8rem;font-weight:600;">Participated before?</label>
+          <select id="regEditParticipated" class="search-input" style="width:100%;margin-top:4px;">
+            <option value="Maya">Maya</option>
+            <option value="Haa">Haa</option>
+          </select>
+        </div>
+        <div id="regEditPrevSectionWrap" style="margin-bottom:10px;" hidden>
+          <label style="font-size:.8rem;font-weight:600;">Previous section</label>
+          <select id="regEditPrevSection" class="search-input" style="width:100%;margin-top:4px;">
+            <option value="">—</option>
+            <option value="10 Juz">10 Juz</option>
+            <option value="20 Juz">20 Juz</option>
+            <option value="30 Juz">30 Juz</option>
+            <option value="Midna">Midna</option>
+          </select>
+        </div>
+        <div id="regEditWonBeforeWrap" style="margin-bottom:10px;" hidden>
+          <label style="font-size:.8rem;font-weight:600;">Won before</label>
+          <select id="regEditWonBefore" class="search-input" style="width:100%;margin-top:4px;">
+            <option value="">—</option>
+            <option value="Kaalinta 1aad">Kaalinta 1aad</option>
+            <option value="Kaalinta 2aad">Kaalinta 2aad</option>
+            <option value="Kaalinta 3aad">Kaalinta 3aad</option>
+            <option value="Midna">Midna</option>
+          </select>
+        </div>
+        <div style="margin-bottom:14px;"><label style="font-size:.8rem;font-weight:600;">Section this year</label>
+          <select id="regEditSection" class="search-input" style="width:100%;margin-top:4px;" required>
+            <option value="Qeybta 10-ka Jus">Qeybta 10-ka Jus</option>
+            <option value="Qeybta 20-ka Jus">Qeybta 20-ka Jus</option>
+            <option value="Qeybta 30-ka Jus">Qeybta 30-ka Jus</option>
+          </select>
+          <p id="regEditSectionHint" hidden style="font-size:.78rem;margin:4px 0 0;"></p>
+        </div>
+        <p id="regEditMsg" style="font-size:.82rem;color:var(--secondary);margin:0 0 10px;"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Save changes</button>
+        <p style="font-size:.78rem;color:var(--text-muted);margin:10px 0 0;">Member receives an email when details are updated.</p>
+      </form>
+    </div>
+  </div>
+
+  <div id="addCompetitorModal" class="portal-modal-overlay">
+    <div class="portal-modal-card portal-modal-card--lg qc-admin-add-modal">
+      <div class="portal-modal-head">
+        <h3>Quran Contest Registration</h3>
+        <button type="button" class="portal-modal-close" onclick="QuranContestAdmin.closeAddCompetitor()" aria-label="Close">&times;</button>
+      </div>
+      <form id="addCompetitorForm" class="qc-admin-add-form">
+        <input type="hidden" id="addCompetitorUserId">
+        <p class="qc-admin-add-hint">Search an HSF member, or choose <strong>Alnuur</strong> and enter name, email, phone, and past participation (university not required for Alnuur).</p>
+        <div id="addCompetitorSearchBlock">
+        <div class="qc-admin-field">
+          <label for="addCompetitorSearch">Search member (HSF)</label>
+          <input type="search" id="addCompetitorSearch" class="search-input" placeholder="Name or username…">
+        </div>
+        <div id="addCompetitorResults" class="qc-admin-search-results"></div>
+        <p id="addCompetitorSelected" class="qc-admin-selected" hidden></p>
+        </div>
+        <p id="addCompetitorYearHint" class="qc-admin-year-hint"></p>
+        <div class="qc-admin-field">
+          <label for="addCompetitorName">Full name <span class="req">*</span></label>
+          <input type="text" id="addCompetitorName" class="search-input" required maxlength="200">
+        </div>
+        <div class="qc-admin-field">
+          <label for="addCompetitorEmail">Email <span class="req">*</span></label>
+          <input type="email" id="addCompetitorEmail" class="search-input" required maxlength="120">
+        </div>
+        <div class="qc-admin-field">
+          <label for="addCompetitorWhatsapp">WhatsApp <span class="req">*</span></label>
+          <input type="tel" id="addCompetitorWhatsapp" class="search-input" required placeholder="e.g. 684421687">
+        </div>
+        <div class="qc-admin-field">
+          <label for="addCompetitorTelephone">Telephone <span class="req">*</span></label>
+          <input type="tel" id="addCompetitorTelephone" class="search-input" required placeholder="e.g. 619751312">
+        </div>
+        <div class="qc-admin-field">
+          <label for="addCompetitorDufcad">Dufcad <span class="req">*</span></label>
+          <select id="addCompetitorDufcad" class="search-input" required></select>
+        </div>
+        <div id="addCompetitorPastBlock" class="qc-admin-past-block" hidden>
+        <div class="qc-admin-field">
+          <label>Participated before? <span class="req">*</span></label>
+          <div class="qc-admin-radio-group">
+            <label><input type="radio" name="addCompetitorParticipated" value="Haa"> Haa</label>
+            <label><input type="radio" name="addCompetitorParticipated" value="Maya" checked> Maya</label>
+          </div>
+        </div>
+        <div id="addCompetitorPrevSectionWrap" class="qc-admin-field" hidden>
+          <label for="addCompetitorPrevSection">Previous section</label>
+          <select id="addCompetitorPrevSection" class="search-input">
+            <option value="">— Dooro —</option>
+            <option value="10 Juz">10 Juz</option>
+            <option value="20 Juz">20 Juz</option>
+            <option value="30 Juz">30 Juz</option>
+            <option value="Midna">Midna</option>
+          </select>
+        </div>
+        <div id="addCompetitorWonBeforeWrap" class="qc-admin-field" hidden>
+          <label for="addCompetitorWonBefore">Won before</label>
+          <select id="addCompetitorWonBefore" class="search-input">
+            <option value="">— Dooro —</option>
+            <option value="Kaalinta 1aad">Kaalinta 1aad</option>
+            <option value="Kaalinta 2aad">Kaalinta 2aad</option>
+            <option value="Kaalinta 3aad">Kaalinta 3aad</option>
+            <option value="Midna">Midna</option>
+          </select>
+        </div>
+        </div>
+        <div class="qc-admin-field" id="addCompetitorSectionWrap">
+          <label for="addCompetitorSection">Section this year <span class="req">*</span></label>
+          <select id="addCompetitorSection" class="search-input" required>
+            <option value="">— Dooro —</option>
+            <option value="Qeybta 10-ka Jus">Qeybta 10-ka Jus</option>
+            <option value="Qeybta 20-ka Jus">Qeybta 20-ka Jus</option>
+            <option value="Qeybta 30-ka Jus">Qeybta 30-ka Jus</option>
+          </select>
+          <p id="addCompetitorSectionHint" hidden class="qc-admin-field-hint"></p>
+        </div>
+        <div id="addCompetitorAcademicFields">
+        <div class="qc-admin-field">
+          <label for="addCompetitorUniversity">University</label>
+          <input type="text" id="addCompetitorUniversity" class="search-input" maxlength="120">
+        </div>
+        <div class="qc-admin-field">
+          <label for="addCompetitorFaculty">Faculty</label>
+          <input type="text" id="addCompetitorFaculty" class="search-input" maxlength="120">
+        </div>
+        <div class="qc-admin-field">
+          <label for="addCompetitorSemester">Semester</label>
+          <input type="text" id="addCompetitorSemester" class="search-input" maxlength="80">
+        </div>
+        <div class="qc-admin-field">
+          <label for="addCompetitorUsername">Username</label>
+          <input type="text" id="addCompetitorUsername" class="search-input" readonly tabindex="-1" placeholder="From member profile">
+        </div>
+        </div>
+        <p id="addCompetitorMsg" class="qc-admin-form-msg"></p>
+        <button type="submit" class="btn btn-primary qc-admin-submit"><i class="fa-solid fa-paper-plane"></i> Submit registration</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="../../assets/js/report-export.js?v=20260631"></script>
+  <script src="../../assets/js/components.js"></script>
+  <script src="../../assets/js/data.js?v=20260609"></script>
+  <script src="../../assets/js/quran-contest-admin.js?v=20260713d"></script>
+  <script>
+    window.saveFormSettings = () => QuranContestAdmin.saveFormSettings();
+    window.closeContestModal = () => QuranContestAdmin.closeContestModal();
+    window.closeDetail = () => QuranContestAdmin.closeDetail();
+    window.closeRegEdit = () => QuranContestAdmin.closeRegEdit();
+    Components.init({ role: 'main-leader', activePage: 'quran-contest', pageTitle: 'Quran Contest' });
+    QuranContestAdmin.init().catch((err) => {
+      console.error('Quran contest load failed', err);
+      QuranContestAdmin.showLoadError?.();
+    });
+  </script>
+</body>
+</html>

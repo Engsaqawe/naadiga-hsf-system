@@ -1,0 +1,102 @@
+/* Logo FAB with scroll progress ring — inspired by hu.edu.so */
+.hsf-floating-actions {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right, 0px));
+  bottom: max(22px, env(safe-area-inset-bottom, 0px));
+  z-index: 980;
+  pointer-events: none;
+}
+
+.hsf-scroll-logo {
+  pointer-events: auto;
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.14);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.hsf-scroll-logo:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+}
+
+.hsf-scroll-logo:active {
+  transform: scale(0.97);
+}
+
+.hsf-scroll-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.hsf-scroll-ring__track,
+.hsf-scroll-ring__progress {
+  fill: none;
+  stroke-width: 3.5;
+}
+
+.hsf-scroll-ring__track {
+  stroke: #d1d5db;
+}
+
+.hsf-scroll-ring__progress {
+  stroke: var(--primary-green, #2c7a4d);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.08s linear;
+}
+
+.hsf-scroll-logo__inner {
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hsf-scroll-logo__inner img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .hsf-scroll-logo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .hsf-scroll-logo__inner {
+    inset: 6px;
+  }
+
+  .hsf-scroll-logo__inner img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .hsf-floating-actions {
+    right: max(14px, env(safe-area-inset-right, 0px));
+    bottom: max(18px, env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media print {
+  .hsf-floating-actions {
+    display: none !important;
+  }
+}

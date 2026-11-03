@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Students Portal | H Team Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    .portal-hero {
+      padding: 140px 0 80px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      text-align: center;
+    }
+    .teams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 32px;
+      padding: 80px 0;
+    }
+    .team-card {
+      background: white;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+      border: 1px solid #eee;
+    }
+    .team-card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--shadow-lg);
+    }
+    .team-img {
+      height: 200px;
+      width: 100%;
+      object-fit: cover;
+    }
+    .team-body {
+      padding: 24px;
+    }
+    .team-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--bg-main);
+      color: var(--primary);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .team-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-join {
+      background: var(--primary);
+      color: white;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar / Nav for Portal -->
+  <nav>
+    <div class="container nav-container">
+      <div class="logo">
+        <a href="index.html" class="logo-text">H TEAM PORTAL</a>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Back to Home</a>
+        <a href="#teams">My Teams</a>
+        <a href="login.html" class="btn-login">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="portal-hero">
+    <div class="container" data-aos="zoom-in">
+      <h1 style="font-size: 3rem; margin-bottom: 16px;">Welcome to the Students Portal</h1>
+      <p style="font-size: 1.2rem; opacity: 0.9;">Join a team, get involved, and track your community impact.</p>
+    </div>
+  </section>
+
+  <section id="teams" class="container">
+    <div class="teams-grid">
+      <!-- Team 1 -->
+      <div class="team-card" data-aos="fade-up">
+        <img src="https://images.pexels.com/photos/4101553/pexels-photo-4101553.jpeg?auto=compress&cs=tinysrgb&w=600" class="team-img" alt="Beach Cleanup">
+        <div class="team-body">
+          <span class="team-badge">Environmental</span>
+          <h3>Beach Cleaning Squad</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Restoring the beauty of Liido Beach through monthly intensive cleanups.</p>
+        </div>
+        <div class="team-footer">
+          <span style="font-weight: 600; color: var(--text-muted);"><i class="fas fa-users"></i> 24 Members</span>
+          <a href="#" class="btn-join">Join Team</a>
+        </div>
+      </div>
+
+      <!-- Team 2 -->
+      <div class="team-card" data-aos="fade-up" data-aos-delay="100">
+        <img src="https://images.pexels.com/photos/6994982/pexels-photo-6994982.jpeg?auto=compress&cs=tinysrgb&w=600" class="team-img" alt="Iftar">
+        <div class="team-body">
+          <span class="team-badge">Charity</span>
+          <h3>Ramadan Iftar Heroes</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Organizing and distributing meals to families in need during the holy month.</p>
+        </div>
+        <div class="team-footer">
+          <span style="font-weight: 600; color: var(--text-muted);"><i class="fas fa-users"></i> 42 Members</span>
+          <a href="#" class="btn-join">Join Team</a>
+        </div>
+      </div>
+
+      <!-- Team 3 -->
+      <div class="team-card" data-aos="fade-up" data-aos-delay="200">
+        <img src="https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg?auto=compress&cs=tinysrgb&w=600" class="team-img" alt="Tutors">
+        <div class="team-body">
+          <span class="team-badge">Education</span>
+          <h3>Summer Mentors</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Providing free tutoring and mentorship for high school students.</p>
+        </div>
+        <div class="team-footer">
+          <span style="font-weight: 600; color: var(--text-muted);"><i class="fas fa-users"></i> 18 Members</span>
+          <a href="#" class="btn-join">Join Team</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background: #0F172A; text-align: center; padding: 40px 0; color: #94A3B8;">
+    <p>&copy; <span id="footerYear"></span> Naadiga Ardayda Deeqda Waxbarasho HSF. All rights reserved.</p>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 800, once: true });
+    const footerYear = document.getElementById('footerYear');
+    if (footerYear) footerYear.textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

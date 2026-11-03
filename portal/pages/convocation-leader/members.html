@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Convocation Members - HSF</title>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="stylesheet" href="../../assets/css/style.css">
+        <link rel="stylesheet" href="../main-leader/main_leader_responsive.css" />
+        <link rel="stylesheet" href="members.css" />
+    </head>
+    <body>
+        <div class="app-container">
+            <aside class="sidebar" id="sidebar"></aside>
+
+            <main class="main-content">
+                <header class="top-navbar" id="top-navbar"></header>
+
+                <div class="dashboard-content">
+                    <div class="card-table">
+                        <div class="table-header members-page-header">
+                            <h3 id="conv-title">My Convocation Students</h3>
+                            <div class="search-wrapper">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="student-search"
+                                    class="search-input"
+                                    placeholder="Search by ID or name...">
+                            </div>
+                        </div>
+
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Missed Meetings</th>
+                                        <th>Graduated</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="student-table-body">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Scripts -->
+        <script src="../../assets/js/data.js"></script>
+        <script src="../../assets/js/components.js"></script>
+        <script>
+        let allMyStudents = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const cu = getCurrentUser();
+            if (!cu.id) { window.location.href = '../../login.html'; return; }
+
+            const myConvocation = cu.convocation || 'Dufcadda 1';
+
+            Components.init({
+                role: cu.role,
+                activePage: 'members',
+                title: 'My Convocation',
+                userName: cu.name || 'Leader',
+                userRoleLabel: cu.role || 'Convocation Leader'
+            });
+
+            document.getElementById('conv-title').textContent = `${myConvocation} Students`;
+
+            allMyStudents = await getUsers({ convocation: myConvocation });
+            renderStudents(allMyStudents);
+
+            const searchInput = document.getElementById('student-search');
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value.toLowerCase();
+                const filtered = allMyStudents.filter(s =>
+                    s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q)
+                );
+                renderStudents(filtered);
+            });
+        });
+
+        function renderStudents(list) {
+            document.getElementById('student-table-body').innerHTML = list.map(s => `
+                <tr>
+                    <td><strong>${s.id}</strong></td>
+                    <td>
+                        <div class="d-flex align-center gap-2">
+                            <img src="${s.profilePic ? s.profilePic + '?t=' + new Date().getTime() : ''}" style="width:32px;height:32px;border-radius:50%;" alt="">
+                            <span>${s.name}</span>
+                        </div>
+                    </td>
+                    <td><span class="badge ${roleBadgeClass(s.role)}">${displayRole(s.role)}</span></td>
+                    <td class="text-center">${s.meetingsMissed || 0}</td>
+                    <td><span class="badge ${s.isGraduated ? 'badge-paid' : 'badge-unpaid'}">${s.isGraduated ? 'Graduated' : 'Active'}</span></td>
+                </tr>`).join('') || '<tr><td colspan="5" class="text-center" style="padding:2rem;color:var(--text-muted);">No members found.</td></tr>';
+        }
+    </script>
+    </body>
+</html>

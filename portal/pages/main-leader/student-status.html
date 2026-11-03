@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Status - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+     <link rel="stylesheet" href="./main_leader_responsive.css">
+    <style>
+        .profile-card {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 3rem;
+        }
+        @media (max-width: 768px) {
+            .profile-card { grid-template-columns: 1fr; text-align: center; }
+            .profile-img-container { margin: 0 auto; }
+        }
+        .profile-img {
+            width: 240px;
+            height: 240px;
+            border-radius: 24px;
+            object-fit: cover;
+            border: 5px solid #f1f5f9;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .info-item label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+        .info-item span {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+
+            <div class="dashboard-content">
+                <div class="mb-4">
+                    <button class="btn btn-outline" onclick="history.back()">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Members
+                    </button>
+                </div>
+
+                <div id="profile-container">
+                    <!-- Profile Card Injected Here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/data.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const cu = getCurrentUser();
+            Components.init({
+                role: 'main-leader',
+                activePage: 'students',
+                title: 'Member Profile',
+                userName: cu.name || 'Admin',
+                userRoleLabel: 'Main Leader'
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('id');
+            const student = await getUserById(studentId);
+
+            if (!student) {
+                document.getElementById('profile-container').innerHTML = `<div class="text-center"><h3>Member not found.</h3></div>`;
+                return;
+            }
+
+            const bodyCardText = student.bodyCard === 'Yes'
+                ? (student.cardNumber || 'Yes')
+                : 'No';
+
+            const profileContainer = document.getElementById('profile-container');
+            profileContainer.innerHTML = `
+                <div class="d-flex align-center gap-3 mb-4">
+                    <label style="font-weight:600;color:var(--text-muted);"><i class="fa-solid fa-calendar-days"></i> Select Month:</label>
+                    <input type="month" id="month-picker" class="search-input" style="width:auto;">
+                </div>
+
+                <div class="profile-card">
+                    <div class="profile-img-container">
+                        <div style="position:relative;display:inline-block;">
+                            <img src="${student.profilePic || '../../assets/img/default-avatar.png'}" alt="${student.name}" class="profile-img">
+                        </div>
+                        <div class="text-center">
+                            <span class="status-badge ${student.isGraduated ? 'badge-paid' : 'badge-leader'}">
+                                ${student.isGraduated ? '<i class="fa-solid fa-user-graduate"></i> Graduated' : 'Active Scholarship'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">${student.name}</h2>
+                        <p class="text-muted"><i class="fa-solid fa-id-card"></i> Member ID: ${student.id} | <i class="fa-solid fa-users"></i> ${student.convocation}</p>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Role</label>
+                                <span class="badge ${roleBadgeClass(student.role)}">${displayRole(student.role)}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Body Card</label>
+                                <span>${bodyCardText}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-grid" style="margin-top: 1.5rem; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
+                            <div class="stat-card" style="padding: 1.2rem; border-left: 4px solid var(--success);">
+                                <h4 id="attended-meetings" style="color:var(--success); font-size: 1.5rem;">0</h4>
+                                <p style="font-size: 0.8rem;">Attended (Total)</p>
+                            </div>
+                            <div class="stat-card" style="padding: 1.2rem; border-left: 4px solid var(--danger);">
+                                <h4 id="missed-meetings" style="color:var(--danger); font-size: 1.5rem;">0</h4>
+                                <p style="font-size: 0.8rem;">Missed (Total)</p>
+                            </div>
+                            ${student.unpaidMonths && student.unpaidMonths.length > 0 ? `
+                            <div class="stat-card" style="padding: 1.2rem; border-left: 4px solid var(--warning); overflow: visible;">
+                                <div class="hsf-tooltip">
+                                    <h4 style="color:var(--warning); font-size: 1.5rem; display: inline-flex; align-items: center; gap: 6px; margin: 0;">
+                                        ${student.unpaidMonths.length}
+                                        <i class="fa-solid fa-eye" style="font-size: 0.95rem; color: var(--text-muted); cursor: pointer;"></i>
+                                    </h4>
+                                    <span class="tooltip-text">${student.unpaidMonths.join('<br>')}</span>
+                                </div>
+                                <p style="font-size: 0.8rem; margin: 0;">Unpaid Months</p>
+                            </div>
+                            ` : `
+                            <div class="stat-card" style="padding: 1.2rem; border-left: 4px solid var(--success);">
+                                <h4 style="color:var(--success); font-size: 1.5rem; margin: 0;">0</h4>
+                                <p style="font-size: 0.8rem; margin: 0;">Unpaid Months</p>
+                            </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-table" style="margin-top: 2rem;">
+                    <div class="table-header">
+                        <h3 id="table-month-title">Status Overview</h3>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="status-history-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            const mPicker = document.getElementById('month-picker');
+            let showAll = false;
+
+            async function updateView() {
+                const dateVal = mPicker.value;
+                let selectedYear = '';
+                let selectedMonthNum = '';
+                let selectedMonthName = 'All Time';
+
+                if (dateVal) {
+                    const [y, m] = dateVal.split('-');
+                    selectedYear = y;
+                    selectedMonthNum = m;
+                    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+                    selectedMonthName = months[parseInt(selectedMonthNum) - 1];
+                }
+
+                const [meetings, transactions, attendance] = await Promise.all([
+                    getMeetings(),
+                    getTransactions({ 
+                        student_id: student.id, 
+                        month: dateVal ? selectedMonthName : undefined, 
+                        year: dateVal ? selectedYear : undefined 
+                    }),
+                    getAttendance({ student_id: student.id })
+                ]);
+
+                // Total stats filtering
+                const studentCreatedDate = student.created_at ? new Date(student.created_at) : new Date(0);
+                studentCreatedDate.setHours(0, 0, 0, 0);
+
+                const relevantMeetings = meetings.filter(m =>
+                    typeof meetingAppliesToStudent === 'function'
+                    && meetingAppliesToStudent(m, student, attendance)
+                );
+
+                let displayStatsMeetings = relevantMeetings;
+                if (dateVal) {
+                    displayStatsMeetings = relevantMeetings.filter(m => {
+                        const [mYear, mMonth] = m.date.split('-');
+                        return mYear === selectedYear && mMonth === selectedMonthNum;
+                    });
+                }
+
+                let totalAttended = 0;
+                let totalMissed = 0;
+                displayStatsMeetings.forEach(m => {
+                    const record = attendance.find(a => a.meeting_id === m.id);
+                    if (record && record.status === 'Present') totalAttended++;
+                    else if (new Date(m.date) < new Date()) totalMissed++;
+                });
+
+                document.getElementById('attended-meetings').innerText = totalAttended;
+                document.getElementById('missed-meetings').innerText = totalMissed;
+
+                // Table filtering
+                let tableMeetings = relevantMeetings;
+                if (dateVal && !showAll) {
+                    tableMeetings = relevantMeetings.filter(m => {
+                        const [mYear, mMonth] = m.date.split('-');
+                        return mYear === selectedYear && mMonth === selectedMonthNum;
+                    });
+                }
+                
+                tableMeetings.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                document.getElementById('table-month-title').innerText = dateVal 
+                    ? (showAll ? `All Records (${selectedMonthName} Filtered)` : `${selectedMonthName} ${selectedYear} Status`)
+                    : `All-Time Meeting History`;
+                
+                let html = '';
+                if (dateVal) {
+                    const isPaid = transactions.length > 0;
+                    html += `
+                        <tr style="background: var(--bg-hover);">
+                            <td><strong>Monthly Fee (${selectedMonthName} ${selectedYear})</strong></td>
+                            <td>-</td>
+                            <td><span class="badge ${isPaid ? 'badge-paid' : 'badge-unpaid'}">${isPaid ? 'Paid' : 'Unpaid'}</span></td>
+                        </tr>
+                    `;
+                }
+
+                html += tableMeetings.map(m => {
+                    const record = attendance.find(a => a.meeting_id === m.id);
+                    const present = record && (record.status === 'Present' || record.status === 'Late');
+                    const isExcused = record && record.is_excused && !present;
+                    const isFuture = new Date(m.date) > new Date();
+                    return `
+                        <tr>
+                            <td><strong>Meeting:</strong> ${m.topic}</td>
+                            <td>${m.date}</td>
+                            <td><span class="badge ${isFuture ? 'badge-student' : (present ? 'badge-paid' : (isExcused ? 'badge-student' : 'badge-unpaid'))}">${isFuture ? 'Scheduled' : (present ? 'Present' : (isExcused ? 'Absent (excused)' : 'Absent'))}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                const hasMore = tableMeetings.length > (showAll ? tableMeetings.length : 5);
+                if (hasMore && !showAll) {
+                    html += `<tr><td colspan="3" class="text-center p-3"><button class="btn btn-outline btn-sm" onclick="expandHistory()">Show More</button></td></tr>`;
+                }
+
+                document.getElementById('status-history-body').innerHTML = html;
+            }
+
+            window.expandHistory = () => { showAll = true; updateView(); };
+            
+            // Initialize without default to show All Time
+            mPicker.value = "";
+            mPicker.onchange = () => { showAll = false; updateView(); };
+            await updateView();
+        });
+    </script>
+</body>
+</html>

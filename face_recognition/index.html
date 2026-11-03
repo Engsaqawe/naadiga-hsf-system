@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find My Photos — HSF</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/find-web.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <strong>Find My Photos</strong>
+        <span>HSF media · face match</span>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html">Back to site</a>
+        <a href="../portal/login.html">Portal login</a>
+      </div>
+    </div>
+
+    <div class="card" id="authCard">
+      <div id="loginStep">
+        <div class="find-auth-icon"><i class="fa-solid fa-user-lock"></i></div>
+        <h1>Member access</h1>
+        <p class="lead">Use your HSF username and password. A verification code will be emailed to you.</p>
+        <label for="loginUser">Username <span class="req">*</span></label>
+        <input type="text" id="loginUser" autocomplete="username" placeholder="Username">
+        <label for="loginPass">Password <span class="req">*</span></label>
+        <div class="find-pass-wrap">
+          <input type="password" id="loginPass" autocomplete="current-password" placeholder="Password">
+          <button type="button" class="find-pass-toggle" id="togglePass" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+        </div>
+        <button type="button" class="btn btn-primary btn-block" id="btnLogin">
+          <i class="fa-solid fa-right-to-bracket"></i> Continue
+        </button>
+        <p id="loginStatus" class="status"></p>
+      </div>
+
+      <div id="otpStep" class="hidden">
+        <div class="find-auth-icon"><i class="fa-solid fa-envelope-circle-check"></i></div>
+        <h1>Email verification</h1>
+        <p class="lead" id="otpHint">Enter the code sent to your registered email.</p>
+        <label for="otpCode">Verification code <span class="req">*</span></label>
+        <input type="text" id="otpCode" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+        <button type="button" class="btn btn-primary btn-block" id="btnVerifyOtp">
+          <i class="fa-solid fa-check"></i> Verify &amp; continue
+        </button>
+        <div class="actions" style="margin-top:10px;">
+          <button type="button" class="btn btn-outline" id="btnResendOtp">Resend code</button>
+          <button type="button" class="btn btn-outline" id="btnBackLogin">Back</button>
+        </div>
+        <p id="otpStatus" class="status"></p>
+      </div>
+    </div>
+
+    <div id="appPanel" class="hidden">
+      <div class="card">
+        <div class="topbar" style="margin:0 0 8px;">
+          <h2 style="margin:0;font-size:1.1rem;">Find My Photos</h2>
+          <button type="button" class="btn btn-outline btn-sm" id="btnFaceLogout">Log out</button>
+        </div>
+        <label for="eventSelect">Event</label>
+        <select id="eventSelect"></select>
+      </div>
+
+      <div class="card">
+        <div id="faceHero" class="face-hero">
+          <div class="face-orbit" aria-hidden="true">
+            <div class="face-ring"></div>
+            <div class="face-icon"><i class="fa-solid fa-face-smile"></i></div>
+          </div>
+          <p class="lead center">Scan with your camera or upload a selfie — same match as Media Admin gallery.</p>
+          <div class="actions center-actions">
+            <button type="button" class="btn btn-primary" id="btnScan"><i class="fa-solid fa-camera"></i> Scan my face</button>
+            <button type="button" class="btn btn-outline" id="btnUploadSelfie"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
+            <input type="file" id="selfieFile" accept="image/*" class="hidden" capture="user">
+          </div>
+        </div>
+        <div id="cameraPanel" class="hidden">
+          <div class="video-wrap">
+            <video id="video" playsinline muted></video>
+            <canvas id="overlay"></canvas>
+          </div>
+          <div class="actions center-actions">
+            <button type="button" class="btn btn-primary" id="btnCapture">Capture &amp; match</button>
+            <button type="button" class="btn btn-outline" id="btnStopCam">Cancel</button>
+          </div>
+        </div>
+        <p id="status" class="status">Choose Scan or Upload when ready.</p>
+      </div>
+
+      <div class="card">
+        <div class="matches-head">
+          <h2>Your matches <span id="matchHint" class="chip">No matches yet</span></h2>
+          <button type="button" class="btn btn-outline hidden" id="btnDownloadAll">
+            <i class="fa-solid fa-download"></i> <span class="btn-dl-all-label">Download all</span>
+          </button>
+        </div>
+        <div class="match-grid" id="results"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="find-modal hidden" id="previewModal" role="dialog" aria-modal="true">
+    <div class="find-modal-backdrop" id="previewBackdrop"></div>
+    <div class="find-modal-sheet">
+      <button type="button" class="find-modal-close" id="previewClose" aria-label="Close">&times;</button>
+      <img id="previewImg" alt="Preview">
+      <div class="actions center-actions" style="margin-top:12px;">
+        <button type="button" class="btn btn-primary" id="previewDownload">Download</button>
+        <button type="button" class="btn btn-outline" id="previewCloseBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/find-web.js"></script>
+</body>
+</html>

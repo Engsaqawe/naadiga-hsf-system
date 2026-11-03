@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Main Leader Dashboard - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css?v=20260713" />
+    <link rel="stylesheet" href="./main_leader_responsive.css">
+    <style>
+      input[type="month"] {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        color: var(--text-main);
+        height: 38px;
+        outline: none;
+        cursor: pointer;
+      }
+      input[type="month"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        filter: grayscale(100%) opacity(0.5);
+      }
+      .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; }
+      .mt-2   { margin-top: 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="main-content">
+        <header class="top-navbar" id="top-navbar"></header>
+        <div class="dashboard-content">
+          <div class="stats-grid" id="stats-grid"></div>
+
+          <!-- Convocation Graduation Control -->
+          <div class="card-table" style="margin-top: 1.5rem; padding: 2rem; border: none; background: var(--bg-card);">
+            <div class="section-header" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+              <h3 class="section-title" style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--primary);">
+                <i class="fa-solid fa-graduation-cap" style="margin-right: 8px; color: var(--secondary);"></i> 
+                Graduate Phase Control
+              </h3>
+            </div>
+            
+            <div id="grad-form-container">
+              <style>
+                .grad-responsive-form {
+                  display: flex;
+                  gap: 1.5rem;
+                  align-items: flex-end;
+                  background: var(--bg-main);
+                  padding: 2rem;
+                  border-radius: 20px;
+                  box-shadow: var(--shadow);
+                  border: 1px solid var(--border);
+                  flex-wrap: wrap;
+                }
+                @media (max-width: 768px) {
+                  .grad-responsive-form {
+                    flex-direction: column;
+                    align-items: stretch;
+                    padding: 1.5rem;
+                    gap: 1rem;
+                  }
+                  .grad-responsive-form > div {
+                    width: 100%;
+                  }
+                  .grad-responsive-form button {
+                    width: 100%;
+                  }
+                }
+              </style>
+              <form id="grad-form" class="grad-responsive-form" onsubmit="return submitGraduation(event)">
+                <div style="flex: 1; min-width: 250px;">
+                  <label for="grad-conv-select" style="display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-main); opacity: 0.8; margin-bottom: 10px;">
+                    Select Convocation to Mark as Graduated
+                  </label>
+                  <div style="position: relative;">
+                    <select id="grad-conv-select" class="search-input" 
+                            style="width: 100%; height: 50px; padding-left: 45px; font-size: 1rem; border-radius: 12px; appearance: none; background: var(--bg-main);" required>
+                      <option value="" disabled selected>Choose a convocation…</option>
+                    </select>
+                    <i class="fa-solid fa-layer-group" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--secondary); opacity: 0.7;"></i>
+                    <i class="fa-solid fa-chevron-down" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem; pointer-events: none;"></i>
+                  </div>
+                </div>
+
+                <div style="flex-shrink: 0;">
+                  <button type="submit" class="btn btn-primary" id="confirm-grad-btn"
+                          style="height: 50px; padding: 0 32px; border-radius: 12px; font-size: 1rem; box-shadow: 0 4px 12px rgba(30, 74, 109, 0.25); min-width: 200px; justify-content: center;">
+                    <i class="fa-solid fa-user-graduate" style="margin-right: 8px;"></i>
+                    Confirm Graduation
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card-table">
+            <div class="table-header">
+              <div class="d-flex align-center gap-3">
+                <h3 style="margin:0">Recent Convocation Performance</h3>
+                <div class="d-flex gap-2" id="filters-container">
+                  <input type="month" id="month-picker" class="search-input" onchange="updateFilters()" />
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" id="toggle-conv-btn" onclick="toggleConvocations()">See All Convocations</button>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Convocation</th>
+                    <th>Paid Members</th>
+                    <th>Unpaid Members</th>
+                    <th>Payment Rate</th>
+                    <th>Attendance</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="performance-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/data.js?v=20260714e"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+      let currentMonth = "March";
+      let currentYear = 2026;
+
+      function updateFilters() {
+        const val = document.getElementById("month-picker").value;
+        if (!val) return;
+        const [year, monthNum] = val.split("-");
+        const months = ["January","February","March","April","May","June",
+                        "July","August","September","October","November","December"];
+        currentMonth = months[parseInt(monthNum) - 1];
+        currentYear = parseInt(year);
+        loadDashboard();
+      }
+
+      async function loadDashboard() {
+        await Promise.all([loadStats(), loadPerformance()]);
+      }
+
+      async function loadApplicationStats() {
+        try {
+          const base = API_BASE.replace(/\/api$/, '');
+          const res = await fetch(`${base}/api/applications/stats`);
+          return await res.json();
+        } catch (e) {
+          return {};
+        }
+      }
+
+      async function loadStats() {
+        const d = await getStats(currentMonth, currentYear.toString()) || {};
+        const apps = await loadApplicationStats();
+        const stats = [
+          { label: "Total Members",       value: d.totalStudents || 0,        icon: "fa-users",          color: "icon-blue"   },
+          { label: "Graduated Members",   value: d.graduatedStudents || 0,     icon: "fa-user-graduate",  color: "icon-green"  },
+          { label: "Active Members",      value: d.onProgressStudents || 0,    icon: "fa-user-clock",     color: "icon-orange" },
+          { label: "Total Convocations",  value: d.totalConvocations || 0,     icon: "fa-layer-group",    color: "icon-blue"   },
+          { label: "Graduated Convocations", value: d.graduatedConvocations || 0, icon: "fa-graduation-cap", color: "icon-green" },
+          { label: "Active Convocations", value: d.activeConvocations || 0,    icon: "fa-users-between-lines", color: "icon-orange" },
+          { label: "Quran Contest ever made", value: apps.quran_total_contests || 0, icon: "fa-book-quran", color: "icon-green"  },
+          { label: "Summer Course ever made", value: apps.summer_total_programs || 0, icon: "fa-sun", color: "icon-orange" },
+          { label: "Total Meetings",      value: d.totalMeetings || 0,         icon: "fa-calendar-check", color: "icon-blue"   },
+          { label: "Unread messages",     value: apps.help_unread || 0,        icon: "fa-bell",           color: "icon-red"    },
+        ];
+        document.getElementById("stats-grid").innerHTML = stats.map(s => `
+          <div class="stat-card">
+            <div class="stat-icon ${s.color}"><i class="fa-solid ${s.icon}"></i></div>
+            <div class="stat-info"><h4>${s.value}</h4><p>${s.label}</p></div>
+          </div>`).join("");
+      }
+
+      async function loadPerformance() {
+        const perf = await getPerformance(currentMonth, currentYear.toString());
+        const tbl = document.getElementById("performance-table");
+        if (!perf || perf.length === 0) {
+          tbl.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:2rem;color:var(--text-muted);">No convocations found.</td></tr>';
+          return;
+        }
+        tbl.innerHTML = perf.map((c, idx) => {
+          const rate = c.paymentRate || 0;
+          const att  = c.attendanceRate || 0;
+          const displayStyle = idx >= 2 ? 'display: none;' : '';
+          return `
+            <tr class="conv-row" style="${displayStyle}">
+              <td><strong>${c.name}</strong></td>
+              <td>${c.paid}</td>
+              <td>${c.unpaid} Members</td>
+              <td>
+                <div class="d-flex align-center gap-2">
+                  <div style="flex-grow:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+                    <div style="width:${rate}%;height:100%;background:var(--success);border-radius:4px;"></div>
+                  </div>
+                  <span>${rate}%</span>
+                </div>
+              </td>
+              <td>${att}%</td>
+              <td><span class="badge ${rate > 80 ? 'badge-paid' : 'badge-unpaid'}">${rate > 80 ? 'Excellent' : 'Needs Review'}</span></td>
+            </tr>`;
+        }).join("");
+        
+        const btn = document.getElementById('toggle-conv-btn');
+        if (perf.length <= 2) {
+            btn.style.display = 'none';
+        } else {
+            btn.style.display = 'inline-block';
+            btn.innerHTML = 'See All Convocations <i class="fa-solid fa-chevron-down mt-1"></i>';
+            btn.setAttribute('data-expanded', 'false');
+        }
+      }
+
+      function toggleConvocations() {
+        const btn = document.getElementById('toggle-conv-btn');
+        const rows = document.querySelectorAll('.conv-row');
+        const isExpanded = btn.getAttribute('data-expanded') === 'true';
+
+        rows.forEach((row, idx) => {
+            if (idx >= 2) {
+                row.style.display = isExpanded ? 'none' : 'table-row';
+            }
+        });
+
+        if (isExpanded) {
+            btn.innerHTML = 'See All Convocations <i class="fa-solid fa-chevron-down mt-1"></i>';
+            btn.setAttribute('data-expanded', 'false');
+        } else {
+            btn.innerHTML = 'Collapse Convocations <i class="fa-solid fa-chevron-up mt-1"></i>';
+            btn.setAttribute('data-expanded', 'true');
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const cu = getCurrentUser();
+        if (!cu.id || cu.role === 'Public User') {
+            localStorage.removeItem('hsf_current_user'); 
+            window.location.href = "../../login.html"; 
+            return; 
+        }
+        Components.init({
+          role: "main-leader",
+          activePage: "dashboard",
+          title: "Dashboard Overview",
+          userName: cu.name || "Admin",
+          userRoleLabel: "Main Leader",
+        });
+        const now = new Date();
+        document.getElementById("month-picker").value =
+          `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+        updateFilters();
+
+        // Populate convocation list for graduation control
+        async function updateGraduationDropdown() {
+          const formContainer = document.getElementById("grad-form-container");
+          const gradSelect = document.getElementById("grad-conv-select");
+          
+          let convs = await getConvocations();
+          // Extra wait for Passenger cold start — don't replace form with empty state too early
+          if (!convs.length) {
+            await sleepMs(1000);
+            convs = await getConvocations();
+          }
+          const activeConvs = convs.filter(c => !c.isGraduated);
+          
+          if (activeConvs.length === 0) {
+            if (!formContainer) return;
+            formContainer.innerHTML = `
+              <div style="text-align: center; padding: 2rem; background: rgba(245, 158, 11, 0.05); border: 2px dashed rgba(245, 158, 11, 0.2); border-radius: 20px;">
+                <i class="fa-solid fa-layer-group" style="font-size: 2.5rem; color: var(--warning); margin-bottom: 1rem; display: block;"></i>
+                <h4 style="color: var(--text-main); margin-bottom: 0.5rem;">No Convocations Yet</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 420px; margin: 0 auto 1rem;">
+                  Create your first dufcad (e.g. Dufcadda 1), then add members.
+                  The Main Leader should also belong to a dufcad for payments and meetings.
+                </p>
+                <a href="students.html" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-plus"></i> Create Convocations &amp; Members
+                </a>
+              </div>`;
+          } else if (gradSelect) {
+            gradSelect.innerHTML = '<option value="" disabled selected>Choose a convocation…</option>' +
+              activeConvs.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+          } else if (formContainer && activeConvs.length) {
+            // Form was replaced by empty state earlier — restore dropdown
+            location.reload();
+          }
+        }
+        
+        await updateGraduationDropdown();
+        onPortalTabVisible(async () => {
+          await updateGraduationDropdown();
+          await loadDashboard();
+        });
+      });
+
+      async function submitGraduation(event) {
+        event.preventDefault();
+        const select = document.getElementById("grad-conv-select");
+        if (!select || !select.value) return false;
+        const convName = select.value;
+        if (!confirm(`Are you sure you want to mark all students in "${convName}" as graduated?`)) {
+          return false;
+        }
+        const res = await graduateConvocation(convName);
+        if (!res || res.success === false) {
+          Components.showToast(res && res.error ? res.error : "Failed to update convocation. Please try again.", "error");
+          return false;
+        }
+        Components.showToast(`Convocation "${convName}" marked as graduated for ${res.updatedCount || 0} students.`, 'success');
+        
+        // Refresh convocation list to remove the graduated one
+        const updateGraduationDropdown = async () => {
+          const select = document.getElementById("grad-conv-select");
+          if (!select) return;
+          const convs = await getConvocations();
+          const activeConvs = convs.filter(c => !c.isGraduated);
+          if (activeConvs.length === 0) {
+            document.getElementById("grad-form-container").innerHTML = `
+              <div style="text-align: center; padding: 2rem; background: rgba(245, 158, 11, 0.05); border: 2px dashed rgba(245, 158, 11, 0.2); border-radius: 20px;">
+                <i class="fa-solid fa-layer-group" style="font-size: 2.5rem; color: var(--warning); margin-bottom: 1rem; display: block;"></i>
+                <h4 style="color: var(--text-main); margin-bottom: 0.5rem;">No Convocations Yet</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 420px; margin: 0 auto 1rem;">
+                  Create your first dufcad (e.g. Dufcadda 1), then add members.
+                  The Main Leader should also belong to a dufcad for payments and meetings.
+                </p>
+                <a href="students.html" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-plus"></i> Create Convocations &amp; Members
+                </a>
+              </div>`;
+          } else {
+            select.innerHTML = '<option value="" disabled selected>Choose a convocation…</option>' +
+              activeConvs.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+          }
+        };
+        await updateGraduationDropdown();
+        
+        await loadDashboard();
+        return false;
+      }
+    </script>
+  </body>
+</html>

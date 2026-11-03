@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=20260630">
+    <script>
+      try {
+        var t = localStorage.getItem('portal-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
+    <style>
+        .auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-main); padding: 20px; }
+        .auth-card { background: var(--bg-card); padding: 40px; border-radius: 30px; box-shadow: var(--shadow-lg); width: 100%; max-width: 450px; text-align: center; }
+        .otp-inputs { display: flex; gap: 10px; justify-content: center; margin: 2rem 0; }
+        .otp-input { width: 50px; height: 60px; border: 2px solid var(--border); border-radius: 12px; font-size: 1.5rem; font-weight: 700; text-align: center; color: var(--primary); transition: var(--transition); background: var(--bg-main); }
+        .otp-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(30, 74, 109, 0.1); background: white; }
+        .otp-input.valid { border-color: var(--success); }
+        .resend-links { margin-top: 2rem; font-size: 0.9rem; color: var(--text-muted); }
+        .resend-btn { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: none; display: none; }
+        .countdown { font-weight: 700; color: var(--primary); }
+    </style>
+</head>
+<body class="auth-container">
+    <div class="auth-card fade-in">
+        <div class="auth-logo"><img src="img/logo.svg" alt="Logo"></div>
+        <h2>Verification</h2>
+        <p style="color: var(--text-muted);">Enter the 6-digit code sent to your email.</p>
+        
+        <form id="otp-form">
+            <div class="otp-inputs">
+                <input type="text" class="otp-input" maxlength="1" pattern="\d" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="\d" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="\d" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="\d" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="\d" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="\d" required>
+            </div>
+            
+            <button type="submit" id="submit-btn" class="btn-modern primary" style="width: 100%; justify-content: center;">
+                <i class="fa-solid fa-check-circle"></i> Verify Code
+            </button>
+        </form>
+
+        <div class="resend-links">
+            <span id="countdown-text">Resend available in <span id="timer" class="countdown">30</span>s</span>
+            <a href="#" id="resend-btn" class="resend-btn"><i class="fa-solid fa-rotate-right"></i> Resend Verification Link</a>
+        </div>
+    </div>
+
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/components.js"></script>
+    <script>
+        const inputs = document.querySelectorAll('.otp-input');
+        const email = localStorage.getItem('reset_email');
+        if (!email) window.location.href = 'forgot-password.html';
+
+        // OTP Input Logic
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Timer Logic
+        let timeLeft = 30;
+        const timer = document.getElementById('timer');
+        const cText = document.getElementById('countdown-text');
+        const rBtn = document.getElementById('resend-btn');
+
+        function startTimer() {
+            timeLeft = 30;
+            cText.style.display = 'inline';
+            rBtn.style.display = 'none';
+            const inv = setInterval(() => {
+                timeLeft--;
+                timer.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(inv);
+                    cText.style.display = 'none';
+                    rBtn.style.display = 'inline';
+                }
+            }, 1000);
+        }
+        startTimer();
+
+        rBtn.onclick = async (e) => {
+            e.preventDefault();
+            Components.showToast('Resending OTP...', 'success');
+            const res = await apiFetch('/forgot-password', {
+                method: 'POST',
+                body: JSON.stringify({ email })
+            });
+            if (res && res.success) {
+                Components.showToast('OTP code resent!', 'success');
+                startTimer();
+            } else {
+                Components.showToast('Resend failed', 'error');
+            }
+        };
+
+        // Submit Form
+        document.getElementById('otp-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const otp = Array.from(inputs).map(i => i.value).join('');
+
+            Components.setLoading(btn, true);
+            try {
+                const res = await apiFetch('/verify-otp', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, otp })
+                });
+
+                if (res && res.success) {
+                    Components.showToast('OTP verified!', 'success');
+                    localStorage.setItem('reset_otp', otp);
+                    setTimeout(() => window.location.href = 'reset-password.html', 1500);
+                } else {
+                    Components.showToast(res?.message || 'Invalid or expired OTP', 'error');
+                }
+            } catch (err) {
+                Components.showToast('Verification failed', 'error');
+            } finally {
+                Components.setLoading(btn, false);
+            }
+        };
+    </script>
+</body>
+</html>

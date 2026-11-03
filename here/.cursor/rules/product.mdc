@@ -1,0 +1,27 @@
+---
+description: Standalone Find Photos product vision, market, and non-goals
+alwaysApply: true
+---
+
+# Find Photos — standalone product
+
+This repo is a **separate commercial product**, extracted from HSF club portal. Do not rebuild HSF payments, meetings, convocations, or member dashboards here.
+
+## Vision
+- Organizer uploads event photos → guest finds themselves via selfie/QR → downloads only their matches.
+- Target: Somalia / region first (schools, clubs, weddings, campus, conferences). Local edge: Somali+English UX, WhatsApp-friendly, simple pricing — not “first in world.”
+- Global peers exist (SnapSeek, SnapFind, Eventiere, InItPic); compete on local fit.
+
+## Roles (product)
+- **Organizer / Media Admin**: events, upload, gallery, delete downloaded photos, who-downloaded history.
+- **Guest**: privacy consent → selfie/upload → matches → download. Prefer no heavy account for MVP guests.
+- **No** HSF-style “My Dashboard” for organizers — home is **Media Gallery**; also Profile/Settings.
+
+## Tech stance
+- MVP AI is already in-browser: `@vladmandic/face-api` descriptors + distance match.
+- Do **not** add paid cloud face APIs (AWS Rekognition etc.) unless scale/accuracy forces it.
+- Stronger server-side index is optional later (time/hosting), not a launch blocker.
+
+## Separation status
+- Kit copied from HSF; still needs thin standalone Flask app + own auth when building the real product.
+- Keep HSF’s live copy independent; this repo is the product line.

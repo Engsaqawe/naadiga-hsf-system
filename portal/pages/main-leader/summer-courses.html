@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Summer Courses - HSF</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="./main_leader_responsive.css?v=20260631" />
+</head>
+<body class="applications-admin">
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="top-navbar" id="top-navbar"></header>
+      <div class="dashboard-content">
+        <div class="applications-top-row">
+        <div class="month-selector quran-contest-toolbar applications-date-toolbar">
+          <div class="month-field-group applications-date-row">
+            <label class="toolbar-month-label" for="summerGlobalMonthPicker">Filter by month (optional)</label>
+            <input type="month" id="summerGlobalMonthPicker" class="month-picker-input" aria-label="Filter by month" autocomplete="off">
+          </div>
+        </div>
+        <div class="stats-grid applications-stats-panel" id="summer-stats"></div>
+        </div>
+
+        <div class="card-table" style="padding:1.5rem;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+              <strong style="color:var(--primary);">Public form status</strong>
+              <p style="font-size:.82rem;color:var(--text-muted);margin:4px 0 0;">Open only during summer registration period.</p>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+              <input type="checkbox" id="toggleSummerOpen"> Open registration
+            </label>
+          </div>
+          <div id="summerFormOpenFields" class="quran-form-fields" hidden>
+            <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:12px 0 6px;">Form title</label>
+            <input type="text" id="summerHeadline" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Summer Course Registration">
+            <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:10px 0 6px;">Subtitle</label>
+            <input type="text" id="summerSubtitle" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Naadiga Ardayda Deeqda Waxbarasho HSF">
+            <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:10px 0 6px;">F.G. deadline note (when open)</label>
+            <textarea id="summerDeadlineMessage" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Waqtiga uu dhammaanayo ee diiwaangelinta waa 30 June 2026."></textarea>
+          </div>
+          <div id="summerFormClosedFields" class="quran-form-fields" hidden>
+            <label style="display:block;font-size:.78rem;font-weight:600;color:var(--text-muted);margin:12px 0 6px;">Closed message (shown on public form)</label>
+            <textarea id="summerClosedMessage" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-family:inherit;" onblur="saveFormSettings()" placeholder="Summer course registration is closed now. Please check back when registration opens."></textarea>
+          </div>
+          <p id="summerRegClosedBanner" style="display:none;margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#fef3c7;color:#92400e;font-size:.85rem;"><i class="fa-solid fa-lock"></i> <span id="summerRegClosedBannerText"></span></p>
+          <p id="formSettingsMsg" style="font-size:.82rem;color:var(--secondary);margin:8px 0 0;"></p>
+        </div>
+
+        <div class="card-table" style="padding:1.5rem;margin-bottom:1rem;">
+          <div class="portal-section-head summer-program-history-head">
+            <h3 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Program History</h3>
+            <button type="button" class="btn btn-outline btn-sm summer-add-year-btn" onclick="SummerCourseAdmin.promptAddProgramYear()"><i class="fa-solid fa-plus"></i> <span class="btn-text-desktop">Add summer course year</span><span class="btn-text-mobile">Add course</span></button>
+          </div>
+          <div class="table-wrapper applications-table-scroll applications-table-scroll--history">
+            <table class="data-table applications-history-table">
+              <thead>
+                <tr style="text-align:left;border-bottom:2px solid var(--border);">
+                  <th style="padding:10px;">Program</th>
+                  <th style="padding:10px;">Date</th>
+                  <th style="padding:10px;">Registered</th>
+                  <th style="padding:10px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="summerHistoryBody">
+                <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-muted);">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card-table" style="padding:1.5rem;">
+          <div class="portal-section-head applications-reg-section-head">
+            <h3 class="section-title">
+              <i class="fa-solid fa-sun"></i>
+              <button type="button" id="summerRegYearTitleBtn" class="hsf-reg-title-btn" onclick="SummerCourseAdmin.openSelectedProgram()">
+                <span id="summerRegYearTitle">Registrations</span>
+              </button>
+            </h3>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm summer-add-attendee-btn" onclick="SummerCourseAdmin.openAddAttendee()"><i class="fa-solid fa-user-plus"></i> <span class="btn-text-desktop">Add attendee</span><span class="btn-text-mobile">Add</span></button>
+            </div>
+          </div>
+          <div class="registrations-filter-bar applications-reg-filter">
+            <input type="search" id="summerFilterSearch" class="reg-filter-input reg-filter-search" placeholder="Search name…" aria-label="Search by name">
+            <div class="applications-filter-pair">
+              <select id="summerFilterStatus" class="reg-filter-select" aria-label="Filter by status">
+                <option value="">All status</option>
+                <option value="new">New</option>
+                <option value="read">Read</option>
+              </select>
+              <select id="summerFilterDufcad" class="reg-filter-select" aria-label="Filter by dufcad">
+                <option value="">All dufcad</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrapper applications-table-scroll applications-table-scroll--registrations">
+            <table class="data-table applications-registrations-table applications-registrations-table--summer">
+              <thead>
+                <tr style="text-align:left;border-bottom:2px solid var(--border);">
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Dufcad</th>
+                  <th>Faculty</th>
+                  <th>University</th>
+                  <th>Semester</th>
+                  <th>Status</th>
+                  <th class="reg-action-col">Action</th>
+                </tr>
+              </thead>
+              <tbody id="summerAppsBody">
+                <tr><td colspan="8" style="padding:20px;text-align:center;color:var(--text-muted);">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="summerProgramModal" class="portal-modal-overlay">
+    <div class="portal-modal-card portal-modal-card--lg portal-modal-card--program">
+      <div class="portal-modal-head" id="summerProgramModalHead">
+        <h3 id="summerProgramModalTitle">Program</h3>
+        <button type="button" class="portal-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div id="summerProgramViewPanel" class="hsf-program-modal-panel"></div>
+      <form id="summerProgramEditForm" style="display:none;">
+        <input type="hidden" id="summerEditYear">
+        <div class="filter-group" style="margin-bottom:8px;"><label>Place</label><input type="text" id="summerEditPlace" class="filter-select" style="width:100%"></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Program start date (Day 1)</label><input type="date" id="summerEditStartDate" class="filter-select" style="width:100%"></div>
+        <div class="filter-group" style="margin-bottom:8px;">
+          <label>Courses offered</label>
+          <div id="summerEditCoursesList" class="summer-course-edit-list"></div>
+          <button type="button" class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="SummerCourseAdmin.addCourseRow()"><i class="fa-solid fa-plus"></i> Add course</button>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Save program info</button>
+      </form>
+    </div>
+  </div>
+  <div id="summerDetailModal" class="portal-modal-overlay">
+    <div class="portal-modal-card portal-modal-card--lg">
+      <div class="portal-modal-head">
+        <h3>Registration details</h3>
+        <button type="button" class="portal-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div id="summerDetailContent" style="font-size:.9rem;line-height:1.6;"></div>
+    </div>
+  </div>
+  <div id="summerRegEditModal" class="portal-modal-overlay">
+    <div class="portal-modal-card portal-modal-card--md">
+      <div class="portal-modal-head">
+        <h3 id="summerRegEditTitle">Edit registration</h3>
+        <button type="button" class="portal-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="summerRegEditForm">
+        <input type="hidden" id="summerRegEditId">
+        <div class="filter-group" style="margin-bottom:8px;"><label>Name</label><input type="text" id="summerRegEditName" class="filter-select" style="width:100%" required></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Dufcad</label><input type="text" id="summerRegEditDufcad" class="filter-select" style="width:100%" required></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Faculty</label><input type="text" id="summerRegEditFaculty" class="filter-select" style="width:100%" required></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>University</label><input type="text" id="summerRegEditUniversity" class="filter-select" style="width:100%" required></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Semester</label><input type="text" id="summerRegEditSemester" class="filter-select" style="width:100%"></div>
+        <p id="summerRegEditMsg" style="font-size:.82rem;margin:0 0 8px;"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Save changes</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="addAttendeeModal" class="portal-modal-overlay">
+    <div class="portal-modal-card portal-modal-card--md">
+      <div class="portal-modal-head">
+        <h3>Add attendee (admin)</h3>
+        <button type="button" class="portal-modal-close" onclick="SummerCourseAdmin.closeAddAttendee()" aria-label="Close">&times;</button>
+      </div>
+      <form id="addAttendeeForm">
+        <input type="hidden" id="addAttendeeUserId">
+        <input type="hidden" id="addAttendeeConvocationRaw">
+        <p id="addAttendeeSelected" style="font-size:.85rem;color:var(--secondary);margin:0 0 10px;"></p>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Search HSF member</label><input type="search" id="addAttendeeSearch" class="filter-select" style="width:100%" placeholder="Name or username…"></div>
+        <div id="addAttendeeResults" style="max-height:160px;overflow-y:auto;margin-bottom:10px;"></div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;margin:0 0 10px;cursor:pointer;">
+          <input type="checkbox" id="addAttendeeGuestMode"> Register guest (not in member system)
+        </label>
+        <p id="addAttendeeGuestHint" style="font-size:.78rem;color:var(--text-muted);margin:-6px 0 10px;" hidden>Fill name, faculty, and university for people from outside HSF. Email is optional.</p>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Program year</label><input type="number" id="addAttendeeYear" class="filter-select" style="width:100%" min="2000" max="2100" required readonly></div>
+        <div class="filter-group" style="margin-bottom:8px;" id="addAttendeeEmailWrap" hidden><label>Email <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label><input type="email" id="addAttendeeEmail" class="filter-select" style="width:100%" placeholder="guest@example.com"></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Name</label><input type="text" id="addAttendeeName" class="filter-select" style="width:100%" required></div>
+        <div class="filter-group" style="margin-bottom:8px;" id="addAttendeeDufcadWrap"><label>Dufcad</label><input type="text" id="addAttendeeDufcad" class="filter-select" style="width:100%"></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Faculty</label><input type="text" id="addAttendeeFaculty" class="filter-select" style="width:100%" required></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>University</label><input type="text" id="addAttendeeUniversity" class="filter-select" style="width:100%" required></div>
+        <div class="filter-group" style="margin-bottom:8px;"><label>Semester</label><input type="text" id="addAttendeeSemester" class="filter-select" style="width:100%"></div>
+        <p id="addAttendeeMsg" style="font-size:.82rem;margin:0 0 8px;"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Register attendee</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="../../assets/js/report-export.js?v=20260631"></script>
+  <script src="../../assets/js/components.js"></script>
+  <script src="../../assets/js/data.js?v=20260609c"></script>
+  <script src="../../assets/js/summer-course-admin.js?v=20260713d"></script>
+  <script>
+    window.saveSummerFormSettings = () => SummerCourseAdmin.saveFormSettings();
+    window.saveFormSettings = () => SummerCourseAdmin.saveFormSettings();
+    Components.init({ role: 'main-leader', activePage: 'summer-courses', pageTitle: 'Summer Courses' });
+    document.getElementById('toggleSummerOpen')?.addEventListener('change', () => SummerCourseAdmin.saveFormSettings());
+    document.getElementById('summerHeadline')?.addEventListener('blur', () => SummerCourseAdmin.saveFormSettings());
+    document.getElementById('summerSubtitle')?.addEventListener('blur', () => SummerCourseAdmin.saveFormSettings());
+    document.getElementById('summerDeadlineMessage')?.addEventListener('blur', () => SummerCourseAdmin.saveFormSettings());
+    document.getElementById('summerClosedMessage')?.addEventListener('blur', () => SummerCourseAdmin.saveFormSettings());
+    SummerCourseAdmin.init().catch((err) => {
+      console.error('Summer course load failed', err);
+      SummerCourseAdmin.showLoadError?.();
+    });
+  </script>
+</body>
+</html>

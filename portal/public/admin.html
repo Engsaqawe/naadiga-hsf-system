@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | HS Foundation</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="admin-layout">
+
+  <!-- Mobile Header -->
+  <div class="admin-mobile-header" style="display: none;">
+    <div class="logo-text" style="color:white; -webkit-text-fill-color:white; font-size: 1.25rem;">HS ADMIN</div>
+    <div class="admin-menu-toggle" id="adminMenuToggle"><i class="fas fa-bars"></i></div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="adminSidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text" style="color:white; -webkit-text-fill-color:white;">HS ADMIN</div>
+      <i class="fas fa-times sidebar-close" id="adminMenuClose" style="display: none;"></i>
+    </div>
+    
+    <nav class="sidebar-links" style="position:static; background:transparent; padding:0; border:none; backdrop-filter:none;">
+      <a href="javascript:void(0)" class="active" onclick="switchSection('overview')"><i class="fas fa-th-large"></i> Overview</a>
+      <a href="javascript:void(0)" onclick="switchSection('gallery-manager')"><i class="fas fa-images"></i> Gallery Manager</a>
+      <a href="javascript:void(0)" onclick="switchSection('settings')"><i class="fas fa-cog"></i> Settings</a>
+      <a href="index.html" target="_blank" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;"><i class="fas fa-external-link-alt"></i> View Website</a>
+      
+      <div id="sidebar-theme-toggle" onclick="toggleDashboardTheme()" style="margin-top: 20px; padding: 12px 20px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s;">
+        <i class="fas fa-moon" id="theme-icon"></i> <span id="theme-text">Dark Mode</span>
+      </div>
+
+      <div style="padding-top: 20px;">
+        <a href="#" id="logoutBtn" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="admin-main">
+    
+    <!-- Section: Overview -->
+    <div id="overview-section" class="admin-section">
+      <div class="admin-header">
+        <div>
+          <h1 style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.5px;">Dashboard Overview</h1>
+          <p style="color:var(--text-muted); font-size: 0.9rem;">Welcome back, Administrator. Here's what's happening today.</p>
+        </div>
+        <div>
+          <button class="btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New Content</button>
+        </div>
+      </div>
+
+      <!-- Add Content Modal (Floating panel) -->
+      <div id="addModal" class="data-card" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 90%; max-width: 500px; box-shadow: var(--shadow-lg);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h3>Add New Website Content</h3>
+          <button onclick="closeAddModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="form-group">
+          <label>Choose Category</label>
+          <select id="contentCategory" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px;">
+            <option value="1">1. 🏖️ Beach Cleaning (Activity Card)</option>
+            <option value="2">2. 🧥 Eid Clothing (Card & Section)</option>
+            <option value="3">3. 🌙 Ramadan Iftar (Card & Section)</option>
+            <option value="4">4. 📚 Monthly Meetings (Card & Section)</option>
+            <option value="5">5. ☀️ Summer Courses (Card & Section)</option>
+            <option value="6">6. 🏠 Hero Section Main Image</option>
+            <option value="7">7. ✨ Gallery Slot 1 (Liido Action)</option>
+            <option value="8">8. ✨ Gallery Slot 2 (Eid Giving)</option>
+            <option value="9">9. ✨ Gallery Slot 3 (Ramadan Unity)</option>
+            <option value="10">10. ✨ Gallery Slot 4 (Leadership)</option>
+            <option value="11">11. ✨ Gallery Slot 5 (Courses)</option>
+            <option value="12">12. ✨ Gallery Slot 6 (Environment)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Select Picture</label>
+          <input type="file" id="contentImage" style="width: 100%;">
+        </div>
+        <button class="btn-primary" style="width: 100%;" onclick="submitNewContent()">Upload & Update</button>
+      </div>
+      <div id="modalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;" onclick="closeAddModal()"></div>
+
+      <!-- Quick Stats Cards -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card"><span class="label">Visits today</span><span class="value" id="stat-visitors">0</span><span style="color: #10B981; font-size: 0.8rem; font-weight: 700;" title="Homepage loads today"><i class="fas fa-arrow-up"></i> Today</span></div>
+        <div class="admin-stat-card"><span class="label">Total visits</span><span class="value" id="stat-total-visitors">1,250</span></div>
+        <div class="admin-stat-card"><span class="label">Active Content</span><span class="value" id="stat-gallery">0</span></div>
+      </div>
+
+
+    </div>
+
+    <!-- Section: Gallery Manager -->
+    <div id="gallery-manager-section" class="admin-section" style="display: none;">
+      <div id="gallery-manager" class="data-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h3>Gallery Manager (Moments That Matter)</h3>
+        </div>
+        <div class="gallery-manager-grid" id="gallery-manager-grid">
+          <!-- Dynamically loaded -->
+          <div style="padding: 40px; text-align: center; color: var(--text-muted); grid-column: 1/-1;">Loading gallery items...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Meetings (Removed) -->
+
+    <!-- Section: Visitors (Removed) -->
+
+    <!-- Section: Settings -->
+    <div id="settings-section" class="admin-section" style="display: none;">
+      <div class="data-card">
+        <h3 style="margin-bottom: 24px;">Platform & Profile Control</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+          <div class="form-group">
+            <label>Foundation Name</label>
+            <input type="text" id="setting-foundation" placeholder="H Team Club">
+          </div>
+          <div class="form-group">
+            <label>Admin Email</label>
+            <input type="email" id="setting-email" placeholder="admin@h-team.so">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
+          <div class="form-group">
+            <label>Change Password</label>
+            <input type="password" id="setting-password" placeholder="Leave blank to keep current">
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="saveAdminSettings()" style="background:var(--primary); color:white;">Save All Changes</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

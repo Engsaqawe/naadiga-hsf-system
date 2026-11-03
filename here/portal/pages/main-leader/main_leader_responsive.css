@@ -1,0 +1,4246 @@
+/* Portal section headers — stack on mobile */
+.portal-section-head {
+  margin-bottom: 1rem;
+}
+.portal-section-head--toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.portal-section-head--toolbar .section-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.portal-section-head--toolbar .export-dropdown {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+@media (max-width: 768px) {
+  .portal-section-head--toolbar {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .portal-section-head--toolbar .export-dropdown {
+    flex: 0 0 auto;
+  }
+  .portal-section-head--toolbar .export-btn {
+    white-space: nowrap;
+  }
+}
+.portal-section-head h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.contest-history-actions {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 6px;
+  flex-wrap: nowrap;
+  align-items: center;
+  white-space: nowrap;
+}
+.contest-icon-btn {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border: none;
+  border-radius: 8px;
+  background: var(--bg-main);
+  color: var(--primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+.contest-icon-btn.view {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+.contest-icon-btn.view:hover {
+  background: #2563eb;
+  color: #fff;
+}
+.contest-icon-btn.edit {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+.contest-icon-btn.edit:hover {
+  background: #2563eb;
+  color: #fff;
+}
+.contest-icon-btn.danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+.contest-icon-btn.danger:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+/* Portal modals — hidden scrollbar, rotating close */
+.portal-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.portal-modal-overlay.is-open {
+  display: flex;
+}
+.portal-modal-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  width: 100%;
+  padding: 1.5rem 1.65rem 1.65rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14), 0 8px 16px rgba(15, 23, 42, 0.06);
+}
+@keyframes portalModalIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.portal-modal-overlay.is-open .portal-modal-card {
+  animation: portalModalIn 0.22s ease;
+}
+.portal-modal-card::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.portal-modal-card--sm { max-width: 480px; }
+.portal-modal-card--md { max-width: 520px; }
+.portal-modal-card--lg { max-width: 560px; }
+.portal-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 12px;
+}
+.portal-modal-head h3 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.portal-modal-card .filter-group {
+  margin-bottom: 14px;
+}
+.portal-modal-card .filter-group label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.portal-modal-card .filter-select,
+.portal-modal-card textarea.filter-select {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: var(--bg-main);
+  color: var(--text-main);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.portal-modal-card .filter-select:focus,
+.portal-modal-card textarea.filter-select:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(44, 122, 77, 0.12);
+}
+.portal-modal-card #summerDetailContent p,
+.portal-modal-card #detailContent p,
+.portal-modal-card #contestViewPanel p {
+  margin: 0 0 10px;
+  line-height: 1.55;
+}
+.portal-modal-card .btn-primary[type="submit"] {
+  margin-top: 4px;
+  min-height: 44px;
+  font-weight: 600;
+}
+.portal-modal-close {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-main);
+  transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;
+}
+.portal-modal-close:hover {
+  transform: rotate(90deg);
+  background: #f1f5f9;
+  color: var(--primary);
+}
+
+/* Quran contest — filter toolbar */
+.month-selector.quran-contest-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.quran-contest-toolbar .month-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 0 1 auto;
+}
+.quran-contest-toolbar--reports {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+.quran-contest-toolbar--reports .program-report-hint {
+  display: none;
+}
+.program-report-toolbar-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+}
+.program-report-month {
+  flex: 0 1 200px;
+  min-width: 150px;
+}
+.program-report-month .month-picker-input,
+.program-report-month input[type="month"] {
+  width: 100%;
+  min-width: 0;
+}
+.program-report-or {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  padding-bottom: 11px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.program-report-range {
+  flex: 1 1 280px;
+  min-width: 0;
+  margin-bottom: 0 !important;
+}
+.quran-contest-toolbar--reports .program-report-toolbar-main {
+  align-items: flex-end;
+}
+.quran-contest-toolbar--reports .program-report-month {
+  flex: 0 1 180px;
+  min-width: 140px;
+  max-width: 200px;
+}
+.quran-contest-toolbar--reports .program-report-range {
+  flex: 1 1 320px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+.quran-contest-toolbar--reports .program-report-date-field {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 220px;
+  margin-bottom: 0;
+}
+.quran-contest-toolbar--reports .program-report-date-field label {
+  display: block;
+  margin-bottom: 4px;
+}
+.quran-contest-toolbar--reports .program-report-or {
+  flex: 0 0 auto;
+  min-width: 28px;
+  text-align: center;
+  padding-bottom: 11px;
+}
+.program-report-range.registrations-filter-dates--row {
+  gap: 12px;
+}
+.program-report-range .registrations-filter-date-group {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+}
+.quran-contest-toolbar--reports .program-report-date-input {
+  min-width: 0 !important;
+  width: 100%;
+  border-radius: 12px;
+}
+.program-report-export {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+.program-report-hint {
+  margin-left: 0 !important;
+  text-align: left;
+  width: 100%;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+.program-report-toolbar-main--month-only .program-report-month {
+  flex: 1 1 100%;
+  max-width: none;
+}
+@media (min-width: 900px) {
+  .program-report-toolbar-main {
+    flex-wrap: nowrap;
+  }
+  .quran-contest-toolbar--reports .program-report-toolbar-main {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+  .quran-contest-toolbar--reports .program-report-month {
+    flex: 0 0 180px;
+    width: 180px;
+    max-width: 180px;
+  }
+  .quran-contest-toolbar--reports .program-report-range {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 460px;
+  }
+  .quran-contest-toolbar--reports .program-report-date-field {
+    flex: 1 1 0;
+    max-width: none;
+  }
+  .program-report-toolbar-main--month-only .program-report-month {
+    flex: 0 1 240px;
+  }
+}
+
+/* Quran reports — export menu + table layout */
+#quran-tab-content > .card-table {
+  overflow: visible;
+}
+#quran-tab-content #quran-report-print-area {
+  overflow: visible;
+}
+#quran-tab-content .portal-section-head--toolbar {
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+}
+#quran-tab-content .portal-section-head--toolbar .export-dropdown {
+  position: relative;
+  z-index: 3;
+}
+#quran-tab-content .portal-section-head--toolbar .export-options {
+  z-index: 1100;
+}
+@media (max-width: 768px) {
+  #quran-tab-content .portal-section-head--toolbar {
+    flex-wrap: wrap;
+  }
+  #quran-tab-content .portal-section-head--toolbar .export-dropdown {
+    width: 100%;
+    margin-left: 0;
+  }
+  #quran-tab-content .portal-section-head--toolbar .export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  #quran-tab-content .portal-section-head--toolbar .export-options.active {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    margin-top: 8px;
+  }
+}
+#quran-tab-content .applications-history-table thead th {
+  position: static;
+  top: auto;
+  z-index: auto;
+  background: var(--bg-card);
+}
+#quran-tab-content .applications-history-table tbody td.reg-action-col {
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+#quran-tab-content .applications-history-table tbody tr:has(.export-options.active) td.reg-action-col {
+  z-index: 5000;
+}
+#quran-tab-content .applications-history-table th.reg-action-col {
+  overflow: visible;
+  position: relative;
+  z-index: 0;
+}
+.contest-row-export {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+}
+.contest-row-export:has(.export-options.active) {
+  z-index: 5001;
+}
+.contest-row-export .export-options {
+  right: 0;
+  left: auto;
+  min-width: 200px;
+  z-index: 5002;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg, 0 10px 24px rgba(15, 23, 42, 0.12));
+}
+.contest-row-export .export-options.active {
+  display: block;
+}
+.contest-row-export .export-options.active.export-options--fixed-mobile {
+  position: fixed !important;
+  display: block !important;
+  z-index: 10050 !important;
+  margin-top: 0;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.22);
+}
+@media (max-width: 768px) {
+  .contest-row-export {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  .contest-row-export .export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .contest-row-export .export-options,
+  .contest-row-export .export-options.active {
+    position: static;
+    right: auto;
+    left: auto;
+    top: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 6px;
+    box-sizing: border-box;
+  }
+  .contest-row-export .export-options.active.export-options--fixed-mobile {
+    position: fixed !important;
+    margin-top: 0;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+  }
+  .applications-history-table th:last-child,
+  .applications-history-table td:last-child,
+  .applications-history-table th.reg-action-col,
+  .applications-history-table td.reg-action-col {
+    min-width: 120px;
+    overflow: visible;
+    vertical-align: top;
+  }
+}
+@media (max-width: 899px) {
+  .program-report-toolbar-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "month"
+      "or"
+      "range";
+    gap: 10px;
+    align-items: stretch;
+  }
+  .program-report-or {
+    grid-area: or;
+    align-self: center;
+    text-align: center;
+    padding-bottom: 0;
+  }
+  .program-report-month {
+    grid-area: month;
+    width: 100%;
+    min-width: 0;
+    flex: none;
+  }
+  .program-report-range {
+    grid-area: range;
+    width: 100%;
+    min-width: 0;
+    gap: 12px;
+  }
+  .program-report-range.registrations-filter-dates--row {
+    flex-wrap: nowrap;
+  }
+  .program-report-range .registrations-filter-date-group {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+    max-width: none;
+  }
+  .quran-contest-toolbar--reports .program-report-month {
+    max-width: none;
+    width: 100%;
+  }
+  .quran-contest-toolbar--reports .program-report-range {
+    max-width: none;
+  }
+  .quran-contest-toolbar--reports .program-report-date-field {
+    max-width: none;
+  }
+  .program-report-export {
+    grid-area: export;
+    margin-left: 0;
+    width: 100%;
+    justify-self: stretch;
+  }
+  .program-report-export.export-dropdown {
+    width: 100%;
+  }
+  .program-report-export .export-btn {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  .quran-contest-toolbar--reports input[type="date"].month-picker-input,
+  .quran-contest-toolbar--reports .program-report-date-input {
+    min-width: 0 !important;
+    width: 100%;
+  }
+  .quran-contest-toolbar--reports .program-report-hint {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
+  .quran-contest-toolbar--reports {
+    gap: 8px;
+  }
+}
+.quran-contest-toolbar--reports .quran-date-mode-select {
+  flex: 0 0 148px;
+  min-width: 148px;
+  height: 42px;
+}
+.quran-contest-toolbar--reports .quran-date-between {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 0;
+  align-items: flex-end;
+}
+.quran-contest-toolbar--reports .registrations-filter-date-group {
+  margin-bottom: 0;
+}
+.quran-contest-toolbar input[type="date"].month-picker-input {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  height: 42px;
+  outline: none;
+  cursor: pointer;
+  min-width: 160px;
+  box-sizing: border-box;
+}
+.quran-contest-toolbar .toolbar-month-label {
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+.quran-contest-toolbar .toolbar-month-label--caps {
+  text-transform: uppercase;
+}
+.quran-contest-toolbar input[type="month"],
+.quran-contest-toolbar .month-picker-input {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  height: 42px;
+  outline: none;
+  cursor: pointer;
+  min-width: 200px;
+  box-sizing: border-box;
+}
+.quran-contest-toolbar input[type="month"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: grayscale(100%) opacity(0.5);
+}
+.quran-global-date-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-left: auto;
+  white-space: nowrap;
+}
+@media (min-width: 769px) {
+  .quran-contest-toolbar {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 768px) {
+  .quran-contest-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .quran-contest-toolbar .month-field-group {
+    width: 100%;
+  }
+  .quran-contest-toolbar input[type="month"] {
+    width: 100%;
+    max-width: none;
+  }
+  .quran-global-date-hint {
+    margin-left: 0;
+    text-align: right;
+  }
+}
+
+/* Registrations filter — date row on top */
+.registrations-filter-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+  align-items: flex-end;
+}
+.registrations-filter-dates--row {
+  flex-wrap: nowrap;
+  flex: 1 1 auto;
+  min-width: min(100%, 360px);
+  width: 100%;
+}
+.registrations-filter-dates--row .registrations-filter-date-group {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+}
+.registrations-filter-date-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 0 1 160px;
+  min-width: 140px;
+}
+.registrations-filter-date-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.registrations-filter-date-group input[type="date"] {
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 0.85rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  width: 100%;
+}
+.registrations-filter-date-group input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.65;
+}
+
+/* Registrations filter bar */
+.registrations-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+.registrations-filter-bar .search-input,
+.registrations-filter-bar select,
+.registrations-filter-bar .reg-filter-input,
+.registrations-filter-bar .reg-filter-select {
+  flex: 1 1 140px;
+  min-width: 120px;
+  max-width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 0.85rem;
+  background: var(--bg-card);
+  box-sizing: border-box;
+}
+.registrations-filter-bar input[type="search"],
+.registrations-filter-bar .reg-filter-input {
+  flex: 2 1 200px;
+  min-width: 160px;
+}
+.registrations-filter-bar .reg-filter-select,
+.registrations-filter-bar select {
+  cursor: pointer;
+}
+.export-dropdown--inline {
+  position: relative;
+  display: inline-flex;
+}
+.export-dropdown--inline .export-options {
+  right: 0;
+  left: auto;
+  min-width: 168px;
+}
+.contest-report-sheet {
+  padding: 24px;
+  font-family: inherit;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  color: #1e293b;
+}
+.contest-report-sheet h2 {
+  margin: 0 0 6px;
+  color: var(--primary);
+  font-size: 1.35rem;
+}
+.contest-report-sheet h3 {
+  margin: 20px 0 10px;
+  color: var(--primary);
+  font-size: 1rem;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 6px;
+}
+
+/* Export / preview — always light report styling (ignore portal dark theme) */
+.contest-report-sheet,
+.report-export-ready.contest-report-sheet,
+#exportPreviewBody .contest-report-sheet {
+  background: #fff !important;
+  color: #1e293b !important;
+}
+
+.contest-report-sheet h2,
+.contest-report-sheet h3,
+.report-export-ready.contest-report-sheet h2,
+.report-export-ready.contest-report-sheet h3,
+#exportPreviewBody .contest-report-sheet h2,
+#exportPreviewBody .contest-report-sheet h3 {
+  color: #1e4a6d !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+.contest-report-sheet .hsf-program-winners-grid,
+.report-export-ready .hsf-program-winners-grid,
+#exportPreviewBody .hsf-program-winners-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.contest-report-sheet .hsf-program-winners-grid > div,
+.report-export-ready .hsf-program-winners-grid > div,
+#exportPreviewBody .hsf-program-winners-grid > div {
+  background: #fff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+}
+
+.contest-report-sheet .hsf-program-winners-grid span,
+.contest-report-sheet .hsf-program-meta-label,
+.report-export-ready .hsf-program-winners-grid span,
+.report-export-ready .hsf-program-meta-label,
+#exportPreviewBody .hsf-program-winners-grid span,
+#exportPreviewBody .hsf-program-meta-label {
+  color: #64748b !important;
+}
+
+.contest-report-sheet .hsf-program-winners-grid strong,
+.report-export-ready .hsf-program-winners-grid strong,
+#exportPreviewBody .hsf-program-winners-grid strong {
+  color: #0f172a !important;
+}
+
+/* Summer program report — course cards + day stats (print/PDF light) */
+.contest-report-sheet .summer-courses-cards,
+.report-export-ready .summer-courses-cards,
+#exportPreviewBody .summer-courses-cards {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin: 8px 0 16px !important;
+}
+
+.contest-report-sheet .summer-course-card,
+.report-export-ready .summer-course-card,
+#exportPreviewBody .summer-course-card {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #0f172a !important;
+  min-height: 0 !important;
+}
+
+.contest-report-sheet .summer-course-card-num,
+.report-export-ready .summer-course-card-num,
+#exportPreviewBody .summer-course-card-num {
+  flex-shrink: 0 !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 7px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  background: rgba(13, 148, 136, 0.14) !important;
+  color: #0f766e !important;
+}
+
+.contest-report-sheet .summer-course-card-title,
+.report-export-ready .summer-course-card-title,
+#exportPreviewBody .summer-course-card-title {
+  font-size: 0.86rem !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  color: #0f172a !important;
+}
+
+.contest-report-sheet .summer-report-day-cards,
+.report-export-ready .summer-report-day-cards,
+#exportPreviewBody .summer-report-day-cards {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin: 8px 0 16px !important;
+}
+
+.contest-report-sheet .summer-report-day-card,
+.report-export-ready .summer-report-day-card,
+#exportPreviewBody .summer-report-day-card {
+  padding: 10px 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #0f172a !important;
+}
+
+.contest-report-sheet .summer-report-day-card-label,
+.report-export-ready .summer-report-day-card-label,
+#exportPreviewBody .summer-report-day-card-label {
+  display: block !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  color: #64748b !important;
+  margin-bottom: 4px !important;
+}
+
+.contest-report-sheet .summer-report-day-card strong,
+.report-export-ready .summer-report-day-card strong,
+#exportPreviewBody .summer-report-day-card strong {
+  display: block !important;
+  font-size: 0.95rem !important;
+  color: #0f766e !important;
+}
+
+.contest-report-sheet .summer-report-day-card-absent,
+.report-export-ready .summer-report-day-card-absent,
+#exportPreviewBody .summer-report-day-card-absent {
+  display: block !important;
+  font-size: 0.82rem !important;
+  color: #b45309 !important;
+  margin-top: 2px !important;
+}
+
+.contest-report-sheet .summer-report-day-lists-hint,
+.report-export-ready .summer-report-day-lists-hint,
+#exportPreviewBody .summer-report-day-lists-hint {
+  margin: -4px 0 12px !important;
+  font-size: 0.82rem !important;
+  color: #64748b !important;
+}
+
+.contest-report-sheet .summer-report-day-section,
+.report-export-ready .summer-report-day-section,
+#exportPreviewBody .summer-report-day-section {
+  margin-bottom: 18px !important;
+}
+
+.contest-report-sheet .summer-report-dufcad-block,
+.report-export-ready .summer-report-dufcad-block,
+#exportPreviewBody .summer-report-dufcad-block {
+  margin: 0 0 14px !important;
+}
+
+.contest-report-sheet .summer-report-dufcad-title,
+.report-export-ready .summer-report-dufcad-title,
+#exportPreviewBody .summer-report-dufcad-title {
+  margin: 0 0 8px !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: #1e4a6d !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.contest-report-sheet .summer-report-dufcad-title span,
+.report-export-ready .summer-report-dufcad-title span,
+#exportPreviewBody .summer-report-dufcad-title span {
+  font-weight: 500 !important;
+  color: #64748b !important;
+  font-size: 0.82rem !important;
+}
+
+.contest-report-sheet .summer-report-day-lists,
+.report-export-ready .summer-report-day-lists,
+#exportPreviewBody .summer-report-day-lists {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.contest-report-sheet .summer-report-day-list,
+.report-export-ready .summer-report-day-list,
+#exportPreviewBody .summer-report-day-list {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  background: #fff !important;
+}
+
+.contest-report-sheet .summer-report-day-list h4,
+.report-export-ready .summer-report-day-list h4,
+#exportPreviewBody .summer-report-day-list h4 {
+  margin: 0 0 8px !important;
+  font-size: 0.88rem !important;
+  border: none !important;
+  padding: 0 !important;
+  color: #1e4a6d !important;
+}
+
+.contest-report-sheet .summer-report-day-list--present h4,
+.report-export-ready .summer-report-day-list--present h4,
+#exportPreviewBody .summer-report-day-list--present h4 {
+  color: #0f766e !important;
+}
+
+.contest-report-sheet .summer-report-day-list--absent h4,
+.report-export-ready .summer-report-day-list--absent h4,
+#exportPreviewBody .summer-report-day-list--absent h4 {
+  color: #b45309 !important;
+}
+
+.contest-report-sheet .summer-report-day-list ol,
+.report-export-ready .summer-report-day-list ol,
+#exportPreviewBody .summer-report-day-list ol {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+.contest-report-sheet .summer-report-day-list li,
+.report-export-ready .summer-report-day-list li,
+#exportPreviewBody .summer-report-day-list li {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: flex-start !important;
+  font-size: 0.82rem !important;
+  line-height: 1.4 !important;
+  padding: 3px 0 !important;
+  color: #0f172a !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.contest-report-sheet .summer-report-day-list li:last-child,
+.report-export-ready .summer-report-day-list li:last-child,
+#exportPreviewBody .summer-report-day-list li:last-child {
+  border-bottom: none !important;
+}
+
+.contest-report-sheet .summer-report-list-num,
+.report-export-ready .summer-report-list-num,
+#exportPreviewBody .summer-report-list-num {
+  flex-shrink: 0 !important;
+  width: 1.4em !important;
+  color: #64748b !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+}
+
+.contest-report-sheet .summer-report-list-empty,
+.report-export-ready .summer-report-list-empty,
+#exportPreviewBody .summer-report-list-empty {
+  color: #94a3b8 !important;
+  font-style: italic !important;
+  border: none !important;
+}
+
+@media (max-width: 640px) {
+  .contest-report-sheet .summer-courses-cards,
+  .contest-report-sheet .summer-report-day-lists,
+  #exportPreviewBody .summer-courses-cards,
+  #exportPreviewBody .summer-report-day-lists {
+    grid-template-columns: 1fr !important;
+  }
+
+  .contest-report-sheet .summer-report-day-cards,
+  #exportPreviewBody .summer-report-day-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .contest-report-sheet .hsf-program-winners-grid > div,
+  #exportPreviewBody .hsf-program-winners-grid > div,
+  .report-export-ready .hsf-program-winners-grid > div {
+    padding: 8px 6px !important;
+  }
+
+  .contest-report-sheet .hsf-program-winners-grid span,
+  #exportPreviewBody .hsf-program-winners-grid span,
+  .report-export-ready .hsf-program-winners-grid span {
+    font-size: 0.65rem !important;
+  }
+
+  .contest-report-sheet .hsf-program-winners-grid strong,
+  #exportPreviewBody .hsf-program-winners-grid strong,
+  .report-export-ready .hsf-program-winners-grid strong {
+    font-size: 0.78rem !important;
+    word-break: break-word;
+  }
+}
+
+.contest-report-sheet table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.contest-report-participants-wrap {
+  overflow: visible;
+  max-width: 100%;
+  width: 100%;
+}
+.contest-report-participants-table {
+  font-size: 0.8rem;
+  table-layout: fixed;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.contest-report-participants-table th {
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  line-height: 1.3;
+  padding: 6px 5px;
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: bottom;
+  font-weight: 700;
+}
+.contest-report-participants-table td {
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: top;
+  padding: 6px 5px;
+  line-height: 1.35;
+  font-size: 0.8rem;
+}
+.report-export-ready .contest-report-participants-wrap {
+  overflow: visible !important;
+  max-width: none !important;
+  padding-bottom: 0 !important;
+}
+.report-export-ready .contest-report-participants-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  table-layout: fixed !important;
+}
+.report-export-ready .contest-report-participants-table th,
+.report-export-ready .contest-report-participants-table td {
+  padding: 6px 5px !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  line-height: 1.35 !important;
+  font-size: 0.8rem !important;
+}
+.report-export-ready .contest-report-participants-table--quran th:nth-child(1),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(1) { width: 4%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(2),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(2) { width: 11%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(3),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(3) { width: 7%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(4),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(4) { width: 10%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(5),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(5) { width: 10%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(6),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(6) { width: 9%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(7),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(7) { width: 9%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(8),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(8) { width: 8%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(9),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(9) { width: 10%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(10),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(10) { width: 9%; }
+.report-export-ready .contest-report-participants-table--quran th:nth-child(11),
+.report-export-ready .contest-report-participants-table--quran td:nth-child(11) { width: 13%; }
+.report-export-ready .contest-report-participants-table--summer {
+  table-layout: auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  font-size: 11px !important;
+}
+.report-export-ready .contest-report-participants-table--summer th,
+.report-export-ready .contest-report-participants-table--summer td {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+  padding: 4px 5px !important;
+  vertical-align: middle !important;
+}
+.report-export-ready .contest-report-participants-table--summer th:nth-child(1),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(1) {
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 36px !important;
+  text-align: center !important;
+}
+.report-export-ready .contest-report-participants-table--summer th:nth-child(2),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(2) {
+  width: auto !important;
+  min-width: 170px !important;
+  white-space: nowrap !important;
+}
+.report-export-ready .contest-report-participants-table--summer th:nth-child(3),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(3) {
+  min-width: 78px !important;
+}
+.report-export-ready .contest-report-participants-table--summer th:nth-child(6),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(6) {
+  min-width: 48px !important;
+  text-align: center !important;
+}
+.report-export-ready .contest-report-participants-table--summer th:nth-child(7),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(7),
+.report-export-ready .contest-report-participants-table--summer th:nth-child(8),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(8),
+.report-export-ready .contest-report-participants-table--summer th:nth-child(9),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(9),
+.report-export-ready .contest-report-participants-table--summer th:nth-child(10),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(10),
+.report-export-ready .contest-report-participants-table--summer th:nth-child(11),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(11),
+.report-export-ready .contest-report-participants-table--summer th:nth-child(12),
+.report-export-ready .contest-report-participants-table--summer td:nth-child(12) {
+  width: 32px !important;
+  min-width: 32px !important;
+  max-width: 36px !important;
+  padding: 3px 2px !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  font-size: 12px !important;
+}
+#exportPreviewBody {
+  overflow-x: auto !important;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#exportPreviewBody .contest-report-sheet,
+#exportPreviewBody .quran-whole-report-bundle {
+  max-width: 100% !important;
+  width: 100% !important;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 24px 28px !important;
+}
+
+.report-export-ready.contest-report-sheet,
+#exportPreviewBody .report-export-ready.contest-report-sheet {
+  padding: 28px 32px !important;
+}
+#exportPreviewBody .contest-report-participants-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  width: 100%;
+}
+#exportPreviewBody .report-export-ready .contest-report-participants-wrap {
+  overflow-x: auto !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+#exportPreviewBody .contest-report-participants-table--quran {
+  width: max-content;
+  min-width: 900px;
+  max-width: none;
+  table-layout: auto;
+}
+#exportPreviewBody .contest-report-participants-table--summer {
+  width: max-content;
+  min-width: 1050px;
+  max-width: none;
+  table-layout: auto;
+}
+#exportPreviewBody .report-export-ready .contest-report-participants-table {
+  width: max-content !important;
+  min-width: 900px !important;
+  max-width: none !important;
+  table-layout: auto !important;
+}
+#exportPreviewBody .report-export-ready .contest-report-participants-table--summer {
+  min-width: 1050px !important;
+}
+#exportPreviewBody .contest-report-participants-table th,
+#exportPreviewBody .contest-report-participants-table td,
+#exportPreviewBody .report-export-ready .contest-report-participants-table th,
+#exportPreviewBody .report-export-ready .contest-report-participants-table td {
+  white-space: nowrap !important;
+  word-break: normal !important;
+}
+.contest-report-sheet th,
+.contest-report-sheet td {
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: left;
+}
+.contest-report-participants-table th,
+.contest-report-participants-table td {
+  padding: 6px 5px;
+  font-size: 0.8rem;
+}
+.contest-report-sheet th {
+  background: #f8fafc;
+}
+.quran-whole-report-bundle {
+  background: #fff;
+  color: #1e293b;
+}
+.quran-whole-report-bundle .contest-report-sheet + .contest-report-sheet {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 2px solid var(--border);
+}
+@media print {
+  .quran-whole-report-bundle .contest-report-sheet + .contest-report-sheet {
+    page-break-before: always;
+    break-before: page;
+    border-top: none;
+    margin-top: 0;
+    padding-top: 24px;
+  }
+}
+.quran-form-fields[hidden] {
+  display: none !important;
+}
+.registrations-filter-count {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* Applications reg filter — status/dufcad pair + count row */
+.applications-reg-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.applications-reg-filter .applications-filter-pair {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  width: 100%;
+}
+
+.applications-reg-filter .applications-filter-pair .reg-filter-select {
+  flex: 1 1 calc(50% - 5px);
+  min-width: 0;
+  width: auto;
+  max-width: none;
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  background: var(--bg-card);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.applications-reg-filter .reg-filter-search,
+.applications-reg-filter input.reg-filter-input[type="search"] {
+  width: 100%;
+  flex: 0 0 auto;
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  max-width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  background: var(--bg-card);
+}
+
+.applications-reg-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.applications-reg-count-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.applications-reg-count-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.applications-reg-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  margin-bottom: 1rem;
+}
+
+.applications-reg-section-head .section-title {
+  margin: 0;
+  min-width: 0;
+}
+
+.applications-reg-count-row--head {
+  width: auto;
+  flex: 0 0 auto;
+  padding: 0;
+  margin: 0;
+  border-bottom: none;
+  justify-content: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.applications-reg-count-row--head .applications-reg-count-num {
+  font-size: 1.15rem;
+}
+
+.applications-reg-count-row--head .applications-reg-count-label {
+  font-size: 0.88rem;
+}
+@media (max-width: 768px) {
+  .registrations-filter-dates {
+    flex-direction: row;
+  }
+  .registrations-filter-date-group {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+  }
+  .registrations-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .registrations-filter-bar .search-input,
+  .registrations-filter-bar > select,
+  .registrations-filter-bar > .reg-filter-input,
+  .registrations-filter-bar > .reg-filter-select {
+    width: 100%;
+    flex: 0 0 auto;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+  }
+  .registrations-filter-count {
+    margin-left: 0;
+    text-align: right;
+  }
+
+  .applications-reg-filter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .applications-reg-filter .reg-filter-search {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .applications-reg-filter .applications-filter-pair {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .applications-reg-filter .applications-filter-pair .reg-filter-select {
+    flex: 1 1 calc(50% - 5px);
+    width: auto !important;
+    min-width: 0;
+    max-width: none;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+  }
+
+  .applications-reg-count-row {
+    margin-left: 0;
+  }
+}
+
+/* Quran + Summer admin pages */
+.applications-admin .dashboard-content {
+  overflow-x: visible;
+}
+
+.applications-admin .card-table {
+  padding: 1.25rem !important;
+  overflow: visible;
+}
+
+.applications-admin .applications-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 0.25rem;
+}
+
+.applications-admin .applications-table-scroll .data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.applications-admin .applications-table-scroll .data-table thead th {
+  position: static;
+  top: auto;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  background: var(--bg-card);
+}
+
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) {
+  min-width: 880px;
+}
+
+.applications-admin .applications-history-table {
+  min-width: 520px;
+}
+
+@media (min-width: 769px) {
+  .applications-admin .applications-table-scroll--history {
+    overflow-x: visible;
+  }
+
+  .applications-admin .applications-history-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .applications-admin .applications-history-table th:nth-child(1),
+  .applications-admin .applications-history-table td:nth-child(1) {
+    width: 36%;
+    word-break: break-word;
+  }
+
+  .applications-admin .applications-history-table th:nth-child(2),
+  .applications-admin .applications-history-table td:nth-child(2) {
+    width: 16%;
+  }
+
+  .applications-admin .applications-history-table th:nth-child(3),
+  .applications-admin .applications-history-table td:nth-child(3) {
+    width: 12%;
+    text-align: center;
+  }
+
+  .applications-admin .applications-history-table th:nth-child(4),
+  .applications-admin .applications-history-table td:nth-child(4) {
+    width: 36%;
+    text-align: right;
+  }
+
+  .applications-admin .applications-history-table .contest-history-actions {
+    justify-content: flex-end;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) {
+    width: 100%;
+    min-width: 0;
+    table-layout: auto;
+  }
+
+  .applications-admin .applications-table-scroll--registrations {
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 8px;
+    scrollbar-gutter: stable;
+  }
+}
+
+@media (min-width: 1100px) {
+  .applications-admin .applications-table-scroll--registrations {
+    overflow-x: auto;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th:nth-child(1),
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td:nth-child(1) {
+    width: 9%;
+    white-space: nowrap;
+    font-size: 0.78rem;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th:nth-child(2),
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td:nth-child(2) {
+    width: 14%;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th:nth-child(3),
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td:nth-child(3) {
+    width: 8%;
+    white-space: nowrap;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th:nth-child(4),
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td:nth-child(4) {
+    width: 13%;
+    white-space: normal;
+    word-break: break-word;
+    font-size: 0.78rem;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th:nth-child(5),
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td:nth-child(5) {
+    width: 15%;
+    white-space: normal;
+    word-break: break-word;
+    font-size: 0.78rem;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th:nth-child(6),
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td:nth-child(6) {
+    width: 12%;
+    white-space: normal;
+    word-break: break-word;
+    font-size: 0.78rem;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th:nth-child(7),
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td:nth-child(7) {
+    width: 7%;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th.reg-action-col,
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td.reg-action-col {
+    width: 12%;
+    min-width: 118px;
+    text-align: center;
+    white-space: nowrap;
+    padding-left: 4px !important;
+    padding-right: 10px !important;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) .contest-history-actions {
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+}
+
+.applications-admin .applications-table-scroll .data-table th,
+.applications-admin .applications-table-scroll .data-table td {
+  padding: 10px;
+  vertical-align: middle;
+}
+
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) th,
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td {
+  padding: 8px 6px;
+  vertical-align: middle;
+}
+
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) .reg-col-date {
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) .reg-col-section,
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) .reg-col-faculty,
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) .reg-col-semester {
+  font-size: 0.78rem;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) .reg-col-status {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.applications-admin .contest-history-actions {
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+
+/* Top row: month picker + stats */
+.applications-admin .applications-top-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.applications-admin .applications-top-row .quran-contest-toolbar {
+  margin-bottom: 0;
+}
+
+.applications-admin .applications-top-row .applications-stats-panel {
+  margin-bottom: 0 !important;
+}
+
+/* Date bar: label left, month value right */
+.applications-admin .applications-date-toolbar {
+  width: 100%;
+  margin-bottom: 0;
+  padding: 12px 14px;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.applications-admin .applications-date-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.applications-admin .applications-date-row .toolbar-month-label {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-muted);
+  white-space: normal;
+  line-height: 1.3;
+}
+
+.applications-admin .applications-date-row .month-picker-input,
+.applications-admin .applications-date-row input[type="month"] {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 132px;
+  max-width: 48%;
+  height: 38px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 999px;
+}
+
+.applications-admin .applications-stats-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.applications-admin .applications-history-table td:last-child,
+.applications-admin .applications-registrations-table td:last-child {
+  white-space: nowrap;
+}
+
+/* Summer registrations — list table */
+#summer-tab-content .applications-registrations-table--summer {
+  min-width: 920px;
+}
+
+.applications-admin .applications-registrations-table--summer {
+  min-width: 960px;
+  table-layout: auto;
+}
+
+.applications-admin .applications-table-scroll--registrations:has(.applications-registrations-table--summer) {
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 8px;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.applications-admin .applications-registrations-table--summer th,
+.applications-admin .applications-registrations-table--summer td {
+  padding: 8px 6px;
+  vertical-align: middle;
+}
+
+.applications-admin .applications-registrations-table--summer .reg-col-date {
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.applications-admin .applications-registrations-table--summer .reg-col-name,
+.applications-admin .applications-registrations-table--summer .reg-col-university,
+.applications-admin .applications-registrations-table--summer .reg-col-faculty,
+.applications-admin .applications-registrations-table--summer .reg-col-semester {
+  white-space: normal;
+  word-break: break-word;
+  font-size: 0.78rem;
+}
+
+.applications-admin .applications-registrations-table--summer .reg-col-status {
+  text-align: center;
+  white-space: nowrap;
+  min-width: 56px;
+}
+
+.applications-admin .applications-registrations-table--summer th.reg-action-col,
+.applications-admin .applications-registrations-table--summer td.reg-action-col {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+  text-align: center;
+  white-space: nowrap;
+  padding-left: 10px !important;
+  padding-right: 16px !important;
+}
+
+.applications-admin .applications-registrations-table--summer .contest-history-actions {
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+#summer-tab-content .applications-table-scroll--registrations {
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+#summer-tab-content .applications-registrations-table--summer .reg-col-status {
+  text-align: center;
+  white-space: nowrap;
+  min-width: 56px;
+}
+
+#summer-tab-content .applications-registrations-table--summer th.reg-action-col,
+#summer-tab-content .applications-registrations-table--summer td.reg-action-col {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+  text-align: center;
+  white-space: nowrap;
+  padding-left: 10px !important;
+  padding-right: 16px !important;
+}
+
+/* Summer attendance modal table (separate from registrations list) */
+.summer-attendance-table .summer-att-day-head,
+.summer-attendance-table .summer-att-day-cell {
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  padding: 8px 4px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) td:last-child {
+  min-width: 126px;
+  white-space: nowrap;
+}
+
+.applications-admin .applications-history-table td.reg-action-col,
+.applications-admin .applications-history-table th.reg-action-col {
+  min-width: 118px;
+}
+
+.applications-admin .applications-history-table .contest-icon-btn,
+.applications-admin .applications-registrations-table .contest-icon-btn {
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .applications-admin .applications-top-row {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 0.85rem;
+  }
+
+  .applications-admin .applications-date-toolbar {
+    padding: 12px 14px;
+  }
+
+  .applications-admin .applications-date-row .toolbar-month-label {
+    font-size: 0.78rem;
+  }
+
+  .applications-admin .applications-date-row .month-picker-input,
+  .applications-admin .applications-date-row input[type="month"] {
+    min-width: 118px;
+    max-width: 50%;
+    font-size: 0.8rem;
+  }
+
+  .applications-admin .applications-date-toolbar.quran-contest-toolbar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .applications-admin .applications-date-row {
+    width: 100%;
+  }
+
+  .applications-admin .applications-stats-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .applications-admin .applications-top-row .stat-card {
+    width: 100%;
+    padding: 12px 14px !important;
+    gap: 12px;
+  }
+
+  .applications-admin .applications-top-row .stat-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+  }
+
+  .applications-admin .applications-top-row .stat-info h4 {
+    font-size: 1.25rem;
+  }
+
+  .applications-admin .applications-top-row .stat-info p {
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .applications-admin .main-content {
+    padding: 12px;
+    padding-top: 70px;
+  }
+
+  .applications-admin .card-table {
+    padding: 1rem !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .applications-admin .stats-grid {
+    margin-bottom: 0.85rem !important;
+  }
+
+  .applications-admin .stat-card {
+    padding: 14px 16px !important;
+  }
+
+  .applications-admin .stat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
+  }
+
+  .applications-admin .stat-info h4 {
+    font-size: 1.35rem;
+  }
+
+  .applications-admin .applications-table-scroll {
+    scrollbar-width: thin;
+    -ms-overflow-style: auto;
+    padding-bottom: 4px;
+  }
+
+  .applications-admin .applications-table-scroll::-webkit-scrollbar {
+    display: block;
+    height: 6px;
+  }
+
+  .applications-admin .applications-table-scroll::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  .applications-admin .applications-table-scroll .data-table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .applications-admin .applications-registrations-table:not(.applications-registrations-table--summer) {
+    min-width: 880px;
+  }
+
+  .applications-admin .applications-history-table {
+    min-width: 520px;
+  }
+
+  .applications-admin .quran-global-date-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .portal-section-head h3 {
+    font-size: 1rem;
+  }
+  .card-table .section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px;
+  }
+  .card-table .section-header .section-title {
+    width: 100%;
+  }
+
+  /* Responsive button labels — full text desktop, short text mobile */
+  .summer-program-history-head {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .summer-program-history-head .section-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.92rem;
+  }
+  .summer-add-year-btn,
+  .summer-add-attendee-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .summer-add-year-btn {
+    font-size: 0.72rem;
+    padding: 6px 10px;
+  }
+  .summer-add-attendee-btn {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+  .btn-text-desktop {
+    display: none;
+  }
+  .btn-text-mobile {
+    display: inline;
+  }
+}
+
+@media (min-width: 769px) {
+  .btn-text-mobile {
+    display: none;
+  }
+  .btn-text-desktop {
+    display: inline;
+  }
+  .summer-program-history-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}
+
+/* ========================= */
+/* GLOBAL (DESKTOP DEFAULT) */
+/* ========================= */
+
+/* Student Management — desktop toolbar (search | filter | buttons) */
+@media (min-width: 769px) {
+  .students-toolbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .students-toolbar-search {
+    order: 1;
+    flex: 0 1 280px;
+    min-width: 200px;
+    max-width: 320px;
+    width: auto !important;
+  }
+
+  .students-toolbar-filters {
+    order: 2;
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  .students-toolbar-filters select {
+    width: auto !important;
+    min-width: 160px;
+  }
+
+  .students-toolbar-actions {
+    order: 3;
+    flex: 0 0 auto;
+    margin-left: auto;
+    flex-direction: row !important;
+    width: auto;
+  }
+
+  .students-toolbar-actions .btn {
+    width: auto !important;
+    flex: 0 0 auto;
+  }
+}
+
+/* Payment Management — month left, convocation right, search below */
+.month-selector--payment-admin .convocation-filter-input {
+  min-height: 42px;
+  padding-left: 12px;
+  min-width: 160px;
+}
+
+.month-selector--payment-admin .toolbar-month-label {
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.month-selector--payment-admin-panel .month-field-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.month-selector--payment-admin-panel #month-picker {
+  min-height: 42px;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .month-selector--payment-admin-panel,
+  .month-selector--payment-admin {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .month-selector--payment-admin-panel #filters-container,
+  .month-selector--payment-admin #filters-container {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    order: 1;
+  }
+
+  .month-selector--payment-admin-panel .month-field-group,
+  .month-selector--payment-admin .month-field-group {
+    flex: 1 1 50% !important;
+    width: auto !important;
+    max-width: 50%;
+    min-width: 0;
+  }
+
+  .month-selector--payment-admin-panel .toolbar-month-label {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+  }
+
+  .month-selector--payment-admin-panel #month-picker,
+  .month-selector--payment-admin .month-field-group input[type="month"] {
+    flex: 1;
+    min-width: 0;
+    width: 100% !important;
+    max-width: none;
+    font-size: 0.85rem;
+  }
+
+  .month-selector--payment-admin-panel #convocation-filter,
+  .month-selector--payment-admin #convocation-filter {
+    flex: 1 1 50% !important;
+    width: auto !important;
+    min-width: 0;
+    font-size: 0.85rem;
+  }
+
+  .month-selector--payment-admin-panel .search-wrapper,
+  .month-selector--payment-admin .search-wrapper {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    flex: 1 1 100% !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .month-selector--payment-admin #filters-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .month-selector--payment-admin .month-field-group {
+    flex: 0 0 auto;
+  }
+
+  .month-selector--payment-admin #convocation-filter {
+    flex: 0 0 auto;
+    min-width: 180px;
+  }
+
+  .month-selector--payment-admin .search-wrapper {
+    margin-left: auto;
+  }
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+.app-container,
+.main-content,
+.dashboard-content {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.card-table {
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* TABLE */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  /* Hide scrollbar on desktop */
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* IE/Edge */
+}
+.table-wrapper::-webkit-scrollbar {
+  display: none;              /* Chrome/Safari */
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 2;
+}
+
+/* TABLE HEADER */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+
+  position: relative;
+  z-index: 1;
+}
+
+.table-header h3,
+.table-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* MONTH PICKER */
+#meeting-month-picker {
+  min-width: 140px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  font-size: 13px;
+  background: var(--bg-card);
+}
+
+/* MODAL - Overridden by global style.css */
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 16px;
+}
+
+body.student-modal-open {
+  overflow: hidden;
+}
+
+/* Student detail modal — header fixed, body scrolls inside card */
+#student-modal.modal {
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#student-modal .student-detail-modal-content {
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 2rem);
+  max-width: min(600px, calc(100vw - 2rem));
+  max-height: min(90dvh, calc(100dvh - 2rem));
+  margin: 0 auto;
+  box-sizing: border-box;
+  transform: none;
+  left: auto;
+  right: auto;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+#student-modal #student-modal-header-content {
+  padding: 1.5rem 1rem 1.25rem !important;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+#student-modal .student-modal-header-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+#student-modal .student-modal-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+#student-modal .student-modal-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+#student-modal .student-modal-card-badge {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  color: #1e4a6d;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#student-modal .student-modal-header-text {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+#student-modal .student-modal-header-text h2 {
+  font-size: 1.35rem;
+  margin: 0 0 0.35rem;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+
+#student-modal .student-modal-header-text p {
+  margin: 0.2rem 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+#student-modal .student-modal-meta {
+  font-size: 0.88rem;
+  opacity: 0.9;
+}
+
+#student-modal .student-modal-pass {
+  font-size: 0.88rem;
+  color: #ffeb3b;
+  word-break: break-all;
+}
+
+#student-modal #student-modal-info-content {
+  padding: 1.25rem 1rem !important;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#student-modal #student-modal-info-content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+#student-modal .student-modal-stats {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 1rem !important;
+  overflow: visible;
+}
+
+#student-modal .student-modal-stat {
+  flex-direction: column;
+  text-align: center;
+  padding: 1.25rem 1rem !important;
+  margin-bottom: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+#student-modal .student-modal-stat p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin: 0.35rem 0 0;
+}
+
+#student-modal .student-modal-stat--unpaid {
+  position: relative;
+  overflow: visible;
+  align-items: stretch !important;
+  z-index: 1;
+}
+
+#student-modal .student-modal-stat--unpaid:hover,
+#student-modal .student-modal-stat--unpaid:focus-within,
+#student-modal .student-modal-stat--unpaid.is-open {
+  z-index: 12;
+}
+
+#student-modal .unpaid-months-head {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  align-self: center;
+}
+
+#student-modal .unpaid-months-eye-btn {
+  border: none;
+  background: transparent;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+  pointer-events: auto;
+}
+
+#student-modal .unpaid-months-head:hover .unpaid-months-eye-btn,
+#student-modal .unpaid-months-head:focus-within .unpaid-months-eye-btn,
+#student-modal .unpaid-months-eye-btn.is-open {
+  color: #b45309;
+  background: #fff7ed;
+}
+
+#student-modal .unpaid-months-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 148px;
+  padding: 8px 12px;
+  background: #0f172a;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+  z-index: 30;
+  pointer-events: none;
+}
+
+#student-modal .unpaid-months-dropdown::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border: 6px solid transparent;
+  border-bottom-color: #0f172a;
+}
+
+#student-modal .unpaid-months-head:hover .unpaid-months-dropdown,
+#student-modal .unpaid-months-head:focus-within .unpaid-months-dropdown,
+#student-modal .student-modal-stat--unpaid.is-open .unpaid-months-dropdown {
+  display: block;
+}
+
+#student-modal .unpaid-months-dropdown div + div {
+  margin-top: 4px;
+}
+
+#student-modal .modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 5;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s, color 0.2s;
+}
+
+#student-modal .modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: rotate(90deg) scale(1.08);
+  border-radius: 50%;
+}
+
+@media (min-width: 520px) {
+  #student-modal .student-modal-header-inner {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  #student-modal .student-modal-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  #student-modal .student-modal-stats {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* PROFILE CARD */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+
+  margin-bottom: 2rem;
+}
+
+.profile-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.profile-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+/* ========================= */
+/* MOBILE (TABLET & PHONE) */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+  .main-content {
+    margin-left: 0 !important;
+    width: 100%;
+    padding: 15px;
+    padding-top: 70px;
+  }
+
+  .top-navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1050;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    height: 100%;
+    z-index: 1100;
+    transition: 0.3s;
+  }
+
+  .sidebar.active {
+    left: 0;
+    z-index: 1100;
+  }
+
+  /* STATS */
+  .stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .stat-card {
+    width: 100%;
+    padding: 15px;
+  }
+
+  /* FORM */
+  #grad-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #grad-form select,
+  #grad-form button {
+    width: 100%;
+  }
+
+  /* TABLE FIX - show scrollbar on mobile */
+  .table-wrapper {
+    overflow-x: auto;
+    scrollbar-width: thin;       /* Firefox */
+    -ms-overflow-style: auto;    /* IE/Edge */
+  }
+  .table-wrapper::-webkit-scrollbar {
+    display: block;              /* Chrome/Safari - restore on mobile */
+    height: 6px;
+  }
+  .table-wrapper::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  .data-table {
+    min-width: 700px;
+    width: max-content;
+  }
+
+  /* HEADER */
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* Student Management — mobile toolbar */
+  .students-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .students-toolbar-filters {
+    width: 100%;
+    order: 0;
+  }
+
+  .students-toolbar-filters select {
+    width: 100% !important;
+  }
+
+  .students-toolbar-actions.d-flex.gap-2 {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    gap: 10px;
+    width: 100%;
+    order: 1;
+  }
+
+  .students-toolbar-actions .btn {
+    flex: 1 1 50%;
+    width: auto !important;
+    justify-content: center;
+    white-space: nowrap;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 0.82rem;
+  }
+
+  .students-toolbar-search {
+    order: 2;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Override global .table-header mobile stack for student toolbar buttons */
+  .table-header.students-toolbar .d-flex.gap-2 {
+    flex-direction: row !important;
+  }
+
+  .table-header.students-toolbar .btn {
+    width: auto !important;
+  }
+
+  /* FILTERS */
+  .payment-filters {
+    overflow-x: auto;
+    display: flex;
+    gap: 10px;
+  }
+
+}
+
+/* ========================= */
+/* SMALL MOBILE */
+/* ========================= */
+
+@media (max-width: 480px) {
+
+  h1 { font-size: 18px; }
+  h3 { font-size: 16px; }
+
+  p, span {
+    font-size: 13px;
+  }
+
+  .stat-card h4 {
+    font-size: 18px;
+  }
+
+  .profile-card {
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .profile-img {
+    width: 65px;
+    height: 65px;
+  }
+
+  .profile-name {
+    font-size: 16px;
+  }
+
+  .profile-meta {
+    font-size: 12px;
+  }
+
+}
+
+/* ========================= */
+/* PREMIUM INTERACTIVE TOOLTIP */
+/* ========================= */
+
+.hsf-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.hsf-tooltip .tooltip-text {
+  visibility: hidden;
+  width: 180px;
+  background-color: #0f172a;
+  color: #ffffff;
+  text-align: center;
+  border-radius: 10px;
+  padding: 10px 14px;
+  position: absolute;
+  z-index: 999;
+  bottom: 135%; /* Position above the element */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.45;
+  box-shadow: var(--shadow-lg), 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.hsf-tooltip .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #0f172a transparent transparent transparent;
+}
+
+/* Hover & Active triggers */
+.hsf-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* Summer program modal — courses & attendance */
+.summer-courses-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  line-height: 1.75;
+  list-style: disc;
+}
+
+.summer-program-view-actions {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.summer-program-view-actions .summer-make-attendance-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.summer-attendance-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+}
+
+.summer-att-focus-hint {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary, #2563eb);
+}
+
+.summer-att-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 14px;
+  margin: 0.65rem 0 0.85rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-main, rgba(148, 163, 184, 0.08));
+}
+
+.summer-att-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 420px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card, #fff);
+  color: var(--text-muted);
+}
+
+.summer-att-search-wrap i {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+}
+
+.summer-att-search-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 0;
+  outline: none;
+}
+
+.summer-att-filter-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex: 0 1 auto;
+}
+
+.summer-att-filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.summer-att-filter-text-short {
+  display: inline;
+}
+
+.summer-att-filter-select {
+  min-width: 140px;
+  max-width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card, #fff);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .summer-att-filter-bar {
+    justify-content: stretch;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .summer-att-search-wrap {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .summer-att-filter-wrap {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+
+  .summer-att-filter-select {
+    min-width: 0;
+    flex: 1 1 auto;
+    max-width: none;
+  }
+}
+
+.summer-attendance-table .summer-att-student-name {
+  display: block;
+  font-weight: 700;
+}
+
+.summer-attendance-table .summer-att-student-dufcad {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.summer-attendance-table .summer-att-name-head {
+  text-align: left;
+  padding: 10px 12px;
+  min-width: 180px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-main, rgba(148, 163, 184, 0.08));
+}
+
+.summer-attendance-table .summer-att-day-head {
+  position: relative;
+  text-align: center;
+  vertical-align: bottom;
+  padding: 8px 4px 10px;
+  min-width: 56px;
+  width: 56px;
+  border-bottom: 2px solid var(--border);
+  border-left: 1px solid var(--border);
+  background: var(--bg-main, rgba(148, 163, 184, 0.08));
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.summer-attendance-table .summer-att-day-arrow {
+  display: none;
+  color: #0d9488;
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.summer-attendance-table .summer-att-day-head.is-focus-day .summer-att-day-arrow {
+  display: block;
+}
+
+.summer-attendance-table .summer-att-day-head.is-focus-day {
+  background: rgba(13, 148, 136, 0.22);
+  box-shadow: inset 0 -4px 0 #0d9488;
+  color: #0f766e;
+  font-weight: 800;
+}
+
+.summer-attendance-table .summer-att-day-cell.is-focus-day {
+  background: rgba(13, 148, 136, 0.12);
+}
+
+.summer-attendance-table tr.summer-att-row.is-focus-student td {
+  background: rgba(100, 116, 139, 0.28);
+}
+
+.summer-attendance-table tr.summer-att-row.is-focus-student td.summer-att-name-cell {
+  border-left: 4px solid #0d9488;
+  box-shadow: inset 4px 0 0 rgba(13, 148, 136, 0.25);
+}
+
+.summer-attendance-table tr.summer-att-row.is-focus-student .summer-att-student-name {
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.summer-attendance-table tr.summer-att-row.is-focus-student td.is-focus-day {
+  background: rgba(13, 148, 136, 0.32);
+  box-shadow: inset 0 0 0 3px rgba(13, 148, 136, 0.75);
+}
+
+.summer-attendance-table tr.summer-att-row.is-focus-student td.is-focus-day .summer-att-day-face {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.35);
+}
+
+.summer-attendance-table tr.summer-att-row:hover td {
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.summer-attendance-table tr.summer-att-row.is-focus-student:hover td {
+  background: rgba(100, 116, 139, 0.34);
+}
+
+.summer-attendance-table tr.summer-att-row.is-focus-student:hover td.is-focus-day {
+  background: rgba(13, 148, 136, 0.38);
+}
+
+#summer-tab-content > .card-table {
+  overflow: visible;
+}
+#summer-tab-content #summer-report-print-area {
+  overflow: visible;
+}
+#summer-tab-content .portal-section-head--toolbar {
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+}
+#summer-tab-content .portal-section-head--toolbar .export-dropdown {
+  position: relative;
+  z-index: 40;
+}
+#summer-tab-content .portal-section-head--toolbar .export-options {
+  z-index: 10050;
+}
+#summer-tab-content .applications-history-table thead th {
+  position: static;
+  top: auto;
+  z-index: auto;
+  background: var(--bg-card);
+}
+#summer-tab-content .applications-history-table tbody td.reg-action-col {
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+#summer-tab-content .applications-history-table tbody tr:has(.export-options.active) {
+  position: relative;
+  z-index: 5000;
+}
+#summer-tab-content .applications-history-table tbody tr:has(.export-options.active) td.reg-action-col {
+  z-index: 5000;
+  overflow: visible;
+}
+#summer-tab-content .applications-table-scroll:has(.applications-history-table) {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+#summer-tab-content .applications-history-table th.reg-action-col {
+  overflow: visible;
+  position: relative;
+  z-index: 0;
+}
+
+.summer-att-day-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-top: 6px;
+}
+
+.summer-att-day-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.summer-att-day-toggle--inline {
+  font-size: 0.85rem;
+}
+
+.summer-att-day-cb {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.summer-att-day-face {
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid #94a3b8;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  color: #64748b;
+  background: #fff;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
+}
+
+.summer-att-day-cb:checked + .summer-att-day-face {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #15803d;
+}
+
+.summer-att-day-cb:checked + .summer-att-day-face::after {
+  content: '✓';
+}
+
+.summer-att-day-cb:not(:checked) + .summer-att-day-face::after {
+  content: '×';
+  color: #94a3b8;
+}
+
+.summer-att-day-cb:disabled + .summer-att-day-face {
+  opacity: 0.85;
+}
+
+.summer-att-day-cell .summer-att-day-toggle {
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.summer-att-day-cell--grey .summer-att-day-face {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+/* Read-only attendance grid (registration details) */
+.summer-att-display-wrap {
+  margin-top: 10px;
+  overflow-x: auto;
+}
+
+.summer-att-display-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 320px;
+}
+
+.summer-att-display-head {
+  text-align: center;
+  padding: 6px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.summer-att-display-cell {
+  text-align: center;
+  padding: 8px 6px;
+}
+
+.summer-att-display-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  background: #fff;
+}
+
+.summer-att-display-mark.is-present {
+  color: #334155;
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.summer-att-display-mark.is-absent {
+  color: #64748b;
+  background: #fff;
+  border-color: #cbd5e1;
+}
+
+#summerDetailModal .portal-modal-card {
+  max-width: min(520px, calc(100vw - 2rem));
+}
+
+#summerProgramModal .portal-modal-card--program {
+  max-width: min(920px, calc(100vw - 2rem));
+  width: 100%;
+}
+
+.summer-attendance-table .summer-att-name-cell {
+  padding: 10px 12px;
+  font-weight: 600;
+  min-width: 180px;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.summer-attendance-table .summer-att-day-head,
+.summer-attendance-table .summer-att-day-cell {
+  text-align: center;
+  padding: 8px 6px;
+  min-width: 56px;
+  width: 56px;
+}
+
+.summer-attendance-table .summer-att-day-cell {
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.summer-attendance-table thead th {
+  position: static;
+  top: auto;
+}
+
+.summer-attendance-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  width: 100%;
+}
+
+.summer-program-attendance .table-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.summer-attendance-table .summer-att-day-cell {
+  position: relative;
+  z-index: 1;
+}
+
+.summer-attendance-table .summer-att-day-cb {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.summer-program-ended-badge {
+  color: #b45309;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.summer-attendance-save-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.summer-finalize-day6 {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.summer-finalize-day6 input {
+  margin-top: 3px;
+}
+
+.summer-attendance-save-hint {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+/* HSF branded program / contest modals */
+.portal-modal-card--program {
+  position: relative;
+  max-height: min(92vh, 720px);
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.portal-modal-card--program.portal-modal-card--no-inner-scroll {
+  max-height: none;
+  overflow: visible;
+}
+
+.portal-modal-overlay.is-open:has(.portal-modal-card--no-inner-scroll) {
+  align-items: flex-start;
+  overflow-y: auto;
+  padding: 24px 16px;
+}
+
+.portal-modal-card--no-inner-scroll .hsf-program-modal-body {
+  gap: 10px;
+  padding-bottom: 8px;
+}
+
+.portal-modal-card--no-inner-scroll .hsf-program-winners-block {
+  padding-top: 0;
+}
+
+.portal-modal-card--no-inner-scroll .hsf-program-winners-grid > div {
+  padding: 7px 8px;
+}
+
+.portal-modal-card--no-inner-scroll .hsf-program-winners-grid span {
+  margin-bottom: 2px;
+  font-size: 0.68rem;
+}
+
+.portal-modal-card--no-inner-scroll .hsf-program-meta-grid {
+  gap: 8px;
+}
+
+.portal-modal-card--no-inner-scroll .hsf-program-meta-item {
+  padding: 10px 12px;
+}
+
+.portal-modal-card--program::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.portal-modal-head--view-only {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  margin: 0;
+}
+
+.portal-modal-card--program .hsf-program-modal-panel {
+  padding: 0 1.25rem 1.5rem;
+}
+
+.hsf-program-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 12px;
+}
+
+.hsf-program-modal-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  margin: 0 -1.25rem 4px;
+  background: linear-gradient(135deg, var(--bg-surface-subtle) 0%, var(--bg-surface) 55%);
+  border-bottom: 1px solid var(--border);
+}
+
+.hsf-program-modal-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid rgba(44, 122, 77, 0.18);
+  padding: 2px;
+}
+
+.hsf-program-modal-org {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.hsf-program-modal-year {
+  margin: 2px 0 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.25;
+}
+
+.hsf-program-modal-sub {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.hsf-program-place-card,
+.hsf-program-venue-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--bg-surface-muted);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+
+.hsf-program-place-card > i,
+.hsf-program-venue-card > i {
+  color: var(--primary);
+  font-size: 1.15rem;
+  margin-top: 2px;
+}
+
+.hsf-program-place-name,
+.hsf-program-venue-name {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.hsf-program-empty {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+
+.hsf-program-meta-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 0 0 4px;
+}
+
+.hsf-program-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.hsf-program-meta-item {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.hsf-program-meta-item strong {
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.hsf-program-courses-block {
+  padding-top: 4px;
+  color: var(--text-main);
+}
+
+.hsf-program-courses-block .summer-courses-list {
+  color: var(--text-main);
+}
+
+.summer-courses-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.summer-course-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-surface, rgba(148, 163, 184, 0.08));
+  color: var(--text-main);
+  min-height: 52px;
+}
+
+.summer-course-card--empty {
+  grid-column: 1 / -1;
+  color: var(--text-muted);
+  justify-content: center;
+}
+
+.summer-course-card-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: rgba(13, 148, 136, 0.16);
+  color: #0f766e;
+}
+
+.summer-course-card-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.summer-program-loading-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-main, rgba(148, 163, 184, 0.08));
+}
+
+.summer-program-loading-box i {
+  margin-top: 2px;
+  color: var(--primary, #2563eb);
+  font-size: 1.1rem;
+}
+
+.summer-program-loading-box strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.summer-program-loading-box p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 560px) {
+  .summer-courses-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hsf-program-att-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.hsf-program-back-btn {
+  align-self: flex-start;
+}
+
+.hsf-program-winners-block {
+  padding-top: 4px;
+}
+
+.hsf-program-winners-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hsf-program-winners-grid > div {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.hsf-program-winners-grid > div strong,
+.hsf-program-winners-grid > div em {
+  color: var(--text-main);
+}
+
+.hsf-program-winners-grid span {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.hsf-program-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--primary);
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+}
+
+.hsf-program-link:hover {
+  color: #1d4ed8;
+}
+
+.hsf-program-row--selected {
+  background: rgba(30, 64, 175, 0.06);
+}
+
+.hsf-reg-title-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+  cursor: default;
+  text-decoration: none;
+}
+
+.hsf-reg-title-btn.is-active {
+  cursor: pointer;
+  color: var(--primary);
+}
+
+.hsf-reg-title-btn.is-active:hover {
+  color: #1d4ed8;
+}
+
+@media (max-width: 520px) {
+  .portal-modal-card .hsf-program-meta-grid,
+  .portal-modal-card .hsf-program-winners-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hsf-program-modal-brand {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.summer-course-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summer-course-edit-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.summer-course-edit-row .summer-course-edit-input {
+  flex: 1;
+}
+
+.summer-att-day-cell--grey {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.summer-att-day-cell--grey .summer-att-day-cb:disabled {
+  opacity: 0.45;
+}
+
+/* Quran admin — add competitor form */
+.qc-admin-add-modal {
+  max-height: min(92vh, 820px);
+  overflow-y: auto;
+}
+
+.qc-admin-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qc-admin-add-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  padding: 10px 12px;
+  background: var(--bg-surface-muted);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.qc-admin-field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+.qc-admin-field .search-input,
+.qc-admin-field select.search-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.qc-admin-field .req {
+  color: #dc2626;
+}
+
+.qc-admin-radio-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.qc-admin-radio-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  margin: 0;
+  cursor: pointer;
+}
+
+.qc-admin-search-results {
+  max-height: 160px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qc-admin-search-hit {
+  width: 100%;
+  text-align: left;
+}
+
+.qc-admin-year-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.qc-admin-selected {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.qc-admin-form-msg {
+  margin: 0;
+  font-size: 0.82rem;
+  min-height: 1.2em;
+}
+
+.qc-admin-submit {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.qc-reg-detail p {
+  margin: 0 0 10px;
+  line-height: 1.55;
+}
+
+.qc-reg-detail p:last-child {
+  margin-bottom: 0;
+}
+
+/* Reports — Quran / Summer registration tables (no .applications-admin wrapper) */
+#quran-tab-content .applications-table-scroll,
+#summer-tab-content .applications-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  padding-bottom: 4px;
+}
+
+#quran-tab-content .applications-table-scroll:not(.applications-table-scroll--history) .data-table,
+#summer-tab-content .applications-table-scroll:not(.applications-table-scroll--history) .data-table {
+  width: max-content;
+  min-width: 100%;
+}
+
+#quran-tab-content .applications-history-table,
+#summer-tab-content .applications-history-table {
+  min-width: 520px;
+}
+
+@media (max-width: 768px) {
+  #quran-tab-content .applications-table-scroll--history,
+  #summer-tab-content .applications-table-scroll--history {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+  }
+
+  #quran-tab-content .applications-table-scroll--history .applications-history-table,
+  #summer-tab-content .applications-table-scroll--history .applications-history-table {
+    display: table;
+    width: max-content;
+    min-width: 520px;
+    table-layout: auto;
+  }
+}
+
+@media (min-width: 769px) {
+  #quran-tab-content .applications-table-scroll--history .data-table,
+  #summer-tab-content .applications-table-scroll--history .data-table {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #quran-tab-content .applications-table-scroll--history,
+  #summer-tab-content .applications-table-scroll--history {
+    overflow-x: visible;
+  }
+
+  #quran-tab-content .applications-history-table,
+  #summer-tab-content .applications-history-table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  #quran-tab-content .applications-history-table th:nth-child(1),
+  #quran-tab-content .applications-history-table td:nth-child(1),
+  #summer-tab-content .applications-history-table th:nth-child(1),
+  #summer-tab-content .applications-history-table td:nth-child(1) {
+    width: 34%;
+    word-break: break-word;
+  }
+
+  #quran-tab-content .applications-history-table th:nth-child(2),
+  #quran-tab-content .applications-history-table td:nth-child(2),
+  #summer-tab-content .applications-history-table th:nth-child(2),
+  #summer-tab-content .applications-history-table td:nth-child(2) {
+    width: 18%;
+    white-space: nowrap;
+  }
+
+  #quran-tab-content .applications-history-table th:nth-child(3),
+  #quran-tab-content .applications-history-table td:nth-child(3),
+  #summer-tab-content .applications-history-table th:nth-child(3),
+  #summer-tab-content .applications-history-table td:nth-child(3) {
+    width: 14%;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  #quran-tab-content .applications-history-table th:nth-child(4),
+  #quran-tab-content .applications-history-table td:nth-child(4),
+  #summer-tab-content .applications-history-table th:nth-child(4),
+  #summer-tab-content .applications-history-table td:nth-child(4) {
+    width: 34%;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  #quran-tab-content .applications-history-table .contest-history-actions,
+  #summer-tab-content .applications-history-table .contest-history-actions {
+    justify-content: flex-end;
+  }
+
+  #quran-tab-content .applications-history-table--reports th:nth-child(1),
+  #quran-tab-content .applications-history-table--reports td:nth-child(1) {
+    width: 38%;
+    word-break: break-word;
+  }
+
+  #quran-tab-content .applications-history-table--reports th:nth-child(2),
+  #quran-tab-content .applications-history-table--reports td:nth-child(2) {
+    width: 20%;
+    white-space: nowrap;
+  }
+
+  #quran-tab-content .applications-history-table--reports th:nth-child(3),
+  #quran-tab-content .applications-history-table--reports td:nth-child(3) {
+    width: 14%;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  #quran-tab-content .applications-history-table--reports th:nth-child(4),
+  #quran-tab-content .applications-history-table--reports td:nth-child(4) {
+    width: 28%;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  #quran-tab-content .applications-history-table--reports .contest-history-actions {
+    justify-content: flex-end;
+  }
+}
+
+#quran-tab-content .applications-registrations-table {
+  min-width: 520px;
+}
+
+#summer-tab-content .applications-registrations-table--summer {
+  min-width: 920px;
+}
+
+#quran-tab-content .applications-table-scroll .data-table thead th,
+#summer-tab-content .applications-table-scroll .data-table thead th {
+  white-space: nowrap;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  background: var(--bg-card);
+}
+
+#quran-tab-content .applications-registrations-table th,
+#quran-tab-content .applications-registrations-table td,
+#summer-tab-content .applications-registrations-table--summer th,
+#summer-tab-content .applications-registrations-table--summer td {
+  vertical-align: middle;
+}
+
+#quran-tab-content .applications-registrations-table th:nth-child(2),
+#quran-tab-content .applications-registrations-table td:nth-child(2) {
+  min-width: 110px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+#summer-tab-content .applications-registrations-table--summer th,
+#summer-tab-content .applications-registrations-table--summer td {
+  white-space: nowrap;
+}
+
+#summer-tab-content .applications-registrations-table--summer th:nth-child(2),
+#summer-tab-content .applications-registrations-table--summer td:nth-child(2) {
+  min-width: 120px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  #quran-tab-content .applications-history-table,
+  #summer-tab-content .applications-history-table {
+    min-width: 320px;
+  }
+
+  #quran-tab-content .applications-history-table th:nth-child(4),
+  #quran-tab-content .applications-history-table td:nth-child(4),
+  #summer-tab-content .applications-history-table th:nth-child(4),
+  #summer-tab-content .applications-history-table td:nth-child(4) {
+    white-space: nowrap;
+  }
+
+  #quran-tab-content .applications-history-table .contest-history-actions .btn,
+  #summer-tab-content .applications-history-table .contest-history-actions .btn {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+}
+
+.quran-admin-flash {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.quran-admin-flash--success {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.quran-admin-flash--error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* Summer report filter viewer (reports tab eye icon) */
+.summer-report-viewer-card {
+  max-width: min(960px, 96vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+.summer-report-viewer-hint {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.summer-report-viewer-body {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  padding: 4px 2px 12px;
+}
+.summer-report-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 4px 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.summer-report-filter-bar--sheet {
+  background: var(--bg-card, #fff);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  pointer-events: auto;
+}
+.summer-report-filter-btn {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.summer-report-filter-btn:hover:not(:disabled) {
+  border-color: #2563eb;
+}
+.summer-report-filter-btn.is-active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+.summer-report-filter-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.summer-report-order-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  pointer-events: auto;
+  position: relative;
+  z-index: 6;
+}
+.summer-report-order-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  white-space: nowrap;
+}
+.summer-report-order-select {
+  min-width: 160px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 6;
+  -webkit-appearance: auto;
+  appearance: auto;
+}
+.contest-report-sheet tr.summer-report-row--heavy-absent,
+.report-export-ready tr.summer-report-row--heavy-absent,
+#exportPreviewBody tr.summer-report-row--heavy-absent,
+.summer-report-viewer-sheet tr.summer-report-row--heavy-absent {
+  background: #fee2e2 !important;
+}
+.contest-report-sheet tr.summer-report-row--heavy-absent td,
+.report-export-ready tr.summer-report-row--heavy-absent td,
+#exportPreviewBody tr.summer-report-row--heavy-absent td,
+.summer-report-viewer-sheet tr.summer-report-row--heavy-absent td {
+  background: #fee2e2 !important;
+}
+.contest-report-sheet .summer-report-li--heavy-absent,
+.report-export-ready .summer-report-li--heavy-absent,
+#exportPreviewBody .summer-report-li--heavy-absent {
+  background: #fee2e2;
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin: 2px 0;
+}
+.summer-report-viewer-sheet {
+  background: #fff;
+  border-radius: 12px;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+/* Eye preview: keep names on one line; scroll sideways instead of wrapping */
+.summer-report-viewer-sheet .contest-report-participants-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  width: 100%;
+}
+.summer-report-viewer-sheet .contest-report-participants-table--summer {
+  table-layout: auto !important;
+  width: max-content !important;
+  min-width: 1050px !important;
+  max-width: none !important;
+  font-size: 11px !important;
+}
+.summer-report-viewer-sheet .contest-report-participants-table--summer th,
+.summer-report-viewer-sheet .contest-report-participants-table--summer td {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+  padding: 4px 5px !important;
+  vertical-align: middle !important;
+}
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(1),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(1) {
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 36px !important;
+  text-align: center !important;
+}
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(2),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(2) {
+  width: auto !important;
+  min-width: 170px !important;
+  white-space: nowrap !important;
+}
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(3),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(3) {
+  min-width: 78px !important;
+}
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(6),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(6) {
+  min-width: 48px !important;
+  text-align: center !important;
+}
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(7),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(7),
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(8),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(8),
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(9),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(9),
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(10),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(10),
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(11),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(11),
+.summer-report-viewer-sheet .contest-report-participants-table--summer th:nth-child(12),
+.summer-report-viewer-sheet .contest-report-participants-table--summer td:nth-child(12) {
+  width: 32px !important;
+  min-width: 32px !important;
+  max-width: 36px !important;
+  padding: 3px 2px !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  font-size: 12px !important;
+}
+.summer-report-viewer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+#summer-tab-content .summer-report-view-btn {
+  width: 36px;
+  height: 36px;
+}
+
+.contest-report-sheet .summer-report-day-card.is-active-day,
+.report-export-ready .summer-report-day-card.is-active-day,
+#exportPreviewBody .summer-report-day-card.is-active-day {
+  border-color: #99f6e4 !important;
+  background: #f0fdfa !important;
+  box-shadow: inset 0 0 0 1px rgba(13, 148, 136, 0.25);
+}
+.contest-report-sheet .summer-report-day-card.is-clickable {
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.contest-report-sheet .summer-report-break-avoid,
+.report-export-ready .summer-report-break-avoid,
+#exportPreviewBody .summer-report-break-avoid,
+.contest-report-sheet .summer-report-day-list li,
+.report-export-ready .summer-report-day-list li {
+  break-inside: avoid-page !important;
+  page-break-inside: avoid !important;
+}

@@ -1,0 +1,1434 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Member Management - HSF</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+     <link rel="stylesheet" href="./main_leader_responsive.css">
+    <style>
+      .member-section-title {
+        margin: 0;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--primary);
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-bottom: none;
+      }
+      .member-section-title--graduated {
+        margin-top: 1.5rem;
+        border-radius: 20px 20px 0 0;
+      }
+      .member-section-title--active {
+        border-radius: 0;
+      }
+      .member-section-empty {
+        text-align: center;
+        padding: 1.5rem;
+        color: var(--text-muted);
+      }
+      .member-dufcad-row td {
+        background: var(--bg-surface-muted);
+        font-size: 0.88rem;
+        color: var(--text-main);
+        padding: 0.65rem 1rem;
+        border-top: 2px solid var(--border);
+      }
+      .member-dufcad-count {
+        color: var(--text-muted);
+        font-weight: 500;
+        font-size: 0.82rem;
+      }
+      .member-dufcad-context {
+        color: var(--text-muted);
+        font-weight: 500;
+        font-size: 0.82rem;
+        margin-left: 0.35rem;
+      }
+      .edit-graduated-panel {
+        grid-column: 1 / -1;
+        padding: 1rem 1.25rem;
+        border: 1px dashed var(--border);
+        border-radius: 14px;
+        background: var(--bg-surface-subtle);
+      }
+      .edit-works-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 0.75rem;
+      }
+      .edit-works-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 640px) {
+        .edit-works-fields { grid-template-columns: 1fr; }
+      }
+      .member-employment-panel {
+        margin-top: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      }
+      .member-employment-panel h4 {
+        margin: 0 0 0.75rem;
+        font-size: 0.95rem;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .member-employment-panel p {
+        margin: 0.35rem 0;
+        font-size: 0.9rem;
+        color: var(--text-main);
+      }
+      .member-employment-panel strong {
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-right: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <main class="main-content">
+        <header class="top-navbar" id="top-navbar"></header>
+
+        <div class="dashboard-content">
+          <div
+            class="table-header students-toolbar"
+            style="
+              background: var(--bg-card);
+              padding: 1.5rem;
+              border-radius: 20px 20px 0 0;
+              border: 1px solid var(--border);
+              border-bottom: none;
+            "
+          >
+            <div class="portal-toolbar toolbar-filters-row students-toolbar-filters" style="border:none;padding:0;margin:0;background:transparent;">
+              <select
+                id="convocation-filter"
+                class="search-input"
+                style="width: auto; padding-left: 12px;"
+              >
+                <option value="All">All Convocations</option>
+              </select>
+            </div>
+            <div class="students-toolbar-actions d-flex gap-2">
+              <button class="btn btn-outline" id="add-conv-btn">
+                <i class="fa-solid fa-layer-group"></i> New Convocation
+              </button>
+              <button class="btn btn-primary" id="add-member-btn">
+                <i class="fa-solid fa-plus"></i> Add New Member
+              </button>
+            </div>
+            <div class="search-wrapper students-toolbar-search" style="width:100%;max-width:100%;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="text"
+                id="student-search"
+                class="search-input"
+                placeholder="Search members..."
+              />
+            </div>
+          </div>
+
+          <h4 class="member-section-title member-section-title--active">Active Members</h4>
+          <div class="card-table" style="border-radius: 0; overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Convocation</th>
+                  <th>Role</th>
+                  <th class="text-center">Missed</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="active-members-body"></tbody>
+            </table>
+          </div>
+
+          <h4 class="member-section-title member-section-title--graduated">Graduated Members</h4>
+          <div class="card-table" style="border-radius: 0 0 20px 20px; overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Convocation</th>
+                  <th>Role</th>
+                  <th class="text-center">Works</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="graduated-members-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="student-modal">
+      <div
+        class="modal-content student-detail-modal-content"
+        style="padding: 0; border: none"
+      >
+        <div
+          id="student-modal-header-content"
+          style="
+            padding: 3rem 2.5rem 2.5rem;
+            background: linear-gradient(
+              135deg,
+              var(--primary) 0%,
+              var(--primary-light) 100%
+            );
+            color: white;
+            position: relative;
+          "
+        >
+          <i
+            class="fa-solid fa-xmark modal-close"
+            id="close-modal"
+            style="color: white; opacity: 0.8; top: 1.5rem; right: 1.5rem"
+          ></i>
+        </div>
+        <div
+          id="student-modal-info-content"
+          style="padding: 2.5rem; background: #f8fafc"
+        ></div>
+      </div>
+    </div>
+
+    <div class="modal" id="add-member-modal">
+      <div class="modal-content" style="border-radius: 24px; padding: 2.5rem">
+        <i
+          class="fa-solid fa-xmark modal-close"
+          id="close-add-modal"
+          style="top: 1.5rem; right: 1.5rem"
+        ></i>
+        <h3 style="margin-bottom: 0.5rem">Add New Member</h3>
+        <p
+          style="
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+          "
+        >
+          Kudar xubin cusub nidaamka
+        </p>
+        <form id="add-member-form">
+          <div
+            class="form-grid"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem"
+          >
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Full Name</label
+              >
+              <input
+                type="text"
+                id="new-name"
+                class="search-input"
+                style="width: 100%"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >ID / Username</label
+              >
+              <input
+                type="text"
+                id="new-id"
+                class="search-input"
+                style="width: 100%"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Password</label
+              >
+              <input
+                type="password"
+                id="new-password"
+                class="search-input"
+                style="width: 100%"
+                value="123"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Convocation</label
+              >
+              <select
+                id="new-conv"
+                class="search-input"
+                style="width: 100%; height: 44px"
+              ></select>
+            </div>
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Role</label
+              >
+              <select
+                id="new-role"
+                class="search-input"
+                style="width: 100%; height: 44px"
+              >
+                <option value="Student">Member</option>
+                <option value="Payment Sub Admin">
+                  Convocation Leader / Collector
+                </option>
+                <option value="Payment Admin">Main Payment Admin</option>
+                <option value="Media Admin">Media Admin (Find My Photos)</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Jaamacadda</label
+              >
+              <input
+                type="text"
+                id="new-university"
+                class="search-input"
+                style="width: 100%"
+              />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Faculty</label
+              >
+              <input
+                type="text"
+                id="new-faculty"
+                class="search-input"
+                style="width: 100%"
+                placeholder="e.g. Computer Science"
+              />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Semester</label
+              >
+              <input
+                type="text"
+                id="new-semester"
+                class="search-input"
+                style="width: 100%"
+                placeholder="e.g. 3rd, Fall 2026"
+              />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Email</label>
+              <input type="email" id="new-email" class="search-input" style="width: 100%" placeholder="e.g. user@hsf.org" required />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Phone Number</label>
+              <input type="tel" id="new-phone" class="search-input" style="width: 100%" placeholder="+252..." />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Body Card</label
+              >
+              <select
+                id="new-bodycard"
+                class="search-input"
+                style="width: 100%; height: 44px"
+              >
+                <option value="No" selected>No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group body-card-number-group" id="new-card-number-group" style="grid-column: span 1; display: none;">
+              <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Card Number</label>
+              <input type="text" id="new-card-number" class="search-input" style="width: 100%" placeholder="e.g. HSF-001" />
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="
+              width: 100%;
+              justify-content: center;
+              margin-top: 2rem;
+              padding: 14px;
+            "
+          >
+            <i class="fa-solid fa-plus"></i> Add Member
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="edit-member-modal">
+      <div class="modal-content" style="border-radius: 24px; padding: 2.5rem">
+        <i
+          class="fa-solid fa-xmark modal-close"
+          id="close-edit-modal"
+          style="top: 1.5rem; right: 1.5rem"
+        ></i>
+        <h3 style="margin-bottom: 0.5rem">Edit Member</h3>
+        <p
+          style="
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+          "
+        >
+          Bedel macluumaadka xubinta
+        </p>
+        <form id="edit-member-form">
+          <input type="hidden" id="edit-original-id" />
+          <div
+            class="form-grid"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem"
+          >
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Full Name</label
+              >
+              <input
+                type="text"
+                id="edit-name"
+                class="search-input"
+                style="width: 100%"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >ID / Username</label
+              >
+              <input
+                type="text"
+                id="edit-login-id"
+                class="search-input"
+                style="width: 100%"
+                required
+                autocomplete="username"
+              />
+            </div>
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Password</label
+              >
+              <input
+                type="password"
+                id="edit-password"
+                class="search-input"
+                style="width: 100%"
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+              />
+            </div>
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Convocation</label
+              >
+              <select
+                id="edit-conv"
+                class="search-input"
+                style="width: 100%; height: 44px"
+              ></select>
+            </div>
+            <div class="form-group">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Role</label
+              >
+              <select
+                id="edit-role"
+                class="search-input"
+                style="width: 100%; height: 44px"
+              >
+                <option value="Student">Member</option>
+                <option value="Payment Sub Admin">
+                  Convocation Leader / Collector
+                </option>
+                <option value="Payment Admin">Main Payment Admin</option>
+                <option value="Main Leader">Main Leader (System Admin)</option>
+                <option value="Media Admin">Media Admin (Find My Photos)</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Jaamacadda</label
+              >
+              <input
+                type="text"
+                id="edit-university"
+                class="search-input"
+                style="width: 100%"
+              />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Faculty</label
+              >
+              <input
+                type="text"
+                id="edit-faculty"
+                class="search-input"
+                style="width: 100%"
+                placeholder="e.g. Computer Science"
+              />
+            </div>
+            <div class="form-group" style="grid-column: span 1" id="edit-semester-wrap">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Semester</label
+              >
+              <input
+                type="text"
+                id="edit-semester"
+                class="search-input"
+                style="width: 100%"
+                placeholder="e.g. 3rd, Fall 2026"
+              />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Member Status</label
+              >
+              <select
+                id="edit-member-status"
+                class="search-input"
+                style="width: 100%; height: 44px"
+              >
+                <option value="active">Active</option>
+                <option value="graduated">Graduated</option>
+              </select>
+            </div>
+            <div id="edit-graduated-panel" class="edit-graduated-panel" style="display: none;">
+              <label class="edit-works-toggle">
+                <input type="checkbox" id="edit-has-works" style="width: 18px; height: 18px;" />
+                Works (employed)
+              </label>
+              <div id="edit-works-fields" class="edit-works-fields" style="display: none;">
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Place of Work</label>
+                  <input type="text" id="edit-work-place" class="search-input" style="width: 100%;" placeholder="Company / Organization" />
+                </div>
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Job Role / Position</label>
+                  <input type="text" id="edit-work-role" class="search-input" style="width: 100%;" placeholder="e.g. Software Engineer" />
+                </div>
+                <div class="form-group" style="margin: 0; grid-column: 1 / -1;">
+                  <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Date Started Working</label>
+                  <input type="date" id="edit-work-started" class="search-input" style="width: 100%; padding-left: 12px;" />
+                </div>
+              </div>
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Email</label>
+              <input type="email" id="edit-email" class="search-input" style="width: 100%" placeholder="e.g. user@hsf.org" required />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Phone Number</label>
+              <input type="tel" id="edit-phone" class="search-input" style="width: 100%" placeholder="+252..." />
+            </div>
+            <div class="form-group" style="grid-column: span 1">
+              <label
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                  display: block;
+                "
+                >Body Card</label
+              >
+              <select
+                id="edit-bodycard"
+                class="search-input"
+                style="width: 100%; height: 44px"
+              >
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group body-card-number-group" id="edit-card-number-group" style="grid-column: span 1; display: none;">
+              <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; display: block;">Card Number</label>
+              <input type="text" id="edit-card-number" class="search-input" style="width: 100%" placeholder="e.g. HSF-001" />
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="
+              width: 100%;
+              justify-content: center;
+              margin-top: 2rem;
+              padding: 14px;
+            "
+          >
+            <i class="fa-solid fa-save"></i> Update Member
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="add-conv-modal">
+      <div
+        class="modal-content"
+        style="border-radius: 24px; padding: 2.5rem; max-width: 400px"
+      >
+        <i
+          class="fa-solid fa-xmark modal-close"
+          id="close-conv-modal"
+          style="top: 1.5rem; right: 1.5rem"
+        ></i>
+        <h3 style="margin-bottom: 0.5rem">New Convocation</h3>
+        <p
+          style="
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+          "
+        >
+          Kudar dufcad cusub
+        </p>
+        <form id="add-conv-form">
+          <div class="form-group">
+            <label
+              style="
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                margin-bottom: 6px;
+                display: block;
+              "
+              >Convocation Name</label
+            >
+            <input
+              type="text"
+              id="new-conv-name"
+              class="search-input"
+              style="width: 100%"
+              placeholder="e.g. Dufcadda 5"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="
+              width: 100%;
+              justify-content: center;
+              margin-top: 2rem;
+              padding: 14px;
+            "
+          >
+            <i class="fa-solid fa-plus"></i> Create Convocation
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/data.js?v=20260714e"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+      // In-memory cache so modals don't need extra fetches
+      let allStudents = [];
+      let allConvocations = [];
+      let allMeetings = [];
+      let allAttendance = [];
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const cu = getCurrentUser();
+        if (!cu.id) { window.location.href = "../../login.html"; return; }
+
+        Components.init({
+          role: cu.role,
+          activePage: "students",
+          title: "Member Management",
+          userName: cu.name || "Admin",
+          userRoleLabel: cu.role || "Main Leader",
+        });
+
+        const activeMembersBody = document.getElementById("active-members-body");
+        const graduatedMembersBody = document.getElementById("graduated-members-body");
+        const searchInput      = document.getElementById("student-search");
+        const filterSelect     = document.getElementById("convocation-filter");
+        const convSelectAdd    = document.getElementById("new-conv");
+        const convSelectEdit   = document.getElementById("edit-conv");
+
+        // Modals
+        const detailModal    = document.getElementById("student-modal");
+        const addMemberModal = document.getElementById("add-member-modal");
+        const editMemberModal= document.getElementById("edit-member-modal");
+        const addConvModal   = document.getElementById("add-conv-modal");
+
+        // â”€â”€ Loaders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        async function loadFilters() {
+          allConvocations = await getConvocations();
+          if (!allConvocations.length) {
+            await sleepMs(1000);
+            allConvocations = await getConvocations();
+          }
+          const opts = allConvocations.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+          if (filterSelect)  filterSelect.innerHTML  = '<option value="All">All Convocations</option>' + opts;
+          
+          const activeConvs = allConvocations.filter(c => !c.isGraduated);
+          const nonGradOpts = activeConvs.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+          
+          if (convSelectAdd) {
+            if (activeConvs.length === 0) {
+              convSelectAdd.innerHTML = '<option value="" disabled selected>No active convocations available</option>';
+            } else {
+              convSelectAdd.innerHTML = '<option value="" disabled selected>Select convocation…</option>' + nonGradOpts;
+            }
+          }
+          if (convSelectEdit) convSelectEdit.innerHTML = nonGradOpts;
+        }
+
+        async function loadStudents() {
+          let users = await getUsers();
+          if (!users.length) {
+            await sleepMs(1000);
+            users = await getUsers();
+          }
+          const [meetings, att] = await Promise.all([
+            getMeetings(),
+            getAttendance()
+          ]);
+          allStudents = users;
+          allMeetings = meetings;
+          allAttendance = att;
+          applyFilter();
+        }
+
+        let currentDetailStudentId = null;
+
+        function mergeStudentRecord(student) {
+          if (!student?.id) return;
+          const idx = allStudents.findIndex((x) => x.id === student.id);
+          if (idx >= 0) allStudents[idx] = { ...allStudents[idx], ...student };
+          else allStudents.push(student);
+        }
+
+        function bodyCardDisplay(student) {
+          if (student?.bodyCard !== 'Yes') return 'No';
+          return student.cardNumber || 'Yes';
+        }
+
+        function isManageableMember(s) {
+          if (!s || s.role === "Public User" || s.role === "Alnuur") return false;
+          if (String(s?.id || '').startsWith('alnuur-')) return false;
+          return true;
+        }
+
+        function applyFilter() {
+          const q   = searchInput  ? searchInput.value.toLowerCase()  : "";
+          const fv  = filterSelect ? filterSelect.value : "All";
+          const filtered = allStudents.filter(s => {
+            if (!isManageableMember(s)) return false;
+            const matchSearch = s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q);
+            const matchFilter = fv === "All" || (s.convocation && s.convocation.toLowerCase() === fv.toLowerCase());
+            return matchSearch && matchFilter;
+          });
+          renderStudents(
+            filtered.filter(s => !s.isGraduated),
+            filtered.filter(s => s.isGraduated)
+          );
+        }
+
+        function calculateMissed(s) {
+          return getMeetingAttendanceStats(s, allMeetings, allAttendance).missed;
+        }
+
+        function memberActionButtons(s) {
+          return `
+            <div class="d-flex gap-1 justify-end">
+              <button type="button" class="btn btn-outline" style="padding:6px 10px;" title="View" onclick="viewFullStudent('${s.id}')"><i class="fa-solid fa-eye"></i></button>
+              <button type="button" class="btn btn-outline" style="padding:6px 10px;color:var(--secondary);" title="Edit" onclick="openEditModal('${s.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button type="button" class="btn btn-outline" style="padding:6px 10px;color:#dc2626;border-color:#fecaca;" title="Delete" onclick="deleteMember('${s.id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>`;
+        }
+
+        function renderMemberRow(s, graduatedTable) {
+          const profilePic = getProfilePicUrl(s);
+          const nameCell = `
+            <td>
+              <div class="d-flex align-center gap-2">
+                <img src="${profilePic}"
+                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=1e4a6d&color=fff'"
+                     style="width:32px;height:32px;border-radius:50%;object-fit:cover;" alt="">
+                <span>${s.name}</span>
+              </div>
+            </td>`;
+          if (graduatedTable) {
+            const worksLabel = s.hasWorks
+              ? '<span class="badge badge-paid">Yes</span>'
+              : '<span class="badge badge-unpaid">No</span>';
+            return `
+            <tr>
+              <td><strong>${s.id}</strong></td>
+              ${nameCell}
+              <td>${s.convocation || '-'}</td>
+              <td><span class="badge ${roleBadgeClass(s.role)}">${displayRole(s.role)}</span></td>
+              <td class="text-center">${worksLabel}</td>
+              <td>${memberActionButtons(s)}</td>
+            </tr>`;
+          }
+          const missed = calculateMissed(s);
+          return `
+            <tr>
+              <td><strong>${s.id}</strong></td>
+              ${nameCell}
+              <td>${s.convocation || '-'}</td>
+              <td><span class="badge ${roleBadgeClass(s.role)}">${displayRole(s.role)}</span></td>
+              <td class="text-center">${missed}</td>
+              <td>${memberActionButtons(s)}</td>
+            </tr>`;
+        }
+
+        function convocationSortOrder(name) {
+          const conv = (allConvocations || []).find(
+            (c) => c.name && name && c.name.toLowerCase() === name.toLowerCase()
+          );
+          if (conv && conv.year) return conv.year;
+          const m = String(name || "").match(/\d+/);
+          return m ? parseInt(m[0], 10) : 9999;
+        }
+
+        function groupMembersByDufcad(list) {
+          const groups = new Map();
+          [...(list || [])]
+            .sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }))
+            .forEach((s) => {
+              const key = (s.convocation || "").trim() || "Unassigned";
+              if (!groups.has(key)) groups.set(key, []);
+              groups.get(key).push(s);
+            });
+          return [...groups.keys()]
+            .sort((a, b) => {
+              if (a === "Unassigned") return 1;
+              if (b === "Unassigned") return -1;
+              const diff = convocationSortOrder(a) - convocationSortOrder(b);
+              return diff || a.localeCompare(b);
+            })
+            .map((name) => ({ name, members: groups.get(name) }));
+        }
+
+        function renderGroupedMemberRows(list, graduatedTable) {
+          const groups = groupMembersByDufcad(list);
+          if (!groups.length) return "";
+          return groups
+            .map(
+              (g) => `
+            <tr class="member-dufcad-row">
+              <td colspan="6">
+                <strong>${g.name}</strong>
+                <span class="${graduatedTable ? "member-dufcad-context" : "member-dufcad-count"}">${
+                  graduatedTable
+                    ? `(graduated · ${g.members.length} member${g.members.length === 1 ? "" : "s"})`
+                    : `(${g.members.length} member${g.members.length === 1 ? "" : "s"})`
+                }</span>
+              </td>
+            </tr>
+            ${g.members.map((s) => renderMemberRow(s, graduatedTable)).join("")}
+          `
+            )
+            .join("");
+        }
+
+        function renderStudents(activeList, graduatedList) {
+          if (activeMembersBody) {
+            activeMembersBody.innerHTML = activeList?.length
+              ? renderGroupedMemberRows(activeList, false)
+              : '<tr><td colspan="6" class="member-section-empty">No active members found.</td></tr>';
+          }
+          if (graduatedMembersBody) {
+            graduatedMembersBody.innerHTML = graduatedList?.length
+              ? renderGroupedMemberRows(graduatedList, true)
+              : '<tr><td colspan="6" class="member-section-empty">No graduated members yet.</td></tr>';
+          }
+        }
+
+        function formatWorkDate(val) {
+          if (!val) return "";
+          const d = new Date(`${val}T12:00:00`);
+          if (Number.isNaN(d.getTime())) return val;
+          return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+        }
+
+        function convocationRecord(name) {
+          return (allConvocations || []).find(
+            (c) => c.name && name && c.name.toLowerCase() === name.toLowerCase()
+          );
+        }
+
+        function validateMemberConvocationStatus(isGraduated, convName) {
+          const conv = convocationRecord(convName);
+          if (!conv) return "";
+          if (isGraduated && !conv.isGraduated) {
+            return "Graduated members must use a graduated dufcad, or set Member Status to Active.";
+          }
+          if (!isGraduated && conv.isGraduated) {
+            return "Active members cannot be assigned to a graduated dufcad.";
+          }
+          return "";
+        }
+
+        function populateEditConvocationOptions(s) {
+          if (!convSelectEdit) return;
+          const isGraduatedMember =
+            document.getElementById("edit-member-status")?.value === "graduated";
+          const currentConv =
+            document.getElementById("edit-conv")?.value || s?.convocation || "";
+          let editOpts;
+          if (isGraduatedMember) {
+            editOpts = allConvocations.filter((c) => c.isGraduated);
+            const curRec = convocationRecord(currentConv);
+            if (
+              currentConv &&
+              (!curRec || !curRec.isGraduated) &&
+              !editOpts.some((c) => c.name === currentConv)
+            ) {
+              editOpts.unshift({
+                name: currentConv,
+                isGraduated: false,
+                invalidMix: true,
+              });
+            }
+          } else {
+            editOpts = allConvocations.filter((c) => !c.isGraduated);
+          }
+          if (!editOpts.length) {
+            convSelectEdit.innerHTML =
+              '<option value="" disabled selected>No matching convocations</option>';
+            return;
+          }
+          convSelectEdit.innerHTML = editOpts
+            .map((c) => {
+              let suffix = "";
+              if (c.invalidMix) {
+                suffix = " (invalid — set Active or pick graduated dufcad)";
+              } else if (c.isGraduated) {
+                suffix = " (Graduated batch)";
+              }
+              return `<option value="${c.name}">${c.name}${suffix}</option>`;
+            })
+            .join("");
+          if (editOpts.some((c) => c.name === currentConv)) {
+            convSelectEdit.value = currentConv;
+          } else {
+            convSelectEdit.value = editOpts[0].name;
+          }
+        }
+
+        function syncEditMemberStatusFields() {
+          const graduated = document.getElementById("edit-member-status")?.value === "graduated";
+          const semesterWrap = document.getElementById("edit-semester-wrap");
+          const gradPanel = document.getElementById("edit-graduated-panel");
+          if (semesterWrap) semesterWrap.style.display = graduated ? "none" : "";
+          if (gradPanel) gradPanel.style.display = graduated ? "block" : "none";
+          if (!graduated) {
+            const worksCb = document.getElementById("edit-has-works");
+            if (worksCb) worksCb.checked = false;
+            syncEditWorksFields();
+          }
+        }
+
+        function syncEditWorksFields() {
+          const show = document.getElementById("edit-has-works")?.checked;
+          const fields = document.getElementById("edit-works-fields");
+          if (fields) fields.style.display = show ? "grid" : "none";
+        }
+
+        // â”€â”€ Event Wiring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        if (searchInput)  searchInput.oninput  = applyFilter;
+        if (filterSelect) filterSelect.onchange = applyFilter;
+
+        document.getElementById("add-member-btn").onclick  = () => addMemberModal.classList.add("active");
+        document.getElementById("close-add-modal").onclick  = () => addMemberModal.classList.remove("active");
+        document.getElementById("close-edit-modal").onclick = () => editMemberModal.classList.remove("active");
+        function closeStudentDetailModal() {
+          detailModal.classList.remove("active");
+          document.body.classList.remove("student-modal-open");
+          currentDetailStudentId = null;
+        }
+        window.closeStudentDetailModal = closeStudentDetailModal;
+
+        window.toggleUnpaidMonthsDropdown = (btn, event) => {
+          event?.stopPropagation();
+          const card = btn.closest(".student-modal-stat--unpaid");
+          const head = btn.closest(".unpaid-months-head");
+          if (!card || !head) return;
+          const isOpen = card.classList.toggle("is-open");
+          btn.classList.toggle("is-open", isOpen);
+          btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        };
+        document.getElementById("close-modal").onclick = closeStudentDetailModal;
+        document.getElementById("add-conv-btn").onclick     = () => addConvModal.classList.add("active");
+        document.getElementById("close-conv-modal").onclick = () => addConvModal.classList.remove("active");
+
+        document.getElementById("edit-member-status")?.addEventListener("change", () => {
+          syncEditMemberStatusFields();
+          const originalId = document.getElementById("edit-original-id")?.value;
+          const s = allStudents.find((x) => x.id === originalId);
+          populateEditConvocationOptions(s);
+        });
+        document.getElementById("edit-has-works")?.addEventListener("change", syncEditWorksFields);
+        document.getElementById("new-bodycard")?.addEventListener("change", () => syncBodyCardFields("new"));
+        document.getElementById("edit-bodycard")?.addEventListener("change", () => syncBodyCardFields("edit"));
+
+        function syncBodyCardFields(prefix) {
+          const isYes = document.getElementById(`${prefix}-bodycard`)?.value === "Yes";
+          const group = document.getElementById(`${prefix}-card-number-group`);
+          const input = document.getElementById(`${prefix}-card-number`);
+          if (group) group.style.display = isYes ? "block" : "none";
+          if (input) {
+            input.required = isYes;
+            if (!isYes) input.value = "";
+          }
+        }
+
+        // â”€â”€ View Student â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        window.viewFullStudent = async (id) => {
+          currentDetailStudentId = id;
+          let s = allStudents.find(x => x.id === id);
+          try {
+            const fresh = await getUserById(id);
+            if (fresh?.id) {
+              mergeStudentRecord(fresh);
+              s = fresh;
+            }
+          } catch (err) {
+            console.error('Could not refresh member profile', err);
+          }
+          if (!s) return;
+
+          const attendance = await getAttendance({ student_id: id });
+          const attendedCount = attendance.filter(a => a.status === 'Present').length;
+
+          const profilePicUrl = getProfilePicUrl(s);
+          
+          document.getElementById("student-modal-header-content").innerHTML = `
+            <i class="fa-solid fa-xmark modal-close" onclick="closeStudentDetailModal()"
+               style="color:white;opacity:0.8;"></i>
+            <div class="student-modal-header-inner">
+              <div class="student-modal-avatar-wrap">
+                <img src="${profilePicUrl}" class="student-modal-avatar"
+                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=1e4a6d&color=fff'" alt="">
+              </div>
+              <div class="student-modal-header-text">
+                <h2>${s.name}</h2>
+                <p>${displayRole(s.role)} | ${s.convocation||''}</p>
+                <p class="student-modal-meta"><i class="fa-solid fa-graduation-cap"></i> ${s.university||'N/A'}</p>
+                <p class="student-modal-meta"><i class="fa-solid fa-building-columns"></i> Faculty: ${s.faculty||'N/A'}</p>
+                ${!s.isGraduated ? `<p class="student-modal-meta"><i class="fa-solid fa-book-open"></i> Semester: ${s.semester||'N/A'}</p>` : ''}
+                ${s.email ? `<p class="student-modal-meta"><i class="fa-solid fa-envelope"></i> ${s.email}</p>` : ''}
+                ${s.phone ? `<p class="student-modal-meta"><i class="fa-solid fa-phone"></i> ${s.phone}</p>` : ''}
+                <p class="student-modal-pass"><i class="fa-solid fa-key"></i> Pass: ${s.password||'***'}</p>
+                <p class="mt-2"><span class="badge" style="background:rgba(255,255,255,0.2);color:white;opacity:0.8;">ID: ${s.id}</span></p>
+              </div>
+            </div>`;
+          const missed = calculateMissed(s);
+          const unpaidCount = s.unpaidMonths ? s.unpaidMonths.length : 0;
+          document.getElementById("student-modal-info-content").innerHTML = `
+            <div class="stats-grid student-modal-stats" style="overflow: visible;">
+              <div class="stat-card student-modal-stat">
+                <h4 style="color: var(--danger); font-size: 1.5rem;">${missed}</h4>
+                <p>Missed</p>
+              </div>
+              <div class="stat-card student-modal-stat">
+                <h4 style="color: ${s.isGraduated ? 'var(--success)' : 'var(--warning)'}; font-size: 0.95rem;">${s.isGraduated ? 'Graduated' : 'Active'}</h4>
+                <p>Status</p>
+              </div>
+              <div class="stat-card student-modal-stat">
+                <h4 style="font-size: 1.1rem; font-weight: 700;">${bodyCardDisplay(s)}</h4>
+                <p>Body Card</p>
+              </div>
+              <div class="stat-card student-modal-stat student-modal-stat--unpaid">
+                <div class="unpaid-months-head">
+                  <h4 style="color: ${unpaidCount > 0 ? 'var(--warning)' : 'var(--success)'}; font-size: 1.5rem; margin: 0;">
+                    ${unpaidCount}
+                  </h4>
+                  ${unpaidCount > 0 ? `
+                    <button type="button" class="unpaid-months-eye-btn" aria-label="Show unpaid months" aria-expanded="false" onclick="toggleUnpaidMonthsDropdown(this, event)">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <div class="unpaid-months-dropdown" role="tooltip">${(s.unpaidMonths || []).map((m) => `<div>${m}</div>`).join('')}</div>
+                  ` : ''}
+                </div>
+                <p>Unpaid Months</p>
+              </div>
+            </div>
+            ${s.isGraduated ? `
+            <div class="member-employment-panel">
+              <h4><i class="fa-solid fa-briefcase"></i> Employment</h4>
+              <p><strong>Works:</strong> ${s.hasWorks ? 'Yes' : 'No'}</p>
+              ${s.hasWorks ? `
+                <p><strong>Place of Work:</strong> ${s.workPlace || '—'}</p>
+                <p><strong>Job Role:</strong> ${s.workRole || '—'}</p>
+                <p><strong>Date Started:</strong> ${formatWorkDate(s.workStarted) || '—'}</p>
+              ` : '<p style="color:var(--text-muted);font-size:0.85rem;">No employment information recorded.</p>'}
+            </div>` : ''}`;
+          detailModal.classList.add("active");
+          document.body.classList.add("student-modal-open");
+        };
+
+        window.deleteMember = async (id) => {
+          const s = allStudents.find((x) => x.id === id);
+          if (!s) return;
+          if (s.id === cu.id) {
+            Components.showToast("You cannot delete your own account.", "error");
+            return;
+          }
+          const msg = `Delete ${s.name} (${s.id}) — ${displayRole(s.role)}?\n\nThis cannot be undone. Their help messages, applications, payments, attendance, and notifications will also be removed.`;
+          if (!confirm(msg)) return;
+
+          const res = await deleteStudent(id);
+          if (res && res.success) {
+            await loadStudents();
+            Components.showToast(`${s.name} was deleted.`, "success");
+          } else {
+            Components.showToast(res?.error || "Could not delete member.", "error");
+          }
+        };
+
+        // â”€â”€ Edit Student â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        window.openEditModal = (id) => {
+          const s = allStudents.find(x => x.id === id);
+          if (!s) return;
+
+          // Dynamically populate edit dropdown from member status
+          populateEditConvocationOptions(s);
+
+          document.getElementById("edit-original-id").value = s.id;
+          document.getElementById("edit-name").value        = s.name;
+          document.getElementById("edit-login-id").value    = s.username || s.id;
+          document.getElementById("edit-password").value    = ""; // Clear for security
+          document.getElementById("edit-conv").value        = s.convocation || "";
+          
+          const roleSelect = document.getElementById("edit-role");
+          roleSelect.value = s.role;
+          
+          // PROTECTION: If this is the Main Leader, don't allow changing role
+          if (s.role === "Main Leader") {
+              roleSelect.disabled = true;
+          } else {
+              roleSelect.disabled = false;
+          }
+
+          document.getElementById("edit-university").value  = s.university || "";
+          document.getElementById("edit-faculty").value     = s.faculty || "";
+          document.getElementById("edit-semester").value    = s.semester || "";
+          document.getElementById("edit-member-status").value = s.isGraduated ? "graduated" : "active";
+          document.getElementById("edit-has-works").checked = !!s.hasWorks;
+          document.getElementById("edit-work-place").value   = s.workPlace || "";
+          document.getElementById("edit-work-role").value   = s.workRole || "";
+          document.getElementById("edit-work-started").value = s.workStarted || "";
+          document.getElementById("edit-email").value       = s.email || "";
+          document.getElementById("edit-phone").value       = s.phone || "";
+          document.getElementById("edit-bodycard").value    = s.bodyCard || "No";
+          document.getElementById("edit-card-number").value = s.cardNumber || "";
+          syncBodyCardFields("edit");
+          syncEditMemberStatusFields();
+          syncEditWorksFields();
+          editMemberModal.classList.add("active");
+        };
+
+        // â”€â”€ Add Member Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        document.getElementById("add-member-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const role = document.getElementById("new-role").value;
+          const conv = document.getElementById("new-conv").value;
+
+          if (!conv) {
+            Components.showToast("Please select a convocation.", "error");
+            return;
+          }
+
+          // Validation
+          if (role === "Payment Sub Admin" &&
+              allStudents.find(s => s.convocation === conv && (s.role === "Payment Sub Admin" || s.role === "Leader"))) {
+            Components.showToast("Error: Every convocation can only have one Leader / Collector!", "error");
+            return;
+          }
+          if (role === "Payment Admin" && allStudents.find(s => s.role === "Payment Admin")) {
+            Components.showToast("Error: There can only be one Main Payment Admin in the system!", "error");
+            return;
+          }
+
+          const bodyCard = document.getElementById("new-bodycard").value;
+          const cardNumber = document.getElementById("new-card-number").value.trim();
+          const email = document.getElementById("new-email").value.trim();
+          if (!email) {
+            Components.showToast("Email is required so the member can receive update notifications.", "error");
+            return;
+          }
+          if (bodyCard === "Yes" && !cardNumber) {
+            Components.showToast("Card number is required when Body Card is Yes.", "error");
+            return;
+          }
+
+          const newMember = {
+            id:          document.getElementById("new-id").value.trim().toLowerCase(),
+            name:        document.getElementById("new-name").value.trim(),
+            password:    document.getElementById("new-password").value.trim(),
+            convocation: conv,
+            role:        role,
+            university:  document.getElementById("new-university").value.trim(),
+            faculty:     document.getElementById("new-faculty").value.trim(),
+            semester:    document.getElementById("new-semester").value.trim(),
+            email:       document.getElementById("new-email").value.trim(),
+            phone:       document.getElementById("new-phone").value.trim(),
+            bodyCard,
+            cardNumber: bodyCard === "Yes" ? cardNumber : "",
+          };
+
+          const res = await addStudent(newMember);
+          if (res && res.success) {
+            document.getElementById("add-member-form").reset();
+            syncBodyCardFields("new");
+            addMemberModal.classList.remove("active");
+            await loadStudents();
+            Components.showToast("Member Added Successfully!", "success");
+          } else {
+            Components.showToast("Error adding member: " + (res?.error || "Unknown error"), "error");
+          }
+        };
+
+        // â”€â”€ Edit Member Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        document.getElementById("edit-member-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const originalId = document.getElementById("edit-original-id").value;
+          const role       = document.getElementById("edit-role").value;
+          const conv       = document.getElementById("edit-conv").value;
+
+          if (!conv) {
+            Components.showToast("Please select a convocation.", "error");
+            return;
+          }
+
+          // Validation
+          if (role === "Payment Sub Admin" &&
+              allStudents.find(s => s.id !== originalId && s.convocation === conv && (s.role === "Payment Sub Admin" || s.role === "Leader"))) {
+            Components.showToast("Error: Every convocation can only have one Leader / Collector!", "error");
+            return;
+          }
+          if (role === "Payment Admin" &&
+              allStudents.find(s => s.id !== originalId && s.role === "Payment Admin")) {
+            Components.showToast("Error: There can only be one Main Payment Admin in the system!", "error");
+            return;
+          }
+
+          const loginId = document.getElementById("edit-login-id").value.trim().toLowerCase();
+          if (!loginId) {
+            Components.showToast("ID / Username is required.", "error");
+            return;
+          }
+
+          const bodyCard = document.getElementById("edit-bodycard").value;
+          const cardNumber = document.getElementById("edit-card-number").value.trim();
+          const email = document.getElementById("edit-email").value.trim();
+          if (!email) {
+            Components.showToast("Email is required so the member can receive update notifications.", "error");
+            return;
+          }
+          if (bodyCard === "Yes" && !cardNumber) {
+            Components.showToast("Card number is required when Body Card is Yes.", "error");
+            return;
+          }
+
+          const isGraduated = document.getElementById("edit-member-status").value === "graduated";
+          const statusErr = validateMemberConvocationStatus(isGraduated, conv);
+          if (statusErr) {
+            Components.showToast(statusErr, "error");
+            return;
+          }
+
+          const updatedData = {
+            name:        document.getElementById("edit-name").value.trim(),
+            username:    loginId,
+            convocation: conv,
+            role:        role,
+            university:  document.getElementById("edit-university").value.trim(),
+            faculty:     document.getElementById("edit-faculty").value.trim(),
+            email:       document.getElementById("edit-email").value.trim(),
+            phone:       document.getElementById("edit-phone").value.trim(),
+            bodyCard,
+            cardNumber: bodyCard === "Yes" ? cardNumber : "",
+            isGraduated: isGraduated,
+          };
+          if (!isGraduated) {
+            updatedData.semester = document.getElementById("edit-semester").value.trim();
+          }
+          if (isGraduated) {
+            const hasWorks = document.getElementById("edit-has-works").checked;
+            updatedData.hasWorks = hasWorks;
+            if (hasWorks) {
+              updatedData.workPlace = document.getElementById("edit-work-place").value.trim();
+              updatedData.workRole = document.getElementById("edit-work-role").value.trim();
+              updatedData.workStarted = document.getElementById("edit-work-started").value;
+            }
+          }
+          const pass = document.getElementById("edit-password").value.trim();
+          if (pass) updatedData.password = pass;
+
+          const res = await editStudent(originalId, updatedData);
+          if (res && res.success) {
+            if (res.user) mergeStudentRecord(res.user);
+            editMemberModal.classList.remove("active");
+            await loadStudents();
+            await viewFullStudent(originalId);
+            if (res.emailSent) {
+              Components.showToast("Member updated — notification email sent.", "success");
+            } else {
+              Components.showToast("Member updated successfully.", "success");
+            }
+          } else {
+            Components.showToast(res?.error || "Error updating member.", "error");
+          }
+        };
+
+        // â”€â”€ Add Convocation Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        document.getElementById("add-conv-form").onsubmit = async (e) => {
+          e.preventDefault();
+          const name = document.getElementById("new-conv-name").value.trim();
+          if (name) {
+            await addConvocation(name, new Date().getFullYear());
+            await loadFilters();
+            addConvModal.classList.remove("active");
+            document.getElementById("new-conv-name").value = "";
+            alert("Convocation Added!");
+          }
+        };
+
+        // â”€â”€ Initial Load â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        await loadFilters();
+        await loadStudents();
+        onPortalTabVisible(async () => {
+          await loadFilters();
+          await loadStudents();
+        });
+      });
+    </script>
+  </body>
+</html>

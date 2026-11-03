@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Leader Dashboard - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="./main_leader_responsive.css">
+    <style>
+        input[type="month"] {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            height: 38px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .month-selector {
+            background: var(--bg-card);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .chart-row {
+                display: flex;
+                overflow-x: auto;
+                gap: 1rem;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.5rem;
+            }
+            .chart-card {
+                min-width: 85vw;
+                flex: 0 0 85vw;
+                scroll-snap-align: start;
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            height: 200px;
+            margin-top: 1.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .bar-item {
+            flex: 1;
+            height: 100%;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .bar-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+
+            <div class="dashboard-content">
+                <div class="month-selector month-selector--payment-admin month-selector--payment-admin-panel">
+                    <div class="d-flex align-center gap-3" id="filters-container">
+                        <div class="month-field-group">
+                            <label class="toolbar-month-label" for="month-picker"><i class="fa-solid fa-calendar-days"></i> Month:</label>
+                            <input type="month" id="month-picker" class="search-input month-picker-input">
+                        </div>
+                        <select id="convocation-filter" class="search-input convocation-filter-input">
+                            <option value="All">All Convocations</option>
+                        </select>
+                    </div>
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="global-search" class="search-input"
+                            placeholder="Search by ID or Name...">
+                    </div>
+                </div>
+
+
+
+                <div class="stats-grid" id="stats-grid" style="display: none;">
+                    <!-- Stats cards will be injected here -->
+                </div>
+
+                <div class="card-table" style="margin-top: 2rem;">
+
+                    <!-- HEADER (stays fixed) -->
+                    <div class="table-header">
+                        <h3>
+                            Unpaid Members |
+                            <span style="font-weight: 400; color: var(--text-muted);">
+                                Lacag la'aan
+                            </span>
+                        </h3>
+                    </div>
+
+                    <!-- ONLY TABLE SCROLLS -->
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Convocation</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unpaid-table-body">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="card-table" style="margin-top: 2rem;">
+
+                    <!-- HEADER (fixed) -->
+                    <div class="table-header">
+                        <h3>
+                            Transaction History |
+                            <span style="font-weight: 400; color: var(--text-muted);">
+                                Taariikhda Bixinta
+                            </span>
+                        </h3>
+                    </div>
+
+                    <!-- ONLY TABLE SCROLLS -->
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Convocation</th>
+                                    <th>Month</th>
+                                    <th>Amount</th>
+                                    <th>Collector</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="chart-row" id="admin-charts" style="display: none;">
+                    <div class="chart-card">
+                        <h3>Monthly Collection Rate</h3>
+                        <div class="bar-container" id="monthly-chart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Convocation Performance (%)</h3>
+                        <div class="bar-container" id="conv-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/data.js"></script>
+    <script src="../../assets/js/chart-bars.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+        let currentUser = {};
+        let allStudents = [];
+        let allConvocations = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = getCurrentUser();
+            if (!currentUser.id) { window.location.href = '../../login.html'; return; }
+
+            Components.init({
+                role: 'main-leader',
+                activePage: 'payments',
+                title: 'Payment Management',
+                userName: currentUser.name || 'Admin',
+                userRoleLabel: currentUser.role || 'Main Leader'
+            });
+
+            allConvocations = await getConvocations();
+            allStudents = await getUsers();
+
+            const convFilter = document.getElementById('convocation-filter');
+            if (convFilter) {
+                convFilter.innerHTML = '<option value="All">All Convocations</option>' +
+                    allConvocations.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+                convFilter.onchange = updateDashboard;
+            }
+
+            const monthPicker = document.getElementById('month-picker');
+            if (monthPicker) {
+                const now = new Date();
+                monthPicker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                monthPicker.onchange = updateDashboard;
+            }
+
+            const globalSearch = document.getElementById('global-search');
+            if (globalSearch) globalSearch.oninput = updateDashboard;
+
+            updateDashboard();
+        });
+
+        async function updateDashboard() {
+            const mPicker = document.getElementById('month-picker');
+            const gSearch = document.getElementById('global-search');
+            const cFilter = document.getElementById('convocation-filter');
+
+            const dateVal = mPicker ? mPicker.value : '';
+            if (!dateVal) return;
+
+            const [year, monthNum] = dateVal.split('-');
+            const now = new Date();
+            const selectedMonthIdx = parseInt(monthNum) - 1;
+            const isFutureDate = parseInt(year) > now.getFullYear() ||
+                (parseInt(year) === now.getFullYear() && selectedMonthIdx > now.getMonth());
+
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const selectedMonth = monthNames[selectedMonthIdx];
+            const selectedConv = cFilter ? cFilter.value : 'All';
+            const searchTerm = (gSearch ? gSearch.value : '').toLowerCase();
+
+            // Fetch transactions for this month
+            const txnFilters = { month: selectedMonth };
+            if (selectedConv !== 'All') txnFilters.convocation = selectedConv;
+            const transactions = await getTransactions(txnFilters);
+            const paidIds = new Set(transactions.map(t => t.student_id));
+
+            // Filter students
+            let scopeStudents = allStudents;
+            if (selectedConv !== 'All') scopeStudents = scopeStudents.filter(s => s.convocation && s.convocation.toLowerCase() === selectedConv.toLowerCase());
+
+            const unpaidStudents = isFutureDate ? scopeStudents : scopeStudents.filter(s => !paidIds.has(s.id));
+            const finalUnpaid = unpaidStudents.filter(s =>
+                s.name.toLowerCase().includes(searchTerm) || s.id.toLowerCase().includes(searchTerm)
+            );
+
+            // â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            const statsGrid = document.getElementById('stats-grid');
+            if (statsGrid) {
+                statsGrid.style.display = 'grid';
+                const collectedTotal = transactions.reduce((acc, t) =>
+                    acc + parseFloat((t.amount || '0').replace('$', '')), 0);
+
+                const allTimeTxns = await getTransactions();
+                const allExpensesList = await getExpenses();
+                const allFundEntries = await getFundEntries();
+
+                const grandSpentTotal = sumExpenseTotal(allExpensesList);
+                const grandSupportTotal = sumFundEntriesTotal(allFundEntries);
+                const accountBalance = calcAccountBalance(allTimeTxns, allExpensesList, allFundEntries);
+
+                const currentMonthSpent = allExpensesList
+                    .filter(e => e.month === selectedMonth && parseInt(e.year) === parseInt(year))
+                    .reduce((acc, e) => acc + parseFloat(e.amount || 0), 0);
+
+                const stats = [
+                    { label: 'Unpaid Total', value: unpaidStudents.length, icon: 'fa-clock', color: 'icon-red' },
+                    { label: 'Paid Members', value: scopeStudents.length - unpaidStudents.length, icon: 'fa-user-check', color: 'icon-green' },
+                    { label: `Collected (${selectedMonth})`, value: `$${collectedTotal.toFixed(2)}`, icon: 'fa-sack-dollar', color: 'icon-green' },
+                    { label: `Spent (${selectedMonth})`, value: `$${currentMonthSpent.toFixed(2)}`, icon: 'fa-money-bill-transfer', color: 'icon-red' },
+                    { label: 'Total Account Balance', value: `$${accountBalance.toFixed(2)}`, icon: 'fa-vault', color: 'icon-green' },
+                    { label: 'Total Supported (All Time)', value: `$${grandSupportTotal.toFixed(2)}`, icon: 'fa-hand-holding-heart', color: 'icon-green' },
+                    { label: 'Total Spent (All Time)', value: `$${grandSpentTotal.toFixed(2)}`, icon: 'fa-money-bill-trend-up', color: 'icon-red' }
+                ];
+                statsGrid.innerHTML = stats.map(s => `
+                    <div class="stat-card">
+                        <div class="stat-icon ${s.color}"><i class="fa-solid ${s.icon}"></i></div>
+                        <div class="stat-info"><h4>${s.value}</h4><p>${s.label}</p></div>
+                    </div>`).join('');
+            }
+
+            // â”€â”€ Unpaid Table (grouped by convocation) â”€â”€â”€â”€â”€â”€â”€â”€
+            const unpaidTable = document.getElementById('unpaid-table-body');
+            if (unpaidTable) {
+                const targetConvs = selectedConv === 'All'
+                    ? allConvocations.map(c => c.name)
+                    : [selectedConv];
+
+                unpaidTable.innerHTML = targetConvs.map(convName => {
+                    const group = finalUnpaid.filter(s => s.convocation && s.convocation.toLowerCase() === convName.toLowerCase());
+                    if (!group.length) return '';
+                    const safeConv = convName.replace(/\s+/g, '-');
+                    return `
+                        <tr style="background:var(--bg-hover);cursor:pointer;"
+                            onclick="document.querySelectorAll('.ur-${safeConv}').forEach(r=>r.style.display=r.style.display==='none'?'table-row':'none')">
+                            <td colspan="4"><strong>${convName}</strong> (${group.length} Unpaid) <i class="fa-solid fa-chevron-down" style="float:right;margin-top:4px;"></i></td>
+                        </tr>
+                        ${group.map(s => `
+                            <tr class="ur-${safeConv}">
+                                <td><strong>${s.id}</strong></td>
+                                <td><div class="d-flex align-center gap-2"><img src="${s.profilePic || ''}" style="width:32px;height:32px;border-radius:50%;" alt=""><span>${s.name}</span></div></td>
+                                <td>${s.convocation}</td>
+                                <td style="text-align:right;"><span class="badge badge-unpaid">${selectedMonth} Unpaid</span></td>
+                            </tr>`).join('')}`;
+                }).join('') || '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-muted);">Hambalyo! Cidna laguma laha bishaan.</td></tr>';
+            }
+
+            // â”€â”€ Transaction History â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            const histTable = document.getElementById('history-table-body');
+            if (histTable) {
+                histTable.innerHTML = renderGroupedTransactionHistory(transactions, {
+                    groupByConvocation: true,
+                    allConvocations,
+                    selectedConv,
+                    showAction: false,
+                    colspan: 8,
+                });
+            }
+
+            // â”€â”€ Charts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            const chartsRow = document.getElementById('admin-charts');
+            if (chartsRow) {
+                chartsRow.style.display = 'grid';
+                const perfData = await getPerformance(selectedMonth, year);
+                const monthlyChart = document.getElementById('monthly-chart');
+                if (monthlyChart) {
+                    const trendBars = [];
+                    for (let i = 5; i >= 0; i--) {
+                        const d = new Date(parseInt(year, 10), selectedMonthIdx - i, 1);
+                        const mn = monthNames[d.getMonth()];
+                        const yr = d.getFullYear();
+                        const filt = { month: mn, year: yr };
+                        if (selectedConv !== 'All') filt.convocation = selectedConv;
+                        const tx = await getTransactions(filt);
+                        let pool = scopeStudents;
+                        if (selectedConv === 'All') {
+                            pool = allStudents.filter(s => !s.isGraduated);
+                        }
+                        const paidCount = new Set(tx.map(t => t.student_id)).size;
+                        const rate = pool.length ? Math.round((paidCount / pool.length) * 100) : 0;
+                        trendBars.push({
+                            label: `${mn.slice(0, 3)} '${String(yr).slice(-2)}`,
+                            value: rate
+                        });
+                    }
+                    renderBarChart(monthlyChart, trendBars, {
+                        valueKey: 'value',
+                        labelKey: 'label',
+                        color: 'linear-gradient(180deg, #2E946A 0%, #1A92D4 100%)',
+                    });
+                }
+                const convChart = document.getElementById('conv-chart');
+                if (convChart && perfData) {
+                    renderBarChart(convChart, perfData.map(c => ({
+                        label: c.name,
+                        value: c.paymentRate
+                    })), { valueKey: 'value', labelKey: 'label' });
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

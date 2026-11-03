@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article | NAHS Foundation</title>
+  <meta name="description" content="Read a member article from the NAHS Foundation scholarship community.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/site-header.css">
+  <link rel="stylesheet" href="assets/css/floating-actions.css">
+  <link rel="stylesheet" href="assets/css/articles.css">
+  <!-- Markdown renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    /* ── Progress bar ── */
+    #readProgress{
+      position:fixed;top:0;left:0;height:3px;
+      background:linear-gradient(90deg,#1d8a5e,#1780c8);
+      width:0%;z-index:999;transition:width .1s linear;
+    }
+
+    /* ── Tags section ── */
+    .tags-section{margin-top:2rem;}
+    .tags-section strong{font-size:.85rem;color:#7a9ab2;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+    #tagsList{margin-top:8px;}
+  </style>
+</head>
+<body class="articles-page" id="articlePage">
+
+  <!-- Reading progress bar -->
+  <div id="readProgress" aria-hidden="true" role="progressbar" aria-label="Reading progress"></div>
+
+  <!-- Site header (same as index) -->
+  <div class="navbar" id="mainNavbar" role="navigation" aria-label="Main navigation">
+    <div class="container nav-container">
+      <a href="index.html" class="logo" aria-label="NAHS Foundation home">
+        <img src="portal/img/logo.svg" alt="HS Foundation Logo">
+        <div class="logo-text-wrapper">
+          <h1>Naadiga Ardayda Hormuud Salaam Foundation</h1>
+          <p>Scholarship students • Giving back</p>
+        </div>
+      </a>
+      <div class="menu-icon" id="menuToggle" aria-label="Toggle menu" role="button" tabindex="0"><i class="fas fa-bars"></i></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#mission-vision">Mission</a></li>
+        <li><a href="articles.html" class="active-nav">Articles</a></li>
+        <li><a href="books.html">Books</a></li>
+        <li><a href="team.html">Our Team</a></li>
+        <li><a href="index.html#activities">Activities</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="admin_login.html" class="btn-outline">Login</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div id="articleLoading" class="spinner-wrap" role="status" aria-live="polite">
+    <i class="fas fa-spinner fa-spin fa-2x"></i>
+    <p style="margin-top:1.2rem;font-size:.95rem">Loading article…</p>
+  </div>
+
+  <!-- Not found state -->
+  <div id="articleNotFound" style="display:none" role="alert">
+    <h2><i class="fas fa-file-times" style="color:#c0cdd8;margin-bottom:.5rem;display:block"></i>Article not found</h2>
+    <p style="color:#7a9ab2;margin:.8rem 0 1.5rem">This article may have been removed or the link is incorrect.</p>
+    <a href="articles.html" class="back-link">← Back to Articles</a>
+  </div>
+
+  <!-- Article content -->
+  <article id="articleContent" style="display:none">
+    <div class="article-detail-wrap">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html"><i class="fas fa-home" style="margin-right:4px"></i>Home</a>
+        <i class="fas fa-chevron-right" style="font-size:.7rem;color:#a0b4c2"></i>
+        <a href="articles.html">Articles</a>
+        <i class="fas fa-chevron-right" style="font-size:.7rem;color:#a0b4c2"></i>
+        <span id="breadcrumbTitle">…</span>
+      </nav>
+
+      <!-- Hero image -->
+      <div class="hero-image-block" id="heroImage"></div>
+
+      <!-- Title -->
+      <h1 id="articleTitle"></h1>
+
+      <!-- Meta bar -->
+      <div class="meta-bar">
+        <div id="authorMeta"></div>
+        <span><i class="far fa-calendar-alt"></i><span id="publishedDate"></span></span>
+        <span><i class="far fa-clock"></i><span id="readTime"></span></span>
+        <span><i class="far fa-eye"></i><span id="viewCount"></span></span>
+      </div>
+
+      <!-- Article body -->
+      <div class="article-content" id="articleBody"></div>
+
+      <!-- Tags -->
+      <div class="tags-section">
+        <strong>Tags</strong>
+        <div id="tagsList"></div>
+      </div>
+
+      <!-- Reactions -->
+      <div class="reactions-row" id="reactionsRow" aria-label="Article reactions">
+        <span class="reactions-label"><i class="far fa-thumbs-up" style="margin-right:6px"></i>Was this helpful?</span>
+        <button type="button" class="reaction-btn" id="likeBtn" aria-pressed="false" aria-label="Like this article">
+          <i class="fas fa-thumbs-up"></i> <span id="likeCount">0</span>
+        </button>
+        <button type="button" class="reaction-btn dislike" id="dislikeBtn" aria-pressed="false" aria-label="Dislike this article">
+          <i class="fas fa-thumbs-down"></i> <span id="dislikeCount">0</span>
+        </button>
+      </div>
+
+      <!-- Comments -->
+      <section class="comments-section" id="commentsSection" aria-label="Article comments">
+        <div class="comments-header">
+          <h3><i class="far fa-comments"></i> Comments <span class="comments-count" id="commentCount">0</span></h3>
+          <button type="button" class="comment-toggle-btn" id="commentToggleBtn" aria-expanded="false" aria-controls="commentFormWrap">
+            <i class="far fa-comment-dots"></i> Leave a comment
+          </button>
+        </div>
+        <div class="comment-form-wrap" id="commentFormWrap" aria-hidden="true">
+          <div class="comment-form-inner">
+            <form class="comment-form" id="commentForm" novalidate>
+              <div class="comment-form-grid">
+                <div class="comment-field">
+                  <label for="commentAuthorName">Your name</label>
+                  <input type="text" id="commentAuthorName" name="author_name" maxlength="120" placeholder="e.g. Ahmed Hassan" required autocomplete="name">
+                </div>
+                <div class="comment-field comment-field--wide">
+                  <label for="commentBody">Your comment</label>
+                  <textarea id="commentBody" name="body" rows="3" maxlength="2000" placeholder="Share your thoughts…" required></textarea>
+                </div>
+              </div>
+              <div class="comment-form-actions">
+                <p class="comment-form-hint" id="commentFormHint">Comments are public and appear after you post.</p>
+                <button type="submit" class="comment-submit-btn" id="commentSubmitBtn">
+                  <i class="fas fa-paper-plane"></i> Post comment
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="comments-list" id="commentsList" role="list"></div>
+        <p class="comments-empty" id="commentsEmpty" hidden>No comments yet — be the first to share your thoughts.</p>
+      </section>
+
+      <!-- Share -->
+      <div class="share-row">
+        <span><i class="fas fa-share-alt" style="margin-right:6px"></i>Share this article:</span>
+        <button type="button" id="copyLinkBtn">
+          <i class="fas fa-link" style="margin-right:6px"></i>Copy Link
+        </button>
+        <button type="button" class="secondary" id="shareTwitter">
+          <i class="fab fa-x-twitter" style="margin-right:6px"></i>Share on X
+        </button>
+        <button type="button" class="secondary" id="shareWhatsapp">
+          <i class="fab fa-whatsapp" style="margin-right:6px"></i>WhatsApp
+        </button>
+      </div>
+
+      <a href="articles.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Articles
+      </a>
+    </div>
+
+    <!-- Related articles -->
+    <section class="related-section" aria-label="Related articles">
+      <h2>More from this category</h2>
+      <div class="articles-grid" id="relatedGrid" style="padding:0"></div>
+    </section>
+  </article>
+
+  <script>
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const bar = document.getElementById('readProgress');
+      if (!bar) return;
+      const el = document.getElementById('articleContent');
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const totalH = el.offsetHeight;
+      const scrolled = Math.max(0, -rect.top);
+      const pct = Math.min(100, (scrolled / (totalH - window.innerHeight)) * 100);
+      bar.style.width = pct + '%';
+    });
+  </script>
+  <script src="assets/js/site-header.js"></script>
+  <script src="assets/js/floating-actions.js"></script>
+  <script src="assets/js/articles.js"></script>
+</body>
+</html>

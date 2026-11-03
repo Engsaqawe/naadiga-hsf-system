@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collector Dashboard - HSF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css?v=20260713">
+    <link rel="stylesheet" href="../main-leader/main_leader_responsive.css" />
+    <link rel="stylesheet" href="collector-dashboard.css" />
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+        <main class="main-content">
+            <header class="top-navbar" id="top-navbar"></header>
+            <div class="dashboard-content">
+
+                <div class="month-selector month-selector--collector">
+                    <div class="d-flex align-center gap-3" id="filters-container">
+                        <div class="month-field-group">
+                            <label class="toolbar-month-label" for="month-picker"><i class="fa-solid fa-calendar-days"></i> Month:</label>
+                            <input type="month" id="month-picker" class="search-input month-picker-input">
+                        </div>
+                    </div>
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="global-search" class="search-input" placeholder="Search by ID or Name...">
+                    </div>
+                </div>
+
+                <div class="stats-grid" id="stats-grid" style="display:none;"></div>
+
+                <div class="card-table" style="margin-top:2rem;">
+                    <div class="table-header">
+                        <h3>Unpaid Members | <span style="font-weight:400;color:var(--text-muted);">Lacag la'aan</span></h3>
+                    </div>
+                    <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Name</th><th>Convocation</th>
+                                <th style="text-align:right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unpaid-table-body"></tbody>
+                    </table>
+                    </div>
+
+                </div>
+
+                <div class="card-table" style="margin-top:2rem;">
+                    <div class="table-header">
+                        <h3>Transaction History | <span style="font-weight:400;color:var(--text-muted);">Taariikhda Bixinta</span></h3>
+                    </div>
+                    <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th><th>ID</th><th>Name</th>
+                                <th>Convocation</th><th>Month</th><th>Amount</th><th>Collector</th><th>Status</th><th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body"></tbody>
+                    </table>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/data.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script>
+        let currentUser = {};
+        let allStudents = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = getCurrentUser();
+            if (!currentUser.id || currentUser.role === 'Public User') {
+                localStorage.removeItem('hsf_current_user');
+                window.location.href = '../../login.html'; 
+                return; 
+            }
+
+            Components.init({
+                role: currentUser.role,
+                activePage: 'dashboard',
+                title: 'Collector Dashboard',
+                userName: currentUser.name || 'User',
+                userRoleLabel: currentUser.role || 'Collector'
+            });
+
+            allStudents = await getUsers({ convocation: currentUser.convocation });
+
+            // Show convocation badge
+            const container = document.getElementById('filters-container');
+            if (container && !document.getElementById('collector-badge')) {
+                container.insertAdjacentHTML('afterbegin', `
+                    <div id="collector-badge">
+                        <i class="fa-solid fa-user-shield"></i> ${currentUser.convocation}
+                    </div>`);
+            }
+
+            const now = new Date();
+            const monthPicker = document.getElementById('month-picker');
+            if (monthPicker) {
+                monthPicker.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+                monthPicker.onchange = updateDashboard;
+            }
+            document.getElementById('global-search').oninput = updateDashboard;
+            updateDashboard();
+        });
+
+        async function updateDashboard() {
+            const mPicker = document.getElementById('month-picker');
+            const dateVal = mPicker ? mPicker.value : '';
+            if (!dateVal) return;
+
+            const [year, monthNum] = dateVal.split('-');
+            const now = new Date();
+            const selectedMonthIdx = parseInt(monthNum) - 1;
+            const isFutureDate = (parseInt(year) > now.getFullYear()) ||
+                (parseInt(year) === now.getFullYear() && selectedMonthIdx > now.getMonth());
+
+            const monthNames = ['January','February','March','April','May','June',
+                                'July','August','September','October','November','December'];
+            const selectedMonth = monthNames[selectedMonthIdx];
+            const searchTerm = (document.getElementById('global-search')?.value || '').toLowerCase();
+
+            const transactions = await getTransactions({ month: selectedMonth, year, convocation: currentUser.convocation });
+            const paidIds = new Set(transactions.map(t => t.student_id));
+
+            let unpaidStudents = isFutureDate ? allStudents : allStudents.filter(s => !paidIds.has(s.id));
+            const finalUnpaid = unpaidStudents.filter(s =>
+                s.name.toLowerCase().includes(searchTerm) || s.id.toLowerCase().includes(searchTerm)
+            );
+            const paidCount = isFutureDate ? 0 : allStudents.length - unpaidStudents.length;
+
+            // Stats (full dufcad totals — search only filters the table below)
+            const statsGrid = document.getElementById('stats-grid');
+            if (statsGrid) {
+                statsGrid.style.display = 'grid';
+                const collectedTotal = transactions.reduce((acc, t) => acc + parseFloat((t.amount||'0').replace('$','')), 0);
+                const stats = [
+                    { label: `Collected`, value: `$${collectedTotal.toFixed(2)}`, icon: 'fa-sack-dollar', color: 'icon-green' },
+                    { label: 'Unpaid Members', value: unpaidStudents.length, icon: 'fa-clock', color: 'icon-red' },
+                    { label: 'Paid Members', value: paidCount, icon: 'fa-circle-check', color: 'icon-green' },
+                ];
+                statsGrid.innerHTML = stats.map(s => `
+                    <div class="stat-card">
+                        <div class="stat-icon ${s.color}"><i class="fa-solid ${s.icon}"></i></div>
+                        <div class="stat-info"><h4>${s.value}</h4><p>${s.label}</p></div>
+                    </div>`).join('');
+            }
+
+            // Unpaid table
+            const unpaidTable = document.getElementById('unpaid-table-body');
+            if (unpaidTable) {
+                unpaidTable.innerHTML = finalUnpaid.map(s => {
+                    const isSelf = s.id === currentUser.id;
+                    return `
+                        <tr ${isSelf ? 'style="background:rgba(37,99,235,0.06);border-left:3px solid var(--secondary);"' : ''}>
+                            <td><strong>${s.id}</strong> ${isSelf ? '<span class="badge badge-leader" style="font-size:0.7rem;">You</span>' : ''}</td>
+                            <td><div class="d-flex align-center gap-2"><img src="${s.profilePic ? s.profilePic + '?t=' + new Date().getTime() : ''}" style="width:32px;height:32px;border-radius:50%;" alt=""><span>${s.name}</span></div></td>
+                            <td>${s.convocation}</td>
+                            <td style="text-align:right;">
+                                <div class="d-flex align-center justify-end gap-3 flex-wrap">
+                                    <span class="badge badge-unpaid">${selectedMonth} Unpaid</span>
+                                    ${!isFutureDate ? `
+                                        <div class="collect-row-action">
+                                            <input type="number" step="0.01" min="0.01" id="collect-amount-${s.id}" class="collect-amount-input collect-amount-input--inline" value="${getDefaultCollectAmount()}" aria-label="Amount USD for ${s.name}">
+                                            <button type="button" class="btn ${isSelf ? 'btn-outline' : 'btn-primary'} collect-row-btn"
+                                                onclick="processPayment('${s.id}','${selectedMonth}')">
+                                                <i class="fa-solid ${isSelf ? 'fa-hand-holding-dollar' : 'fa-money-bill-check'}"></i>
+                                                Collect
+                                            </button>
+                                        </div>` : ''}
+                                </div>
+                            </td>
+                        </tr>`;
+                }).join('') || '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-muted);">Hambalyo! Cidna laguma laha bishaan.</td></tr>';
+                bindCollectAmountInputs();
+            }
+
+            // Transaction history
+            const histTable = document.getElementById('history-table-body');
+            if (histTable) {
+                histTable.innerHTML = renderGroupedTransactionHistory(transactions, {
+                    groupByConvocation: false,
+                    isCollector: true,
+                    isFutureDate,
+                    showAction: true,
+                    colspan: 9,
+                });
+            }
+        }
+
+        window.processPayment = async (id, month) => {
+            const amountVal = readCollectAmount(id);
+            if (amountVal === null) {
+                alert('Please enter a valid collect amount (e.g. 3.00).');
+                getCollectAmountInput(id)?.focus();
+                return;
+            }
+            if (confirm(`Ma hubtaa inaad lacagta $${amountVal.toFixed(2)} ka qaaday ${id} bisha ${month}?`)) {
+                const mPicker = document.getElementById('month-picker');
+                const yr = mPicker?.value ? parseInt(mPicker.value.split('-')[0], 10) : new Date().getFullYear();
+                const ok = await updateStudentPayment(id, month, currentUser.name, currentUser.convocation, yr, amountVal);
+                if (ok) {
+                    alert('Lacagta si guul leh ayaa loo diiwangeliyey!');
+                    await updateDashboard();
+                } else {
+                    alert('Khalad ayaa dhacay. Isku day mar kale.');
+                }
+            }
+        };
+
+        window.uncollectPayment = async (txnId, studentId, month) => {
+            if (!confirm(`Undo payment for ${studentId} (${month})? They will show as unpaid again.`)) return;
+            const ok = await deleteTransaction(txnId);
+            if (ok) {
+                alert('Payment removed. Member is unpaid again for this month.');
+                await updateDashboard();
+            } else {
+                alert('Could not undo payment. Try again.');
+            }
+        };
+    </script>
+</body>
+</html>

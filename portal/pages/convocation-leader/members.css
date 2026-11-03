@@ -1,0 +1,52 @@
+/* My Convocation — members table header & search */
+
+.members-page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.members-page-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.members-page-header .search-wrapper {
+    flex: 1 1 220px;
+    max-width: 360px;
+    min-width: 180px;
+    position: relative;
+}
+
+.members-page-header .search-wrapper .search-input {
+    width: 100%;
+    min-height: 42px;
+    padding-left: 38px;
+}
+
+@media (max-width: 768px) {
+    .members-page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 1rem 1.25rem;
+    }
+
+    .members-page-header h3 {
+        font-size: 1rem;
+        white-space: normal;
+    }
+
+    .members-page-header .search-wrapper {
+        max-width: 100%;
+        width: 100%;
+        flex: 1 1 100%;
+    }
+}

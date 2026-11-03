@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Private / admin areas — no need to index
+Disallow: /admin.html
+Disallow: /admin_login.html
+Disallow: /admin-article-editor.html
+Disallow: /portal/pages/
+Disallow: /backend/
+
+Sitemap: https://naadigaardaydahsf.com/sitemap.xml
